@@ -194,11 +194,11 @@ public class Plant {
 		this.fertilization_schedule = fertilization_schedule;
 	}
 
-	public List<Plant> getCompagnionPlants() {
+	public List<Plant> getCompanionPlants() {
 		return companionPlants;
 	}
 
-	public void setCompagnionPlants(List<Plant> compagnionPlants) {
+	public void setCompanionPlants(List<Plant> compagnionPlants) {
 		this.companionPlants = compagnionPlants;
 	}
 
@@ -222,7 +222,7 @@ public class Plant {
 		return plantTasks;
 	}
 
-	public void setTaskList(List<PlantTask> plantTasks) {
+	public void setPlantTasks(List<PlantTask> plantTasks) {
 		this.plantTasks = plantTasks;
 	}
 	
