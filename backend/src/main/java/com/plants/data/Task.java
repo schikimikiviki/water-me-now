@@ -75,7 +75,7 @@ public class Task {
 		return plantTasks;
 	}
 
-	public void setPlantList(List<PlantTask> plantTasks) {
+	public void setPlantTasks(List<PlantTask> plantTasks) {
 		this.plantTasks = plantTasks;
 	}
 

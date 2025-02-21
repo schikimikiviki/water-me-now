@@ -47,7 +47,7 @@ public class PlantController {
 	}
 
 	@GetMapping("/id/{Id}")
-	public Optional<Plant> getUserDataById(@PathVariable Long Id) {
+	public Optional<Plant> getPlantById(@PathVariable Long Id) {
 		// Return details of a single user
 		return plantService.findPlantById(Id);
 	}
@@ -126,13 +126,13 @@ public class PlantController {
 
 
 	@DeleteMapping("/{plantId}")
-	public ResponseEntity<?> deleteUser(@PathVariable Long userId) {
+	public ResponseEntity<?> deletePlant(@PathVariable Long plantId) {
 		try {
-			plantService.deletePlantById(userId);
-			return ResponseEntity.ok(Map.of("success", true, "message", "User deleted successfully"));
+			plantService.deletePlantById(plantId);
+			return ResponseEntity.ok(Map.of("success", true, "message", "Plant deleted successfully"));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-					.body(Map.of("success", false, "message", "User not found"));
+					.body(Map.of("success", false, "message", "Plant not found"));
 		}
 	}
 
