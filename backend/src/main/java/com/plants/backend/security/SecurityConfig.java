@@ -2,6 +2,7 @@ package com.plants.backend.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -39,9 +40,12 @@ public class SecurityConfig {
 		
 
 		.csrf(csrf -> csrf.disable()).securityMatcher("/**"). authorizeHttpRequests((authz) ->  authz
+				
+		.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 		.requestMatchers("/plants/all").anonymous()
 		.requestMatchers("/plants/**").authenticated()
 		
+		.requestMatchers(HttpMethod.POST, "/users/login").permitAll()
 		.requestMatchers("/users/**").authenticated() 
 		.requestMatchers("/test").anonymous()
 		
@@ -53,6 +57,8 @@ public class SecurityConfig {
 		
 		.requestMatchers("/pests/all").anonymous() 
 		.requestMatchers("/pests/**").authenticated() 
+		
+		
 
 
 		.anyRequest().authenticated())
