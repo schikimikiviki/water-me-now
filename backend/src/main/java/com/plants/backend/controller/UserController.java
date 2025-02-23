@@ -4,16 +4,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.plants.backend.data.LoginRequest;
 import com.plants.backend.data.User;
 import com.plants.backend.service.UserService;
 
@@ -21,13 +27,18 @@ import com.plants.backend.service.UserService;
 @RequestMapping("/users")
 public class UserController {
 
+	@Autowired
+	private UserDetailsService userDetailsService;
+	
+	private final PasswordEncoder passwordEncoder;
 
 
 	private final UserService userService;
 
 
-	public UserController(UserService userService) {
+	public UserController(UserService userService, PasswordEncoder passwordEncoder) {
 		this.userService = userService;
+		this.passwordEncoder = passwordEncoder;
 	}
 
 
@@ -82,5 +93,22 @@ public class UserController {
 					.body(Map.of("success", false, "message", "User not found"));
 		}
 	}
+	
+	
+	@PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        String username = loginRequest.getUsername();
+        String password = loginRequest.getPassword();
+        
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        if (userDetails != null && passwordEncoder.matches(password, userDetails.getPassword())) {
+            return ResponseEntity.ok(Map.of("success", true, "message", "Login successful"));
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("success", false, "message", "Invalid credentials"));
+        }
+    }
 
 }

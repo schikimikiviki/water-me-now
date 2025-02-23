@@ -27,11 +27,11 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --color-pink: #ff99c8;
-  --color-yellow: #fcf6bd;
-  --color-green: #d0f4de;
-  --color-blue: #a9def9;
-  --color-purple: #e4c1f9;
+  --color-blue: #95b8d1;
+  --color-pink: #ea9ab2;
+  --color-green: #60d394;
+  --color-red: #ff9b85;
+  --color-yellow: #ffd97d;
 }
 
 .page-div {
@@ -81,17 +81,4 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
 }
