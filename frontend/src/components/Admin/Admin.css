@@ -6,3 +6,15 @@ input {
   padding: 5px;
   color: black;
 }
+
+.post-box {
+  border: 2px solid white;
+  border-radius: 20px;
+  padding: 10px;
+  width: 33%;
+}
+
+.form-add {
+  display: flex;
+  flex-direction: column;
+}

@@ -9,7 +9,6 @@ function Header() {
         margin: '30px',
         backgroundColor: '#95b8d1',
         width: '90vw',
-        marginTop: '-150px',
       }}
     >
       <h1>🪴 water me now 🪴</h1>
