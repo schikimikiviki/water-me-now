@@ -20,14 +20,14 @@ function App() {
       <Header />
       <div className='main-div'>
         <Menu setMenuItem={handleChangeMenuItem} />
-        {activeItemMenu == 'plants' ? (
-          <PlantList />
-        ) : activeItemMenu == 'pests' ? (
+        {activeItemMenu == 'pests' ? (
           <PestList />
         ) : activeItemMenu == 'tasks' ? (
           <TaskList />
-        ) : (
+        ) : activeItemMenu == 'admin' ? (
           <Admin />
+        ) : (
+          <PlantList />
         )}
       </div>
     </div>
