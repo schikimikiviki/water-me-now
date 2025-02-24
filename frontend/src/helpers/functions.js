@@ -7,6 +7,7 @@ export const getRequest = async (path) => {
         'Content-Type': 'application/json',
       },
     });
+    return response.data;
   } catch (error) {
     console.error('Request failed:', error.message || error);
     return null;

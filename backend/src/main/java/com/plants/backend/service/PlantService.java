@@ -35,6 +35,10 @@ public class PlantService {
     	plantRepository.deleteById(id);
     }
 
+    public List<Plant> findPlantsByIds(List<Long> plantIds) {
+        return plantRepository.findAllById(plantIds); 
+    }
+
    
     
    

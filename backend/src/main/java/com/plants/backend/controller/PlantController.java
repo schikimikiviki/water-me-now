@@ -35,6 +35,7 @@ import com.plants.backend.data.Plant;
 import com.plants.backend.data.PlantTask;
 import com.plants.backend.data.Soil_type;
 import com.plants.backend.data.Watering;
+import com.plants.backend.repository.PestRepository;
 import com.plants.backend.repository.PlantTaskRepository;
 import com.plants.backend.service.PlantService;
 
@@ -47,11 +48,14 @@ public class PlantController {
 	private final PlantService plantService;
 	
 	private final PlantTaskRepository plantTaskRepository;
+	
+	private final PestRepository pestRepository;
 
 
-	public PlantController(PlantService plantService, PlantTaskRepository plantTaskRepository) {
+	public PlantController(PlantService plantService, PlantTaskRepository plantTaskRepository, PestRepository pestRepository) {
 		this.plantService = plantService;
 		this.plantTaskRepository = plantTaskRepository;
+		this.pestRepository = pestRepository;
 	}
 
 
@@ -84,7 +88,8 @@ public class PlantController {
 	    @RequestParam(value = "propagation", required = false) String propagation,
 	    @RequestParam("fertilization_schedule") Fertilization_schedule fertilizationSchedule,
 	    @RequestParam(value = "uses", required = false) List<String> uses,
-	    @RequestParam(value = "plantTasks", required = false) List<Long> plantTaskIds
+	    @RequestParam(value = "plantTasks", required = false) List<Long> plantTaskIds,
+	    @RequestParam(value = "commonPests", required = false) List<Long> commonPestIds
 	) {
 		 System.out.println("Received POST /plants/add");
 	    try {
@@ -114,6 +119,17 @@ public class PlantController {
 	        plant.setPropagation(propagation);
 	        plant.setFertilization_schedule(fertilizationSchedule);
 	        plant.setUses(uses != null ? uses : new ArrayList<>());
+	        // 3. Fetch Common Pests by IDs
+	        if (commonPestIds != null && !commonPestIds.isEmpty()) {
+	            List<Common_pest> commonPests = commonPestIds.stream()
+	                .map(id -> pestRepository.findById(id).orElse(null))
+	                .filter(Objects::nonNull)
+	                .collect(Collectors.toList());
+	            plant.setCommonPests(commonPests);
+	        }
+	        
+	        System.out.println("Common Pests: " + plant.getCommonPests());
+
 
 	        // 3. Handle Plant Tasks
 	        if (plantTaskIds != null && !plantTaskIds.isEmpty()) {
