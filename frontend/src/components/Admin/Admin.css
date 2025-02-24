@@ -1,10 +1,17 @@
 input {
   background-color: white;
-  font-size: 25px;
+  font-size: 20px;
   border-radius: 20px;
   margin: 5px;
   padding: 5px;
   color: black;
+  font-family: 'Poppins', sans-serif;
+  border-color: black;
+}
+
+input::placeholder {
+  color: black;
+  opacity: 1;
 }
 
 .post-box {
@@ -17,4 +24,96 @@ input {
 .form-add {
   display: flex;
   flex-direction: column;
+}
+
+select {
+  font-family: 'Poppins', sans-serif;
+  background-color: white;
+  color: black;
+  padding: 5px;
+  margin: 5px;
+  font-size: 20px;
+  border-radius: 20px;
+  border: 2px solid black;
+}
+
+.custom-file-upload {
+  padding: 5px;
+  margin: 5px;
+  cursor: pointer;
+  background-color: white;
+  color: black;
+  background-color: rgb(230, 229, 229);
+  border-radius: 20px;
+  border: none;
+  font-size: 20px;
+  border: 2px solid black;
+}
+
+.hr-styled {
+  width: 80%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.feature-checkboxes input[type='checkbox'] {
+  /* Remove default checkbox styling */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  width: 18px;
+  height: 18px;
+  border: 2px solid #888;
+  border-radius: 4px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+  position: relative;
+  background-color: #fff;
+}
+
+.feature-checkboxes input[type='checkbox']:checked {
+  background-color: var(--color-yellow);
+  border-color: var(--color-yellow);
+}
+
+/* Add a checkmark */
+.feature-checkboxes input[type='checkbox']:checked::after {
+  content: '✔';
+  color: white;
+  font-size: 14px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%);
+}
+
+.feature-checkboxes input[type='checkbox']:hover {
+  border-color: #666;
+}
+
+.feature-checkboxes div {
+  display: flex;
+  align-items: center;
+}
+
+.feature-checkboxes label {
+  margin-left: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  margin-top: 3px;
+  font-size: 18px;
+}
+
+.remove-button {
+  padding: 5px 10px 5px 10px;
+  margin-left: 10px;
+  background-color: var(--color-red);
+  border: 2px solid black;
+
+  &:hover {
+    border: 2px solid black;
+  }
 }

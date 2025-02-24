@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../api/axiosConfig';
 import './Admin.css';
+import getRequest from '../../helpers/functions';
 
 function Admin() {
   const [password, setPassword] = useState('');
@@ -26,13 +27,21 @@ function Admin() {
   const [allPlants, setAllPlants] = useState([]); // Available plants
   const [companionInput, setCompanionInput] = useState('');
   const [companionPlants, setCompanionPlants] = useState([]);
+  const [plantTasks, setPlantTasks] = useState([]);
+  const [selectedPlantTasks, setSelectedPlantTasks] = useState([]);
 
   useEffect(() => {
     const fetchPlants = async () => {
-      const response = await api.get('/plants/all'); // Fetch available plants
+      const response = getRequest('plants');
       setAllPlants(response.data);
     };
+
+    const fetchPlantTasks = async () => {
+      const response = getRequest('plant-tasks');
+      setPlantTasks(response.data);
+    };
     fetchPlants();
+    fetchPlantTasks();
   }, []);
 
   const addCompanionPlant = (e) => {
@@ -81,17 +90,16 @@ function Admin() {
     }
   };
 
-  // TODO: you should be able to select multiple uses
-  // TODO: compagnion plants auto fill is missing
-  // TODO: fix input fields color
+  // TODO: compagnion plants auto fill should only work for existing plants
+  // TODO: You should be able to see the uploaded img file
 
   const handleAddPlant = async (e) => {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append('plantName', plantName);
+    formData.append('name', plantName);
     formData.append('origin', origin);
-    formData.append('image', imageFile);
+    formData.append('imageFile', imageFile);
     formData.append('hardiness', hardiness);
     formData.append('hardinessInfo', hardinessInfo);
     formData.append('ideal_location', idealLocation);
@@ -104,10 +112,22 @@ function Admin() {
     formData.append('fertilization_schedule', fertilization);
     formData.append('companionPlants', JSON.stringify(companionPlants));
     formData.append('uses', JSON.stringify(uses));
+    selectedPlantTasks.forEach((taskId) =>
+      formData.append('plantTasks', taskId)
+    );
+
+    console.log('Posting with this data :');
+    for (var pair of formData.entries()) {
+      console.log(pair[0] + ', ' + pair[1]);
+    }
+
     try {
-      const response = await api.post('/plants', formData, {
+      const authToken = localStorage.getItem('authToken');
+
+      const response = await api.post('/plants/add', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          Authorization: `Basic ${authToken}`,
         },
       });
       console.log('Plant added:', response.data);
@@ -167,25 +187,21 @@ function Admin() {
     setFertilization(e.taget.value);
   };
 
-  const handleUsesChange = (e) => {
-    const selectedOptions = Array.from(
-      e.target.selectedOptions,
-      (option) => option.value
-    );
-    setUses(selectedOptions);
+  const removeUse = (index) => {
+    setUses(uses.filter((_, i) => i !== index));
   };
 
-  const addCustomUse = (e) => {
-    e.preventDefault();
-    if (customUse && !uses.includes(customUse)) {
-      setUses([...uses, customUse]);
-      setCustomUse('');
+  const handleTaskChange = (e, taskId) => {
+    if (e.target.checked) {
+      setSelectedPlantTasks([...selectedPlantTasks, taskId]);
+    } else {
+      setSelectedPlantTasks(selectedPlantTasks.filter((id) => id !== taskId));
     }
   };
 
   return (
     <div className='page-div'>
-      {loggedIn ? (
+      {!loggedIn ? (
         <div>
           <h1>Login</h1>
           <form onSubmit={handleLogin} role='form'>
@@ -217,7 +233,7 @@ function Admin() {
 
           <div style={{ display: 'flex', gap: '20px' }}>
             <div className='post-box'>
-              <h2> Add a new plant</h2>
+              <h2>✨ Add a new plant ✨</h2>
 
               <form className='form-add' onSubmit={handleAddPlant} role='form'>
                 <input
@@ -238,6 +254,9 @@ function Admin() {
                   onChange={handlePlantOriginChange}
                   required
                 />
+                <label htmlFor='plantImage' className='custom-file-upload'>
+                  Choose Image
+                </label>
                 <input
                   type='file'
                   id='plantImage'
@@ -245,7 +264,9 @@ function Admin() {
                   accept='image/*'
                   onChange={(e) => setImageFile(e.target.files[0])}
                   required
+                  style={{ display: 'none' }} // Hide default input
                 />
+                <hr className='hr-styled' />
                 <label for='hardiness'>Choose hardiness:</label>
                 <select
                   value={hardiness}
@@ -266,6 +287,7 @@ function Admin() {
                   placeholder='Enter hardiness info'
                   value={hardinessInfo}
                 />
+                <hr className='hr-styled' />
                 <label for='idealLocation'>Choose ideal location:</label>
                 <select
                   value={idealLocation}
@@ -317,6 +339,7 @@ function Admin() {
                   <option value='true'>yes</option>
                   <option value='false'>no</option>
                 </select>
+                <hr className='hr-styled' />
                 <label>Choose features:</label>
                 <div className='feature-checkboxes'>
                   {[
@@ -338,11 +361,15 @@ function Admin() {
                         onChange={handleCheckboxChange}
                       />
                       <label htmlFor={feature}>
-                        {feature.replace(/_/g, ' ')}
+                        {feature
+                          .replace(/_/g, ' ')
+                          .toLowerCase()
+                          .replace(/^\w|\s\w/g, (c) => c.toUpperCase())}
                       </label>
                     </div>
                   ))}
                 </div>
+                <hr className='hr-styled' />
                 <label for='idealPlacement'>Choose ideal placement:</label>
                 <select
                   value={idealPlacement}
@@ -365,6 +392,7 @@ function Admin() {
                   onChange={handlePropagationChange}
                   required
                 />
+                <hr className='hr-styled' />
                 <label for='fertilization'>
                   Choose fertilization schedule:
                 </label>
@@ -387,48 +415,74 @@ function Admin() {
                   placeholder='Type plant name...'
                 />
                 <datalist id='plant-suggestions'>
-                  {allPlants.map((plant) => (
-                    <option key={plant.id} value={plant.name} />
-                  ))}
+                  {allPlants?.length > 0 &&
+                    allPlants.map((plant) => (
+                      <option key={plant.id} value={plant.name} />
+                    ))}
                 </datalist>
                 <ul>
                   {companionPlants.map((plant, index) => (
                     <li key={index}>
                       {plant}
-                      <button onClick={() => removeCompanionPlant(index)}>
-                        ❌
+                      <button
+                        className='remove-button'
+                        onClick={() => removeCompanionPlant(index)}
+                      >
+                        ✖
                       </button>
                     </li>
                   ))}
                 </ul>
-                <label htmlFor='uses'>Select Uses:</label>
-                <select
-                  multiple
-                  value={uses}
-                  onChange={handleUsesChange}
-                  name='uses'
-                  id='uses'
-                >
-                  <option value='Ornamental'>Ornamental</option>
-                  <option value='Medicinal'>Medicinal</option>
-                  <option value='Culinary'>Culinary</option>
-                  <option value='Air Purifier'>Air Purifier</option>
-                  <option value='Pollinator Friendly'>
-                    Pollinator Friendly
-                  </option>
-                </select>
+                <hr className='hr-styled' />
+                <label htmlFor='uses'>Enter Uses:</label>
                 <input
                   type='text'
-                  placeholder='Add custom use'
+                  placeholder='Type a use and press Enter'
                   value={customUse}
                   onChange={(e) => setCustomUse(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && addCustomUse(e)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && customUse.trim() !== '') {
+                      e.preventDefault();
+                      setUses([...uses, customUse.trim()]);
+                      setCustomUse(''); // Clear input after adding
+                    }
+                  }}
                 />
-                <ul>
-                  {uses.map((use, index) => (
-                    <li key={index}>{use}</li>
-                  ))}
+                <ul className='uses-list'>
+                  {uses &&
+                    uses.map((use, index) => (
+                      <li key={index} className='use-tag'>
+                        {use}{' '}
+                        <button
+                          className='remove-button'
+                          type='button'
+                          onClick={() => removeUse(index)}
+                        >
+                          ✖
+                        </button>
+                      </li>
+                    ))}
                 </ul>
+                <hr className='hr-styled' />
+                <label>Choose Plant Tasks:</label>
+                <div className='plant-tasks-checkboxes'>
+                  {plantTasks && plantTasks.length > 0 ? (
+                    plantTasks.map((task) => (
+                      <div key={task.id}>
+                        <input
+                          type='checkbox'
+                          id={`task-${task.id}`}
+                          value={task.id}
+                          checked={selectedPlantTasks.includes(task.id)}
+                          onChange={(e) => handleTaskChange(e, task.id)}
+                        />
+                        <label htmlFor={`task-${task.id}`}>{task.name}</label>
+                      </div>
+                    ))
+                  ) : (
+                    <p>No plant tasks found</p>
+                  )}
+                </div>
                 <br /> <br />
                 <button type='submit'>Post</button>
               </form>

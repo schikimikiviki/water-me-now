@@ -9,6 +9,8 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import jakarta.persistence.EntityManagerFactory;
@@ -37,6 +39,11 @@ public class BackendApplication {
 	        emf.getMetamodel().getEntities()
 	            .forEach(entity -> System.out.println("✅ " + entity.getName()));
 	    };
+	}
+	
+	@Bean
+	public MultipartResolver multipartResolver() {
+	    return new StandardServletMultipartResolver();
 	}
 
 
