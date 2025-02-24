@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../api/axiosConfig';
 import './Admin.css';
 import getRequest from '../../helpers/functions';
+import AddPest from '../AddPest/AddPest';
 
 function Admin() {
   const [password, setPassword] = useState('');
@@ -29,6 +30,8 @@ function Admin() {
   const [companionPlants, setCompanionPlants] = useState([]);
   const [plantTasks, setPlantTasks] = useState([]);
   const [selectedPlantTasks, setSelectedPlantTasks] = useState([]);
+  const [commonPests, setCommonPests] = useState([]);
+  const [selectedPests, setSelectedPests] = useState([]);
 
   useEffect(() => {
     const fetchPlants = async () => {
@@ -40,8 +43,15 @@ function Admin() {
       const response = getRequest('plant-tasks');
       setPlantTasks(response.data);
     };
+
+    const fetchPests = async () => {
+      const response = getRequest('pests');
+      setCommonPests(response.data);
+    };
+
     fetchPlants();
     fetchPlantTasks();
+    fetchPests();
   }, []);
 
   const addCompanionPlant = (e) => {
@@ -89,9 +99,6 @@ function Admin() {
       console.error('Login failed:', error.message || error);
     }
   };
-
-  // TODO: compagnion plants auto fill should only work for existing plants
-  // TODO: You should be able to see the uploaded img file
 
   const handleAddPlant = async (e) => {
     e.preventDefault();
@@ -196,6 +203,14 @@ function Admin() {
       setSelectedPlantTasks([...selectedPlantTasks, taskId]);
     } else {
       setSelectedPlantTasks(selectedPlantTasks.filter((id) => id !== taskId));
+    }
+  };
+
+  const handlePestChange = (e, taskId) => {
+    if (e.target.checked) {
+      setSelectedPests([...selectedPests, taskId]);
+    } else {
+      setSelectedPests(selectedPests.filter((id) => id !== taskId));
     }
   };
 
@@ -483,12 +498,32 @@ function Admin() {
                     <p>No plant tasks found</p>
                   )}
                 </div>
+                <hr className='hr-styled' />
+                <label>Choose common pests:</label>
+                <div className='plant-tasks-checkboxes'>
+                  {commonPests && commonPests.length > 0 ? (
+                    commonPests.map((task) => (
+                      <div key={task.id}>
+                        <input
+                          type='checkbox'
+                          id={`task-${task.id}`}
+                          value={task.id}
+                          checked={selectedPests.includes(task.id)}
+                          onChange={(e) => handlePestChange(e, task.id)}
+                        />
+                        <label htmlFor={`task-${task.id}`}>{task.name}</label>
+                      </div>
+                    ))
+                  ) : (
+                    <p>No pests found</p>
+                  )}
+                </div>
                 <br /> <br />
                 <button type='submit'>Post</button>
               </form>
             </div>
             <div className='post-box'>
-              <h2>Add a new pest</h2>
+              <AddPest plantListFromParent={allPlants} />
             </div>
             <div className='post-box'>
               <h2>Add a new task</h2>
