@@ -3,6 +3,7 @@ import api from '../../api/axiosConfig';
 import './Admin.css';
 import getRequest from '../../helpers/functions';
 import AddPest from '../AddPest/AddPest';
+import AddTask from '../AddTask/AddTask';
 
 function Admin() {
   const [password, setPassword] = useState('');
@@ -32,6 +33,7 @@ function Admin() {
   const [selectedPlantTasks, setSelectedPlantTasks] = useState([]);
   const [commonPests, setCommonPests] = useState([]);
   const [selectedPests, setSelectedPests] = useState([]);
+  const [plantBigTasks, setPlantBigTasks] = useState([]);
 
   useEffect(() => {
     const fetchPlants = async () => {
@@ -49,9 +51,15 @@ function Admin() {
       setCommonPests(response.data);
     };
 
+    const fetchTasks = async () => {
+      const response = getRequest('tasks');
+      setPlantBigTasks(response.data);
+    };
+
     fetchPlants();
     fetchPlantTasks();
     fetchPests();
+    fetchTasks();
   }, []);
 
   const addCompanionPlant = (e) => {
@@ -526,7 +534,7 @@ function Admin() {
               <AddPest plantListFromParent={allPlants} />
             </div>
             <div className='post-box'>
-              <h2>Add a new task</h2>
+              <AddTask taskListFromParent={plantBigTasks} />
             </div>
           </div>
         </div>

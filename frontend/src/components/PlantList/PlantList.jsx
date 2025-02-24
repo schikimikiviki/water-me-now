@@ -16,7 +16,7 @@ function PlantList() {
   return (
     <div className='page-div'>
       <h1>Plants</h1>
-      {plants && plants.length > 1 ? (
+      {plants && plants.length > 0 ? (
         <ul>
           {plants.map((plant) => (
             <li key={plant.id}>{plant.name}</li>

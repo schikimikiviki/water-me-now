@@ -16,7 +16,7 @@ function TaskList() {
   return (
     <div className='page-div'>
       <h1>Tasks</h1>
-      {tasks && tasks.length > 1 ? (
+      {tasks && tasks.length > 0 ? (
         <ul>
           {tasks.map((task) => (
             <li key={task.id}>{task.name}</li>
