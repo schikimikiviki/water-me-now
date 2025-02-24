@@ -8,6 +8,7 @@ function PestList() {
   useEffect(() => {
     const fetchData = async () => {
       let pests = await getRequest('pests');
+      console.log('GOT: ', pests);
       setPests(pests);
     };
 
@@ -17,7 +18,7 @@ function PestList() {
   return (
     <div className='page-div'>
       <h1>Pests</h1>
-      {pests && pests.length > 1 ? (
+      {pests && pests.length > 0 ? (
         <ul>
           {pests.map((pest) => (
             <li key={pest.id}>{pest.name}</li>

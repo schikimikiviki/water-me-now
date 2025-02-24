@@ -26,6 +26,10 @@ input::placeholder {
   flex-direction: column;
 }
 
+.form-add input {
+  max-width: 280px;
+}
+
 select {
   font-family: 'Poppins', sans-serif;
   background-color: white;
