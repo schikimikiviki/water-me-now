@@ -1,20 +1,12 @@
 import { useState, useEffect } from 'react';
+import api from '../../api/axiosConfig';
 
 // this is for adding a big boy task, eg. "Prepare for winter"
-const AddTask = ({ plantListFromParent }) => {
-  const [plantList, setPlantList] = useState([]);
+const AddTask = () => {
   const [name, setName] = useState('');
   const [imageFile, setImageFile] = useState('');
   const [todo, setTodo] = useState('');
   const [date, setDate] = useState('');
-
-  //TODO: Plant tasks need to be added in form
-  //
-
-  useEffect(() => {
-    console.log('Received plant list:', plantListFromParent);
-    setPlantList(plantListFromParent);
-  }, [plantListFromParent]);
 
   const handleTodoChange = (e) => {
     setTodo(e.target.value);
@@ -28,7 +20,34 @@ const AddTask = ({ plantListFromParent }) => {
     setDate(e.target.value);
   };
 
-  const handleAddTask = async (e) => {};
+  const handleAddTask = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('imageFile', imageFile);
+    formData.append('todo', todo);
+    formData.append('date', date);
+
+    console.log('Posting with this data :');
+    for (var pair of formData.entries()) {
+      console.log(pair[0] + ', ' + pair[1]);
+    }
+
+    try {
+      const authToken = localStorage.getItem('authToken');
+
+      const response = await api.post('/tasks/add', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Basic ${authToken}`,
+        },
+      });
+      console.log('Task added:', response.data);
+    } catch (error) {
+      console.error('Error adding task:', error);
+    }
+  };
 
   return (
     <div>

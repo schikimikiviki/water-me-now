@@ -26,7 +26,7 @@ function Admin() {
   const [fertilization, setFertilization] = useState('ONCE_A_MONTH');
   const [uses, setUses] = useState([]);
   const [customUse, setCustomUse] = useState('');
-  const [allPlants, setAllPlants] = useState([]); // Available plants
+  const [allPlants, setAllPlants] = useState(null); // Available plants
   const [companionInput, setCompanionInput] = useState('');
   const [companionPlants, setCompanionPlants] = useState([]);
   const [plantTasks, setPlantTasks] = useState([]);
@@ -37,29 +37,40 @@ function Admin() {
 
   useEffect(() => {
     const fetchPlants = async () => {
-      const response = getRequest('plants');
-      setAllPlants(response.data);
+      const response = await getRequest('plants');
+      setAllPlants(response);
     };
 
     const fetchPlantTasks = async () => {
-      const response = getRequest('plant-tasks');
+      const response = await getRequest('plant-tasks');
       setPlantTasks(response.data);
     };
 
     const fetchPests = async () => {
-      const response = getRequest('pests');
+      const response = await getRequest('pests');
       setCommonPests(response.data);
     };
 
     const fetchTasks = async () => {
-      const response = getRequest('tasks');
+      const response = await getRequest('tasks');
       setPlantBigTasks(response.data);
+    };
+
+    const checkIfLoggedIn = () => {
+      const authToken = localStorage.getItem('authToken');
+
+      if (authToken) {
+        setLoggedIn(true);
+      } else {
+        setLoggedIn(false);
+      }
     };
 
     fetchPlants();
     fetchPlantTasks();
     fetchPests();
     fetchTasks();
+    checkIfLoggedIn();
   }, []);
 
   const addCompanionPlant = (e) => {
@@ -428,7 +439,7 @@ function Admin() {
                   <option value='ONCE_A_WEEK'>Once a week</option>
                   <option value='ONCE_A_MONTH'>Once a month</option>
                 </select>
-                <label htmlFor='companions'>Add Companion Plants:</label>
+                <label htmlFor='companions'>Add companion plants:</label>
                 <input
                   type='text'
                   list='plant-suggestions'
@@ -534,7 +545,7 @@ function Admin() {
               <AddPest plantListFromParent={allPlants} />
             </div>
             <div className='post-box'>
-              <AddTask taskListFromParent={plantBigTasks} />
+              <AddTask />
             </div>
           </div>
         </div>

@@ -65,11 +65,12 @@ public class Plant {
 	private List<Common_pest> commonPests;
 
 	@OneToMany(mappedBy = "plant", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference
 	private List<PlantTask> plantTasks;
 
 	public Plant() {}
 	
-	public Plant (Long id, String name, String origin, String imageFile, Hardiness hardiness, String hardiness_info, Ideal_location ideal_location, Watering watering, Soil_type soil_type, List<Feature> featureList, Ideal_placement ideal_placement, String propagation, Fertilization_schedule fertilization_schedule, List<Plant> companionPlants, List<String> uses, List<Common_pest> commonPests, List<PlantTask> plantTasks) {
+	public Plant (Long id, String name, String origin, String imageFile, Hardiness hardiness, String hardiness_info, Ideal_location ideal_location, Watering watering, Soil_type soil_type, List<Feature> featureList, Ideal_placement ideal_placement, String propagation, Fertilization_schedule fertilization_schedule, List<Plant> companionPlants, List<String> uses, List<Common_pest> commonPests, List<PlantTask> plantTasks, Boolean perennial) {
 		super();
 		this.id = id;
 		this.name=name;
@@ -80,6 +81,7 @@ public class Plant {
 		this.ideal_location = ideal_location;
 		this.watering = watering;
 		this.soil_type = soil_type;
+		this.perennial = perennial;
 		this.featureList = featureList;
 		this.ideal_placement = ideal_placement;
 		this.propagation = propagation;
