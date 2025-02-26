@@ -2,10 +2,13 @@ package com.plants.backend.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.plants.backend.data.DTOMapper;
 import com.plants.backend.data.Plant;
+import com.plants.backend.data.PlantDTO;
 import com.plants.backend.repository.PlantRepository;
 
 @Service
@@ -18,8 +21,11 @@ public class PlantService {
         this.plantRepository = plantRepository;
     }
 
-    public List<Plant> findAll() {
-    	return plantRepository.findAll();
+    public List<PlantDTO> findAll() {
+		/* return plantRepository.findAll(); */
+    	return plantRepository.findAll().stream()
+                .map(DTOMapper::toPlantDTO)
+                .collect(Collectors.toList());
     }
    
     

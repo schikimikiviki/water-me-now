@@ -107,7 +107,7 @@ function AddPest({ plantListFromParent }) {
           onChange={handleTodoChange}
           required
         />
-        <label htmlFor='companions'>Add Companion Plants:</label>
+        <label htmlFor='companions'>Add susceptible plants:</label>
         <input
           type='text'
           list='plant-suggestions'
@@ -125,7 +125,7 @@ function AddPest({ plantListFromParent }) {
         <ul>
           {relatedPlants.map((plant, index) => (
             <li key={index}>
-              {plant}
+              {plant.name}
               <button
                 className='remove-button'
                 onClick={() => removeCompanionPlant(index)}

@@ -32,6 +32,7 @@ import com.plants.backend.data.Hardiness;
 import com.plants.backend.data.Ideal_location;
 import com.plants.backend.data.Ideal_placement;
 import com.plants.backend.data.Plant;
+import com.plants.backend.data.PlantDTO;
 import com.plants.backend.data.PlantTask;
 import com.plants.backend.data.Soil_type;
 import com.plants.backend.data.Watering;
@@ -60,8 +61,7 @@ public class PlantController {
 
 
 	@GetMapping("/all")
-	public List<Plant> getAllPlants() {
-		// Return list of users from the database
+	public List<PlantDTO> getAllPlants() {
 		return plantService.findAll();
 	}
 
