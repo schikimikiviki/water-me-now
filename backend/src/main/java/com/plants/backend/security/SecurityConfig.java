@@ -47,6 +47,7 @@ public class SecurityConfig {
 		.requestMatchers("/plants/**").authenticated()
 		
 		.requestMatchers(HttpMethod.POST, "/users/login").permitAll()
+		.requestMatchers(HttpMethod.GET, "/users/verify").authenticated()
 		.requestMatchers("/users/**").authenticated() 
 		.requestMatchers("/test").anonymous()
 		

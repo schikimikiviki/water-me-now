@@ -1,6 +1,6 @@
 import './PestList.css';
 import { useState, useEffect } from 'react';
-import getRequest from '../../helpers/functions';
+import { getRequest } from '../../helpers/functions';
 
 function PestList() {
   const [pests, setPests] = useState(null);
