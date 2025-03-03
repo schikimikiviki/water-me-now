@@ -1,0 +1,18 @@
+<svg
+  viewBox="0 0 24 24"
+  xmlns="http://www.w3.org/2000/svg"
+  stroke="black"
+  stroke-width="1.5"
+  fill="none"
+>
+  <!-- Sun (without rays) -->
+  <circle cx="15" cy="8" r="4" fill="yellow" stroke="black" stroke-width="1.5" />
+
+  <!-- Cloud -->
+  <path
+    d="M6 18h10a4 4 0 0 0 0-8c-.3 0-.6 0-.9.1a5 5 0 0 0-9.6 2.5A3 3 0 0 0 6 18z"
+    fill="lightgray"
+    stroke="black"
+    stroke-width="1.5"
+  />
+</svg>
