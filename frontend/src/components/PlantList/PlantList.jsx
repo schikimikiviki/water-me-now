@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react';
-import getRequest from '../../helpers/functions';
+import {
+  getRequestSimple,
+  getRequest,
+  deleteSomethingWithId,
+} from '../../helpers/functions';
 import './PlantList.css';
 import SunIcon from '../../assets/images/sun.svg';
 import SunCloudIcon from '../../assets/images/suncloud.svg';
@@ -11,17 +15,60 @@ import NotPerennialIcon from '../../assets/images/not-perennial.svg';
 
 function PlantList() {
   const [plants, setPlants] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const fetchData = async () => {
+    let plants = await getRequest('plants');
+    setPlants(plants);
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      let plants = await getRequest('plants');
-      setPlants(plants);
+    const checkIfLoggedIn = async () => {
+      try {
+        const authToken = localStorage.getItem('authToken');
+
+        if (authToken) {
+          const response = await getRequestSimple('users/verify', {
+            headers: { Authorization: `Basic ${authToken}` },
+          });
+
+          const data = await response.data;
+          setIsLoggedIn(data.valid);
+
+          if (!data.valid) localStorage.removeItem('authToken'); // Remove invalid credentials
+        }
+      } catch (err) {
+        console.error('Error verifying login:', err);
+      }
     };
 
     fetchData();
+    checkIfLoggedIn();
   }, []);
 
   const pathToimg = 'http://localhost:8888/uploads/';
+
+  const handlePlantDelete = async (id) => {
+    console.log('Deleting plant with id: ', id);
+
+    try {
+      const response = await deleteSomethingWithId('plants', id);
+      console.log(response);
+
+      // If the delete is successful, refresh the plant list
+      if (response.success) {
+        fetchData();
+      } else {
+        console.log('Failed to delete plant');
+      }
+    } catch (error) {
+      console.error('Error deleting plant:', error);
+    }
+  };
+
+  const handlePlantEdit = (id) => {
+    console.log('Editing plant with id', id);
+  };
 
   return (
     <div className='page-div'>
@@ -39,6 +86,26 @@ function PlantList() {
                   height={350}
                   className='img-plant'
                 />
+                {isLoggedIn ? (
+                  <div className='admin-functions'>
+                    <div
+                      onClick={() => {
+                        handlePlantEdit(plant.id);
+                      }}
+                    >
+                      🖊️
+                    </div>
+                    <div
+                      onClick={() => {
+                        handlePlantDelete(plant.id);
+                      }}
+                    >
+                      🗑️
+                    </div>
+                  </div>
+                ) : (
+                  <div></div>
+                )}
               </div>
               <div className='plant-details'>
                 <div className='plant-shortinfo'>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../api/axiosConfig';
 import './Admin.css';
-import getRequest from '../../helpers/functions';
+import { getRequest } from '../../helpers/functions';
 import AddPest from '../AddPest/AddPest';
 import AddTask from '../AddTask/AddTask';
 
