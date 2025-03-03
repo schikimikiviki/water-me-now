@@ -12,10 +12,13 @@ import SnowflakeIcon from '../../assets/images/snowflake.svg';
 import NoSlowFlakeIcon from '../../assets/images/no-snowflake.svg';
 import PerennialIcon from '../../assets/images/perennial.svg';
 import NotPerennialIcon from '../../assets/images/not-perennial.svg';
+import Popup from '../Popup/Popup';
 
 function PlantList() {
   const [plants, setPlants] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [chosenPlant, setChosenPlant] = useState(null);
 
   const fetchData = async () => {
     let plants = await getRequest('plants');
@@ -48,6 +51,14 @@ function PlantList() {
 
   const pathToimg = 'http://localhost:8888/uploads/';
 
+  const openPopup = () => {
+    setIsPopupOpen(true);
+  };
+
+  const closePopup = () => {
+    setIsPopupOpen(false);
+  };
+
   const handlePlantDelete = async (id) => {
     console.log('Deleting plant with id: ', id);
 
@@ -68,6 +79,8 @@ function PlantList() {
 
   const handlePlantEdit = (id) => {
     console.log('Editing plant with id', id);
+    setChosenPlant(plants.find((plant) => plant.id === id));
+    openPopup();
   };
 
   return (
@@ -248,6 +261,9 @@ function PlantList() {
               </div>
             </div>
           ))}
+          {isPopupOpen && (
+            <Popup plantData={chosenPlant} onClose={closePopup} />
+          )}
         </div>
       ) : (
         <p>Loading plants...</p>
