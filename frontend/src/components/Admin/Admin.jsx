@@ -9,6 +9,7 @@ function Admin() {
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const [loggedIn, setLoggedIn] = useState(false);
+  const [warning, setWarning] = useState('');
 
   // plant fields
   const [plantName, setPlantName] = useState('');
@@ -115,6 +116,10 @@ function Admin() {
       setLoggedIn(true);
     } catch (error) {
       // Handle login error
+
+      setLoggedIn(false);
+      setWarning('Wrong login data entered.');
+
       console.error('Login failed:', error.message || error);
     }
   };
@@ -127,7 +132,7 @@ function Admin() {
     formData.append('origin', origin);
     formData.append('imageFile', imageFile);
     formData.append('hardiness', hardiness);
-    formData.append('hardinessInfo', hardinessInfo);
+    formData.append('hardiness_info', hardinessInfo);
     formData.append('ideal_location', idealLocation);
     formData.append('watering', watering);
     formData.append('soil_type', soilType);
@@ -238,6 +243,13 @@ function Admin() {
       {!loggedIn ? (
         <div>
           <h1>Login</h1>
+
+          {warning.length > 0 && (
+            <div id='warning'>
+              <b>{warning}</b>
+            </div>
+          )}
+
           <form onSubmit={handleLogin} role='form'>
             <input
               type='text'

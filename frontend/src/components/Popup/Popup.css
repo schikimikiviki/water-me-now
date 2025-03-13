@@ -14,7 +14,7 @@
 .popup {
   background: var(--color-red);
   border: white 1px solid;
-  width: 40%;
+  width: 70%;
   padding: 40px;
   position: relative;
   border-radius: 10px;
@@ -86,4 +86,10 @@
 .heading-medium {
   font-size: 20px;
   color: #333;
+}
+
+.popup-body {
+  display: flex;
+  justify-content: center;
+  align-items: self-start;
 }

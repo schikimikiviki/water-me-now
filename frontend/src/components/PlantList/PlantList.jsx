@@ -262,7 +262,11 @@ function PlantList() {
             </div>
           ))}
           {isPopupOpen && (
-            <Popup plantData={chosenPlant} onClose={closePopup} />
+            <Popup
+              plantData={chosenPlant}
+              onClose={closePopup}
+              allPlantsData={plants}
+            />
           )}
         </div>
       ) : (

@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -42,9 +41,9 @@ public class SecurityConfig {
 		.csrf(csrf -> csrf.disable()).securityMatcher("/**"). authorizeHttpRequests((authz) ->  authz
 				
 		.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-		.requestMatchers("/plants/all").anonymous()
+		.requestMatchers("/plants/all").permitAll()
 		.requestMatchers(HttpMethod.POST, "/plants/add").authenticated()
-		.requestMatchers("/plants/**").authenticated()
+		.requestMatchers("/plants/**").permitAll()
 		
 		.requestMatchers(HttpMethod.POST, "/users/login").permitAll()
 		.requestMatchers(HttpMethod.GET, "/users/verify").authenticated()
@@ -54,17 +53,18 @@ public class SecurityConfig {
 		.requestMatchers("/tasks/all").anonymous() 
 		.requestMatchers("/tasks/**").authenticated() 
 		
-		.requestMatchers("/plant-tasks/all").anonymous()
-		.requestMatchers("/plant-tasks/**").authenticated()
+		.requestMatchers("/plant-tasks/all").permitAll()
+		.requestMatchers("/plant-tasks/**").permitAll()
 		
-		.requestMatchers("/pests/all").anonymous() 
-		.requestMatchers("/pests/**").authenticated() 
+		.requestMatchers("/pests/all").permitAll() 
+		.requestMatchers("/pests/**").permitAll() 
 		
 		
 
 
 		.anyRequest().authenticated())
-		.httpBasic(Customizer.withDefaults());
+		.httpBasic(httpp -> httpp.disable()); 
+
 
 		return http.build();
 	}
