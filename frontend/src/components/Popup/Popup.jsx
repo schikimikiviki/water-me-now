@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../api/axiosConfig';
 import './Popup.css';
 import { patchSomethingWithId } from '../../helpers/functions';
+import UploadImage from '../UploadImage/UploadImage';
 
 const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
   // plant states
@@ -154,6 +155,10 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
     let response = await patchSomethingWithId('plants', plantData.id, formData);
   };
 
+  const handleUpload = (e) => {
+    setImageFile(e);
+  };
+
   return (
     <div className='popup-overlay'>
       <div className='popup'>
@@ -191,18 +196,7 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
               />
               <br />
               <br />
-              <label htmlFor='plantImage' className='custom-file-upload'>
-                Choose Image
-              </label>
-              <input
-                type='file'
-                id='imageFile'
-                name='imageFile'
-                accept='image/*'
-                onChange={(e) => setImageFile(e.target.files[0])}
-                required
-                style={{ display: 'none' }} // Hide default input
-              />
+              <UploadImage id='upload3' onUploadImage={handleUpload} />
               <hr className='hr-styled' />
               <label for='hardiness'>Choose hardiness:</label>
               <select
