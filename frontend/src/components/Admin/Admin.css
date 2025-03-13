@@ -102,6 +102,13 @@ select {
   align-items: center;
 }
 
+#warning {
+  padding-bottom: 5px;
+  padding-top: 5px;
+  color: rgb(183, 26, 26);
+  font-weight: bolder;
+}
+
 .feature-checkboxes label {
   margin-left: 8px;
   cursor: pointer;

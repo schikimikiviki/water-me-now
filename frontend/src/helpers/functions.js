@@ -43,4 +43,25 @@ export const deleteSomethingWithId = async (url, id) => {
   }
 };
 
-export default { getRequest, getRequestSimple, deleteSomethingWithId };
+export const patchSomethingWithId = async (url, id, body) => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    const response = await api.patch(`/${url}/${id}`, body, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Basic ${authToken}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Request failed:', error.message || error);
+    return null;
+  }
+};
+
+export default {
+  getRequest,
+  getRequestSimple,
+  deleteSomethingWithId,
+  patchSomethingWithId,
+};

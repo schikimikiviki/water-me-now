@@ -25,6 +25,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.plants.backend.data.Common_pest;
 import com.plants.backend.data.Feature;
 import com.plants.backend.data.Fertilization_schedule;
@@ -176,6 +179,10 @@ public class PlantController {
 	                case "hardiness_info":
 	                    foundPlant.setHardiness_info((String) value);
 	                    break;
+	                case "perennial":
+	                foundPlant.setPerennial(Boolean.parseBoolean(value.toString()));
+	                    break;
+
 	                case "ideal_location":
 	                    foundPlant.setIdeal_location(Ideal_location.valueOf((String) value));
 	                    break;
@@ -185,9 +192,17 @@ public class PlantController {
 	                case "soil_type":
 	                    foundPlant.setSoil_type(Soil_type.valueOf((String) value));
 	                    break;
+	               
 	                case "featureList":
-	                    foundPlant.setFeatureList((List<Feature>) value);
+	                    ObjectMapper objectMapper4 = new ObjectMapper();
+	                    try {
+	                        List<Feature> features = objectMapper4.readValue(value.toString(), new TypeReference<List<Feature>>() {});
+	                        foundPlant.setFeatureList(features);
+	                    } catch (JsonProcessingException e) {
+	                        throw new IllegalArgumentException("Invalid JSON for features: " + value, e);
+	                    }
 	                    break;
+
 	                case "ideal_placement":
 	                    foundPlant.setIdeal_placement(Ideal_placement.valueOf((String) value));
 	                    break;
@@ -198,17 +213,59 @@ public class PlantController {
 	                    foundPlant.setFertilization_schedule(Fertilization_schedule.valueOf((String) value));
 	                    break;
 	                case "companionPlants":
-	                    foundPlant.setCompanionPlants((List<Plant>) value);
+	                    ObjectMapper objectMapper = new ObjectMapper();
+	                    try {
+	                        List<Long> companionPlantIds = objectMapper.readValue(value.toString(), new TypeReference<List<Long>>() {});
+	                        List<Plant> companionPlants = plantService.findPlantsByIds(companionPlantIds);
+	                        foundPlant.setCompanionPlants(companionPlants);
+	                    } catch (JsonProcessingException e) {
+	                        throw new IllegalArgumentException("Invalid JSON for companionPlants: " + value, e);
+	                    }
 	                    break;
+
+
 	                case "uses":
-	                    foundPlant.setUses((List<String>) value);
+	                    ObjectMapper objectMapper1 = new ObjectMapper();
+	                    try {
+	                        List<String> uses = objectMapper1.readValue(value.toString(), new TypeReference<List<String>>() {});
+	                        foundPlant.setUses(uses);
+	                    } catch (JsonProcessingException e) {
+	                        throw new IllegalArgumentException("Invalid JSON for uses: " + value, e);
+	                    }
 	                    break;
 	                case "commonPests":
-	                    foundPlant.setCommonPests((List<Common_pest>) value);
+	                    ObjectMapper objectMapper3 = new ObjectMapper();
+	                    try {
+	                        List<Common_pest> commonPests = objectMapper3.readValue(value.toString(), new TypeReference<List<Common_pest>>() {});
+	                        foundPlant.setCommonPests(commonPests);
+	                    } catch (JsonProcessingException e) {
+	                        throw new IllegalArgumentException("Invalid JSON for commonPests: " + value, e);
+	                    }
 	                    break;
+
+	                
 	                case "plantTasks":
-	                    foundPlant.setPlantTasks((List<PlantTask>) value);
+	                    ObjectMapper objectMapper2 = new ObjectMapper();
+	                    try {
+	                        List<PlantTask> plantTasks = objectMapper2.readValue(value.toString(), new TypeReference<List<PlantTask>>() {});
+	                        foundPlant.setPlantTasks(plantTasks);
+	                    } catch (JsonProcessingException e) {
+	                        throw new IllegalArgumentException("Invalid JSON for plantTasks: " + value, e);
+	                    }
 	                    break;
+
+	                case "features":
+	                    ObjectMapper objectMapper11 = new ObjectMapper();
+	                    try {
+	                        List<Feature> featureList = objectMapper11.readValue(value.toString(), new TypeReference<List<Feature>>() {});
+	                        foundPlant.setFeatureList(featureList);
+	                    } catch (JsonProcessingException e) {
+	                        throw new IllegalArgumentException("Invalid JSON for features: " + value, e);
+	                    }
+	                    break;
+
+	                	
+	                	
 	                default:
 	                    throw new IllegalArgumentException("Invalid field: " + key);
 	            }

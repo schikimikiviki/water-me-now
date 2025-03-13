@@ -54,6 +54,7 @@ public class Plant {
 	    joinColumns = @JoinColumn(name = "plant_id"),
 	    inverseJoinColumns = @JoinColumn(name = "companion_id")
 	)
+	@JsonManagedReference
 	private List<Plant> companionPlants;
 
 	@ElementCollection
