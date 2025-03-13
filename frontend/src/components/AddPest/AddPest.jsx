@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../../api/axiosConfig';
+import UploadImage from '../UploadImage/UploadImage';
 
 function AddPest({ plantListFromParent }) {
   const [pestName, setPestName] = useState('');
@@ -71,6 +72,10 @@ function AddPest({ plantListFromParent }) {
     }
   };
 
+  const handleUpload = (e) => {
+    setImageFile(e);
+  };
+
   return (
     <div>
       <h2>✨ Add a new pest ✨</h2>
@@ -85,18 +90,7 @@ function AddPest({ plantListFromParent }) {
           onChange={handlePestNameChange}
           required
         />
-        <label htmlFor='pestImage' className='custom-file-upload'>
-          Choose Image
-        </label>
-        <input
-          type='file'
-          id='pestImage'
-          name='pestImage'
-          accept='image/*'
-          onChange={(e) => setImageFile(e.target.files[0])}
-          required
-          style={{ display: 'none' }} // Hide default input
-        />
+        <UploadImage id='upload3' onUploadImage={handleUpload} />
         <hr className='hr-styled' />
         <input
           type='text'

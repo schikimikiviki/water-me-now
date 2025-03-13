@@ -4,6 +4,7 @@ import './Admin.css';
 import { getRequest } from '../../helpers/functions';
 import AddPest from '../AddPest/AddPest';
 import AddTask from '../AddTask/AddTask';
+import UploadImage from '../UploadImage/UploadImage';
 
 function Admin() {
   const [password, setPassword] = useState('');
@@ -238,6 +239,10 @@ function Admin() {
     }
   };
 
+  const handleUpload = (e) => {
+    setImageFile(e);
+  };
+
   return (
     <div className='page-div'>
       {!loggedIn ? (
@@ -300,18 +305,7 @@ function Admin() {
                   onChange={handlePlantOriginChange}
                   required
                 />
-                <label htmlFor='plantImage' className='custom-file-upload'>
-                  Choose Image
-                </label>
-                <input
-                  type='file'
-                  id='plantImage'
-                  name='plantImage'
-                  accept='image/*'
-                  onChange={(e) => setImageFile(e.target.files[0])}
-                  required
-                  style={{ display: 'none' }} // Hide default input
-                />
+                <UploadImage id='upload1' onUploadImage={handleUpload} />
                 <hr className='hr-styled' />
                 <label for='hardiness'>Choose hardiness:</label>
                 <select

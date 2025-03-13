@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../../api/axiosConfig';
+import UploadImage from '../UploadImage/UploadImage';
 
 // this is for adding a big boy task, eg. "Prepare for winter"
 const AddTask = () => {
@@ -49,6 +50,11 @@ const AddTask = () => {
     }
   };
 
+  const handleUpload = (e) => {
+    console.log('bbbb');
+    setImageFile(e);
+  };
+
   return (
     <div>
       <h2> ✨ Add a new task ✨</h2>
@@ -62,18 +68,7 @@ const AddTask = () => {
           onChange={handleNameChange}
           required
         />
-        <label htmlFor='imageFile' className='custom-file-upload'>
-          Choose Image
-        </label>
-        <input
-          type='file'
-          id='imageFile'
-          name='imageFile'
-          accept='image/*'
-          onChange={(e) => setImageFile(e.target.files[0])}
-          required
-          style={{ display: 'none' }} // Hide default input
-        />
+        <UploadImage id='upload2' onUploadImage={handleUpload} />
         <hr className='hr-styled' />
         <input
           type='text'
