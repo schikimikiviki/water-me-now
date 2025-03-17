@@ -8,6 +8,7 @@ const AddTask = () => {
   const [imageFile, setImageFile] = useState('');
   const [todo, setTodo] = useState('');
   const [date, setDate] = useState('');
+  const [message, setMessage] = useState('');
 
   const handleTodoChange = (e) => {
     setTodo(e.target.value);
@@ -45,8 +46,19 @@ const AddTask = () => {
         },
       });
       console.log('Task added:', response.data);
+      setMessage('Task added successfully! 🌷');
+
+      setTimeout(() => {
+        document.querySelector('.message').classList.add('fade-out');
+        setTimeout(() => setMessage(''), 500);
+      }, 4500);
     } catch (error) {
       console.error('Error adding task:', error);
+      setMessage('Error posting to the database. ❌');
+      setTimeout(() => {
+        document.querySelector('.message').classList.add('fade-out');
+        setTimeout(() => setMessage(''), 500);
+      }, 4500);
     }
   };
 
@@ -57,6 +69,15 @@ const AddTask = () => {
 
   return (
     <div>
+      <div className='message-container'>
+        {message.length > 0 && (
+          <div
+            className={`message ${message.length > 0 ? 'fade-in' : 'fade-out'}`}
+          >
+            {message}
+          </div>
+        )}
+      </div>
       <h2> ✨ Add a new task ✨</h2>
       <form className='form-add' onSubmit={handleAddTask} role='form'>
         <input

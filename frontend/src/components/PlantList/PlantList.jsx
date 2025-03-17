@@ -13,10 +13,11 @@ import NoSlowFlakeIcon from '../../assets/images/no-snowflake.svg';
 import PerennialIcon from '../../assets/images/perennial.svg';
 import NotPerennialIcon from '../../assets/images/not-perennial.svg';
 import Popup from '../Popup/Popup';
+import { useAuth } from '../AuthContext/AuthContext';
 
 function PlantList() {
   const [plants, setPlants] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn } = useAuth();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [chosenPlant, setChosenPlant] = useState(null);
 
@@ -26,27 +27,7 @@ function PlantList() {
   };
 
   useEffect(() => {
-    const checkIfLoggedIn = async () => {
-      try {
-        const authToken = localStorage.getItem('authToken');
-
-        if (authToken) {
-          const response = await getRequestSimple('users/verify', {
-            headers: { Authorization: `Basic ${authToken}` },
-          });
-
-          const data = await response.data;
-          setIsLoggedIn(data.valid);
-
-          if (!data.valid) localStorage.removeItem('authToken'); // Remove invalid credentials
-        }
-      } catch (err) {
-        console.error('Error verifying login:', err);
-      }
-    };
-
     fetchData();
-    checkIfLoggedIn();
   }, []);
 
   const pathToimg = 'http://localhost:8888/uploads/';

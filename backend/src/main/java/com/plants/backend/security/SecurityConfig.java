@@ -44,9 +44,10 @@ public class SecurityConfig {
 		.requestMatchers("/plants/all").permitAll()
 		.requestMatchers(HttpMethod.POST, "/plants/add").authenticated()
 		.requestMatchers("/plants/**").permitAll()
+		.requestMatchers("/uploads/**").permitAll()
 		
 		.requestMatchers(HttpMethod.POST, "/users/login").permitAll()
-		.requestMatchers(HttpMethod.GET, "/users/verify").authenticated()
+		.requestMatchers(HttpMethod.GET, "/users/check-session").permitAll()
 		.requestMatchers("/users/**").authenticated() 
 		.requestMatchers("/test").anonymous()
 		
