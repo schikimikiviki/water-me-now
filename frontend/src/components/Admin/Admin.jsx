@@ -5,12 +5,14 @@ import { getRequest } from '../../helpers/functions';
 import AddPest from '../AddPest/AddPest';
 import AddTask from '../AddTask/AddTask';
 import UploadImage from '../UploadImage/UploadImage';
+import { useAuth } from '../AuthContext/AuthContext';
 
 function Admin() {
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  const [loggedIn, setLoggedIn] = useState(false);
+  const { isLoggedIn, setLoggedIn } = useAuth();
   const [warning, setWarning] = useState('');
+  const [message, setMessage] = useState('');
 
   // plant fields
   const [plantName, setPlantName] = useState('');
@@ -58,29 +60,26 @@ function Admin() {
       setPlantBigTasks(response.data);
     };
 
-    const checkIfLoggedIn = () => {
-      const authToken = localStorage.getItem('authToken');
-
-      if (authToken) {
-        setLoggedIn(true);
-      } else {
-        setLoggedIn(false);
-      }
-    };
-
     fetchPlants();
     fetchPlantTasks();
     fetchPests();
     fetchTasks();
-    checkIfLoggedIn();
   }, []);
 
   const addCompanionPlant = (e) => {
     e.preventDefault();
-    if (companionInput && !companionPlants.includes(companionInput)) {
-      setCompanionPlants([...companionPlants, companionInput]);
-      setCompanionInput('');
+    const trimmedInput = companionInput.trim();
+
+    // Check if input matches a valid plant name
+    const validPlant = allPlants.find((plant) => plant.name === trimmedInput);
+
+    if (validPlant && !companionPlants.includes(trimmedInput)) {
+      setCompanionPlants([...companionPlants, trimmedInput]);
+    } else {
+      console.warn('Invalid plant name or already added');
     }
+
+    setCompanionInput(''); // Clear input after adding
   };
 
   const removeCompanionPlant = (index) => {
@@ -100,28 +99,19 @@ function Admin() {
     try {
       const response = await api.post(
         '/users/login',
-        { username: username, password: password },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          withCredentials: true,
-        }
+        { username, password },
+        { withCredentials: true }
       );
-      // Handle successful login
+
       console.log('Login successful:', response.data);
 
       const authToken = btoa(`${username}:${password}`);
       localStorage.setItem('authToken', authToken);
-
       setLoggedIn(true);
     } catch (error) {
-      // Handle login error
-
       setLoggedIn(false);
       setWarning('Wrong login data entered.');
-
-      console.error('Login failed:', error.message || error);
+      console.error('Login failed:', error);
     }
   };
 
@@ -163,8 +153,19 @@ function Admin() {
         },
       });
       console.log('Plant added:', response.data);
+      setMessage('Plant added successfully! 🌷');
+
+      setTimeout(() => {
+        document.querySelector('.message').classList.add('fade-out');
+        setTimeout(() => setMessage(''), 500);
+      }, 4500);
     } catch (error) {
       console.error('Error adding plant:', error);
+      setMessage('Error posting to the database. ❌');
+      setTimeout(() => {
+        document.querySelector('.message').classList.add('fade-out');
+        setTimeout(() => setMessage(''), 500);
+      }, 4500);
     }
   };
 
@@ -245,7 +246,7 @@ function Admin() {
 
   return (
     <div className='page-div'>
-      {!loggedIn ? (
+      {!isLoggedIn ? (
         <div>
           <h1>Login</h1>
 
@@ -284,6 +285,17 @@ function Admin() {
 
           <div style={{ display: 'flex', gap: '20px' }}>
             <div className='post-box'>
+              <div className='message-container'>
+                {message.length > 0 && (
+                  <div
+                    className={`message ${
+                      message.length > 0 ? 'fade-in' : 'fade-out'
+                    }`}
+                  >
+                    {message}
+                  </div>
+                )}
+              </div>
               <h2>✨ Add a new plant ✨</h2>
 
               <form className='form-add' onSubmit={handleAddPlant} role='form'>
@@ -307,7 +319,7 @@ function Admin() {
                 />
                 <UploadImage id='upload1' onUploadImage={handleUpload} />
                 <hr className='hr-styled' />
-                <label for='hardiness'>Choose hardiness:</label>
+                <label htmlFor='hardiness'>Choose hardiness:</label>
                 <select
                   value={hardiness}
                   onChange={handleHardinessChange}
@@ -328,7 +340,7 @@ function Admin() {
                   value={hardinessInfo}
                 />
                 <hr className='hr-styled' />
-                <label for='idealLocation'>Choose ideal location:</label>
+                <label htmlFor='idealLocation'>Choose ideal location:</label>
                 <select
                   value={idealLocation}
                   onChange={handleIdealLocationChange}
@@ -339,7 +351,7 @@ function Admin() {
                   <option value='INDIRECT_SUN'>Indirect Sun</option>
                   <option value='SHADOW'>Shadow</option>
                 </select>
-                <label for='watering'>Choose watering schedule:</label>
+                <label htmlFor='watering'>Choose watering schedule:</label>
                 <select
                   value={watering}
                   onChange={handleWateringChange}
@@ -352,7 +364,7 @@ function Admin() {
                   </option>
                   <option value='EVERY_FEW_DAYS'>Every few days</option>
                 </select>
-                <label for='soilType'>Choose soil type:</label>
+                <label htmlFor='soilType'>Choose soil type:</label>
                 <select
                   value={soilType}
                   onChange={handleSoilTypeChange}
@@ -369,7 +381,7 @@ function Admin() {
                   <option value='TOMATO_SOIL'>Tomato soil</option>
                   <option value='COMPOST'>Compost</option>
                 </select>
-                <label for='perennial'>Choose perennial type:</label>
+                <label htmlFor='perennial'>Choose perennial type:</label>
                 <select
                   value={perennial}
                   onChange={handlePerennialChange}
@@ -410,7 +422,7 @@ function Admin() {
                   ))}
                 </div>
                 <hr className='hr-styled' />
-                <label for='idealPlacement'>Choose ideal placement:</label>
+                <label htmlFor='idealPlacement'>Choose ideal placement:</label>
                 <select
                   value={idealPlacement}
                   onChange={handleIdealPlacementChange}
@@ -433,7 +445,7 @@ function Admin() {
                   required
                 />
                 <hr className='hr-styled' />
-                <label for='fertilization'>
+                <label htmlFor='fertilization'>
                   Choose fertilization schedule:
                 </label>
                 <select

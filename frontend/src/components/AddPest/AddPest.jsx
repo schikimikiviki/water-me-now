@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../api/axiosConfig';
 import UploadImage from '../UploadImage/UploadImage';
+import './AddPest.css';
 
 function AddPest({ plantListFromParent }) {
   const [pestName, setPestName] = useState('');
@@ -9,6 +10,7 @@ function AddPest({ plantListFromParent }) {
   const [allPlants, setAllPlants] = useState([]); // Available plants
   const [plantInput, setPlantInput] = useState('');
   const [relatedPlants, setRelatedPlants] = useState([]);
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
     console.log('Received plant list:', plantListFromParent);
@@ -67,8 +69,20 @@ function AddPest({ plantListFromParent }) {
         },
       });
       console.log('Pest added:', response.data);
+
+      setMessage('Pest added successfully! 🌷');
+
+      setTimeout(() => {
+        document.querySelector('.message').classList.add('fade-out');
+        setTimeout(() => setMessage(''), 500);
+      }, 4500);
     } catch (error) {
       console.error('Error adding pest:', error);
+      setMessage('Error posting to the database. ❌');
+      setTimeout(() => {
+        document.querySelector('.message').classList.add('fade-out');
+        setTimeout(() => setMessage(''), 500);
+      }, 4500);
     }
   };
 
@@ -78,6 +92,15 @@ function AddPest({ plantListFromParent }) {
 
   return (
     <div>
+      <div className='message-container'>
+        {message.length > 0 && (
+          <div
+            className={`message ${message.length > 0 ? 'fade-in' : 'fade-out'}`}
+          >
+            {message}
+          </div>
+        )}
+      </div>
       <h2>✨ Add a new pest ✨</h2>
 
       <form className='form-add' onSubmit={handleAddPest} role='form'>
