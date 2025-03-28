@@ -105,8 +105,8 @@ function Admin() {
 
       console.log('Login successful:', response.data);
 
-      const authToken = btoa(`${username}:${password}`);
-      localStorage.setItem('authToken', authToken);
+      // const authToken = btoa(`${username}:${password}`);
+      // localStorage.setItem('authToken', authToken);
       setLoggedIn(true);
     } catch (error) {
       setLoggedIn(false);
@@ -144,13 +144,13 @@ function Admin() {
     }
 
     try {
-      const authToken = localStorage.getItem('authToken');
+      // const authToken = localStorage.getItem('authToken');
 
       const response = await api.post('/plants/add', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: `Basic ${authToken}`,
         },
+        withCredentials: true,
       });
       console.log('Plant added:', response.data);
       setMessage('Plant added successfully! 🌷');

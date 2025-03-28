@@ -39,6 +39,8 @@ const AddTask = () => {
     try {
       const authToken = localStorage.getItem('authToken');
 
+      console.log('TOKEN: ', authToken);
+
       const response = await api.post('/tasks/add', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
