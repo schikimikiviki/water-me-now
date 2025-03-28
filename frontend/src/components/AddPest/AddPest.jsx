@@ -60,13 +60,13 @@ function AddPest({ plantListFromParent }) {
     }
 
     try {
-      const authToken = localStorage.getItem('authToken');
+      // const authToken = localStorage.getItem('authToken');
 
       const response = await api.post('/pests/add', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: `Basic ${authToken}`,
         },
+        withCredentials: true,
       });
       console.log('Pest added:', response.data);
 

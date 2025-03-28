@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +26,9 @@ import com.plants.backend.data.Common_pest;
 import com.plants.backend.data.Plant;
 import com.plants.backend.service.PestService;
 import com.plants.backend.service.PlantService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/pests")
@@ -50,12 +53,13 @@ public class PestController {
 		return pestService.findAll();
 	}
 	
-	 @RequestMapping(value = "/add", method = RequestMethod.POST) 
-		public ResponseEntity<?> addPlant(
+	
+	 @PostMapping("/add") 
+		public ResponseEntity<?> addPest(
 		    @RequestParam("name") String name,
 		    @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
 		    @RequestParam("todo") String todo,
-		    @RequestParam(value = "plantList", required = false) List<Long> plantList
+		    @RequestParam(value = "plantList", required = false) List<Long> plantList,     HttpServletRequest request
 		) {
 			 System.out.println("Received POST /pests/add");
 			 System.out.println("Received plantList: " + plantList);
@@ -81,9 +85,24 @@ public class PestController {
 				        System.out.println("Found plants: " + plants);  
 				        common_pest.setPlantList(plants);	
 		        }
-		       
-		     
+		        
+		        HttpSession session = request.getSession(false); 
+		        if (session == null) {
+		            System.out.println("No session found");
+		            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User not authenticated.");
+		        }
+		        
+		        String username = (String) session.getAttribute("user");
+		        if (username == null) {
+		            System.out.println("No user attribute found in session");
+		            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User not authenticated.");
+		        }
+
+		        System.out.println("User in session: " + username);
 		        pestService.save(common_pest);
+
+		       
+	
 
 		        return ResponseEntity.ok(Map.of("success", true, "common_pest", common_pest));
 		    } catch (IOException e) {

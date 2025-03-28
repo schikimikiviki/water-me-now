@@ -33,6 +33,7 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
   const [customUse, setCustomUse] = useState('');
   const [watering, setWatering] = useState(plantData.watering);
   const [selectedPlantTasks, setSelectedPlantTasks] = useState([]);
+  const [selectedPests, setSelectedPests] = useState([]);
 
   const [width, setWidth] = useState(window.innerWidth);
   const [isMobile, setIsMobile] = useState(false);
@@ -145,7 +146,8 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
     formData.append('uses', JSON.stringify(uses));
     selectedPlantTasks.forEach((taskId) =>
       formData.append('plantTasks', taskId)
-    ); //TODO: pests are missing
+    );
+    selectedPests.forEach((pestID) => formData.append('commonPests', pestID));
 
     console.log('Patching with this data :');
     for (var pair of formData.entries()) {
@@ -154,6 +156,10 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
 
     let response = await patchSomethingWithId('plants', plantData.id, formData);
   };
+
+  //TODO:
+  // Das Problem ist, das ich einen 403 error beim POST bekomme
+  // warum ? authentication funkt nicht
 
   const handleUpload = (e) => {
     setImageFile(e);
@@ -198,7 +204,7 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
               <br />
               <UploadImage id='upload3' onUploadImage={handleUpload} />
               <hr className='hr-styled' />
-              <label for='hardiness'>Choose hardiness:</label>
+              <label htmlFor='hardiness'>Choose hardiness:</label>
               <select
                 value={hardiness}
                 onChange={handleHardinessChange}
@@ -219,7 +225,7 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
                 value={hardinessInfo}
               />
               <hr className='hr-styled' />
-              <label for='idealLocation'>Choose ideal location:</label>
+              <label htmlFor='idealLocation'>Choose ideal location:</label>
               <select
                 value={idealLocation}
                 onChange={handleIdealLocationChange}
@@ -231,7 +237,7 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
                 <option value='SHADOW'>Shadow</option>
               </select>
               <br />
-              <label for='watering'>Choose watering schedule:</label>
+              <label htmlFor='watering'>Choose watering schedule:</label>
               <select
                 value={watering}
                 onChange={handleWateringChange}
@@ -243,7 +249,7 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
                 <option value='EVERY_FEW_DAYS'>Every few days</option>
               </select>{' '}
               <br />
-              <label for='soilType'>Choose soil type:</label>
+              <label htmlFor='soilType'>Choose soil type:</label>
               <select
                 value={soilType}
                 onChange={handleSoilTypeChange}
@@ -261,7 +267,7 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
                 <option value='COMPOST'>Compost</option>
               </select>
               <br />
-              <label for='perennial'>Choose perennial type:</label>
+              <label htmlFor='perennial'>Choose perennial type:</label>
               <select
                 value={perennial}
                 onChange={handlePerennialChange}
@@ -303,7 +309,7 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
               </div>
             </div>
             <div>
-              <label for='idealPlacement'>Choose ideal placement:</label>
+              <label htmlFor='idealPlacement'>Choose ideal placement:</label>
               <select
                 value={idealPlacement}
                 onChange={handleIdealPlacementChange}
@@ -326,7 +332,9 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
                 required
               />
               <hr className='hr-styled' />
-              <label for='fertilization'>Choose fertilization schedule:</label>
+              <label htmlFor='fertilization'>
+                Choose fertilization schedule:
+              </label>
               <select
                 value={fertilization}
                 onChange={handleFertilizationChange}
@@ -421,7 +429,7 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
               </div>
               <hr className='hr-styled' />
               <label>Choose common pests:</label>
-              <div className='plant-tasks-checkboxes'>
+              <div className='feature-checkboxes'>
                 {commonPests && commonPests.length > 0 ? (
                   commonPests.map((task) => (
                     <div key={task.id}>
