@@ -2,7 +2,7 @@
 
 ## Plan
 
-Frontend
+## Frontend
 
 - GET all plants and display them
 - ADD a new plant
@@ -15,7 +15,7 @@ Frontend
 - GET all seasonal events
 - display everything with cute symbols
 
-Backend
+## Backend
 
 - Plant Class:
 - id,
