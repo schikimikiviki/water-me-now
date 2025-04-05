@@ -1,5 +1,7 @@
 package com.plants.backend.security;
 
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -8,6 +10,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 
 
@@ -30,8 +37,25 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		
 		http.csrf(csrf -> csrf.disable())
+		
+		.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+		.exceptionHandling(ex -> ex
+	            .authenticationEntryPoint((request, response, authException) -> {
+	                System.out.println("Authentication failed: " + authException.getMessage());
+	                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+	            })
+	        )
         .authorizeHttpRequests(authz -> authz
             .requestMatchers("/auth/**").permitAll()
+            .requestMatchers("/auth/login").permitAll()
+            .requestMatchers("/auth/check").authenticated()
+            
+			.requestMatchers("/plants/all").permitAll()
+			.requestMatchers("/uploads/**").permitAll()
+			.requestMatchers("/tasks/all").permitAll()
+			.requestMatchers("/plant-tasks/all").permitAll()
+			.requestMatchers("/pests/all").permitAll()
+						 
             .anyRequest().authenticated() 
         )
         .sessionManagement(session -> session
@@ -45,6 +69,18 @@ public class SecurityConfig {
 		return http.build();
 	}
 
+	@Bean
+	CorsConfigurationSource corsConfigurationSource() {
+	    CorsConfiguration configuration = new CorsConfiguration();
+	    configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+	    configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS"));
+	    configuration.setAllowedHeaders(Arrays.asList("*"));
+	    configuration.setAllowCredentials(true);
+	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+	    source.registerCorsConfiguration("/**", configuration);
+	    return source;
+	}
+	
 	
 	
 	 

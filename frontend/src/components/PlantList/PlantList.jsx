@@ -4,6 +4,7 @@ import {
   getRequest,
   deleteSomethingWithId,
 } from '../../helpers/functions';
+import api from '../../api/axiosConfig';
 import './PlantList.css';
 import SunIcon from '../../assets/images/sun.svg';
 import SunCloudIcon from '../../assets/images/suncloud.svg';
@@ -13,21 +14,32 @@ import NoSlowFlakeIcon from '../../assets/images/no-snowflake.svg';
 import PerennialIcon from '../../assets/images/perennial.svg';
 import NotPerennialIcon from '../../assets/images/not-perennial.svg';
 import Popup from '../Popup/Popup';
-import { useAuth } from '../AuthContext/AuthContext';
 
 function PlantList() {
   const [plants, setPlants] = useState(null);
-  const { isLoggedIn } = useAuth();
+  const [isLoggedIn, setLoggedIn] = useState();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [chosenPlant, setChosenPlant] = useState(null);
 
   const fetchData = async () => {
     let plants = await getRequest('plants');
     setPlants(plants);
+    // console.log(plants[0].commonPests);
+  };
+
+  const checkLoginStatus = async () => {
+    try {
+      await api.get('/auth/check', { withCredentials: true });
+      setLoggedIn(true);
+    } catch (err) {
+      setLoggedIn(false);
+      console.error('Check login failed:', err);
+    }
   };
 
   useEffect(() => {
     fetchData();
+    checkLoginStatus();
   }, []);
 
   const pathToimg = 'http://localhost:8888/uploads/';
@@ -226,7 +238,9 @@ function PlantList() {
                 {plant.commonPests.length > 0 && (
                   <div>
                     🌿 <u className='space'>Common pests:</u>{' '}
-                    {plant.commonPests.join(', ')}
+                    {plant.commonPests.map((pest) => {
+                      return <li>{pest.name}</li>;
+                    })}
                   </div>
                 )}
                 {plant.plantTasks.length > 0 && (

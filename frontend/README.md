@@ -1,8 +1,14 @@
 # Water me now
 
+## Used technologies:
+
+- React and Vite for the frontend
+- Secure HTTP Only Cookies in combination with JWT Authentication
+- Spring Boot and Spring security
+
 ## Plan
 
-## Frontend
+### Frontend
 
 - GET all plants and display them
 - ADD a new plant
@@ -15,7 +21,7 @@
 - GET all seasonal events
 - display everything with cute symbols
 
-## Backend
+### Backend
 
 - Plant Class:
 - id,

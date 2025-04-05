@@ -157,10 +157,6 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
     let response = await patchSomethingWithId('plants', plantData.id, formData);
   };
 
-  //TODO:
-  // Das Problem ist, das ich einen 403 error beim POST bekomme
-  // warum ? authentication funkt nicht
-
   const handleUpload = (e) => {
     setImageFile(e);
   };
