@@ -29,11 +29,9 @@ export const getRequestSimple = async (url, options = {}) => {
 
 export const deleteSomethingWithId = async (url, id) => {
   try {
-    const authToken = localStorage.getItem('authToken');
     const response = await api.delete(`/${url}/${id}`, {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Basic ${authToken}`,
       },
     });
     return response.data;
@@ -45,11 +43,10 @@ export const deleteSomethingWithId = async (url, id) => {
 
 export const patchSomethingWithId = async (url, id, body) => {
   try {
-    const authToken = localStorage.getItem('authToken');
     const response = await api.patch(`/${url}/${id}`, body, {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Basic ${authToken}`,
+        credentials: 'include',
       },
     });
     return response.data;

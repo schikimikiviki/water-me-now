@@ -6,7 +6,6 @@ import PestList from './components/PestList/PestList';
 import TaskList from './components/TaskList/TaskList';
 import Admin from './components/Admin/Admin';
 import Header from './components/Header/Header';
-import { AuthProvider } from './components/AuthContext/AuthContext';
 
 function App() {
   const [activeItemMenu, setActiveItemMenu] = useState('');
@@ -17,21 +16,19 @@ function App() {
 
   return (
     <div>
-      <AuthProvider>
-        <Header />
-        <div className='main-div'>
-          <Menu setMenuItem={handleChangeMenuItem} />
-          {activeItemMenu == 'pests' ? (
-            <PestList />
-          ) : activeItemMenu == 'tasks' ? (
-            <TaskList />
-          ) : activeItemMenu == 'admin' ? (
-            <Admin />
-          ) : (
-            <PlantList />
-          )}
-        </div>
-      </AuthProvider>
+      <Header />
+      <div className='main-div'>
+        <Menu setMenuItem={handleChangeMenuItem} />
+        {activeItemMenu == 'pests' ? (
+          <PestList />
+        ) : activeItemMenu == 'tasks' ? (
+          <TaskList />
+        ) : activeItemMenu == 'admin' ? (
+          <Admin />
+        ) : (
+          <PlantList />
+        )}
+      </div>
     </div>
   );
 }

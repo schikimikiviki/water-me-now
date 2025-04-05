@@ -5,14 +5,13 @@ import { getRequest } from '../../helpers/functions';
 import AddPest from '../AddPest/AddPest';
 import AddTask from '../AddTask/AddTask';
 import UploadImage from '../UploadImage/UploadImage';
-import { useAuth } from '../AuthContext/AuthContext';
 
 function Admin() {
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  const { isLoggedIn, setLoggedIn } = useAuth();
   const [warning, setWarning] = useState('');
   const [message, setMessage] = useState('');
+  const [isLoggedIn, setLoggedIn] = useState();
 
   // plant fields
   const [plantName, setPlantName] = useState('');
@@ -60,6 +59,17 @@ function Admin() {
       setPlantBigTasks(response.data);
     };
 
+    const checkLoginStatus = async () => {
+      try {
+        await api.get('/auth/check', { withCredentials: true });
+        setLoggedIn(true);
+      } catch (err) {
+        setLoggedIn(false);
+        console.error('Check login failed:', err);
+      }
+    };
+
+    checkLoginStatus();
     fetchPlants();
     fetchPlantTasks();
     fetchPests();
@@ -96,20 +106,24 @@ function Admin() {
 
   const handleLogin = async (event) => {
     event.preventDefault();
+
     try {
       const response = await api.post(
-        '/users/login',
-        { username, password },
-        { withCredentials: true }
+        '/auth/login',
+        { email: username, password: password },
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+        }
       );
 
       console.log('Login successful:', response.data);
 
-      // const authToken = btoa(`${username}:${password}`);
-      // localStorage.setItem('authToken', authToken);
       setLoggedIn(true);
     } catch (error) {
-      setLoggedIn(false);
       setWarning('Wrong login data entered.');
       console.error('Login failed:', error);
     }
@@ -144,8 +158,6 @@ function Admin() {
     }
 
     try {
-      // const authToken = localStorage.getItem('authToken');
-
       const response = await api.post('/plants/add', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',

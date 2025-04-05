@@ -18,6 +18,7 @@ import com.plants.backend.service.JwtService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -37,24 +38,50 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.userDetailsService = userDetailsService;
         this.handlerExceptionResolver = handlerExceptionResolver;
     }
-
+    
     @Override
     protected void doFilterInternal(
         @NonNull HttpServletRequest request,
         @NonNull HttpServletResponse response,
         @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        final String authHeader = request.getHeader("Authorization");
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        String path = request.getRequestURI();
+        if (path.startsWith("/auth/login") || path.startsWith("/auth/signup")) {
+            filterChain.doFilter(request, response);
+            System.out.println("NOT Filtering: " + request.getRequestURI());
+            return;
+        }
+
+        String jwt = null;
+
+        // 1. Check Authorization header
+        final String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            jwt = authHeader.substring(7);
+        }
+
+        // 2. If no Authorization header, try to get token from cookie
+        if (jwt == null) {
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("token".equals(cookie.getName())) {
+                        jwt = cookie.getValue();
+                        break;
+                    }
+                }
+            }
+        }
+
+        // 3. If still no token, continue without auth
+        if (jwt == null) {
             filterChain.doFilter(request, response);
             return;
         }
 
         try {
-            final String jwt = authHeader.substring(7);
             final String userEmail = jwtService.extractUsername(jwt);
-
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
             if (userEmail != null && authentication == null) {
@@ -77,4 +104,53 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             handlerExceptionResolver.resolveException(request, response, null, exception);
         }
     }
+
+
+	/*
+	 * @Override protected void doFilterInternal(
+	 * 
+	 * @NonNull HttpServletRequest request,
+	 * 
+	 * @NonNull HttpServletResponse response,
+	 * 
+	 * @NonNull FilterChain filterChain ) throws ServletException, IOException {
+	 * 
+	 * 
+	 * 
+	 * String path = request.getRequestURI(); if (path.startsWith("/auth/login") ||
+	 * path.startsWith("/auth/signup")) { filterChain.doFilter(request, response);
+	 * System.out.println("NOT Filtering: " + request.getRequestURI()); return; }
+	 * 
+	 * 
+	 * 
+	 * 
+	 * final String authHeader = request.getHeader("Authorization");
+	 * 
+	 * if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+	 * filterChain.doFilter(request, response); return; }
+	 * 
+	 * 
+	 * 
+	 * try { final String jwt = authHeader.substring(7); final String userEmail =
+	 * jwtService.extractUsername(jwt);
+	 * 
+	 * Authentication authentication =
+	 * SecurityContextHolder.getContext().getAuthentication();
+	 * 
+	 * if (userEmail != null && authentication == null) { UserDetails userDetails =
+	 * this.userDetailsService.loadUserByUsername(userEmail);
+	 * 
+	 * if (jwtService.isTokenValid(jwt, userDetails)) {
+	 * UsernamePasswordAuthenticationToken authToken = new
+	 * UsernamePasswordAuthenticationToken( userDetails, null,
+	 * userDetails.getAuthorities() );
+	 * 
+	 * authToken.setDetails(new
+	 * WebAuthenticationDetailsSource().buildDetails(request));
+	 * SecurityContextHolder.getContext().setAuthentication(authToken); } }
+	 * 
+	 * filterChain.doFilter(request, response); } catch (Exception exception) {
+	 * handlerExceptionResolver.resolveException(request, response, null,
+	 * exception); } }
+	 */
 }
