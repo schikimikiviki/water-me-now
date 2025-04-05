@@ -80,7 +80,7 @@ function PlantList() {
     <div className='page-div'>
       <h1>Plants</h1>
       {plants && plants.length > 0 ? (
-        <div style={{}}>
+        <div>
           {plants.map((plant) => (
             <div className='container-plant' key={plant.id}>
               <div>
