@@ -1,15 +1,27 @@
 .plant-div {
   background-color: var(--color-blue);
-  padding: 5px;
+  padding: 1px;
   border-radius: 20px;
+  margin-bottom: 5px;
 }
 
 .inner-plant {
   display: flex;
   flex-direction: row;
   gap: 20px;
+  align-items: center;
 }
 
 .plant-name {
-  padding: 20px;
+  padding: 10px;
+}
+
+.no-plants {
+  display: flex;
+  gap: 20px;
+}
+
+.small-button {
+  padding: 5px;
+  margin-bottom: 0;
 }

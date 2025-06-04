@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.plants.backend.data.CommonPestDTO;
 import com.plants.backend.data.Common_pest;
 import com.plants.backend.data.Plant;
@@ -100,13 +101,20 @@ public class PestController {
 	public ResponseEntity<?> updatePest(
 	        @PathVariable Long pestId,
 	        @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
-	        @RequestPart("pestBody") CommonPestDTO pestDTO) {
+	        @RequestPart("pestBody") String pestBodyJson) {
 
 	    System.out.println("Received PATCH request for pestId: " + pestId);
-	    System.out.println("Received pestDTO: " + pestDTO);
-	    System.out.println("PlantList: " + pestDTO.getPlantList());
+	    System.out.println("Received raw pestBody: " + pestBodyJson);
+
 
 	    try {
+	    	
+	    	 ObjectMapper objectMapper = new ObjectMapper();
+	         CommonPestDTO pestDTO = objectMapper.readValue(pestBodyJson, CommonPestDTO.class);
+
+	         System.out.println("Parsed pestDTO: " + pestDTO);
+	         System.out.println("PlantList: " + pestDTO.getPlantList());
+	         
 	        // 1. Find existing pest
 	        Optional<Common_pest> existingPestOpt = pestService.findPestById(pestId);
 	        if (!existingPestOpt.isPresent()) {
@@ -168,52 +176,7 @@ public class PestController {
 	    }
 	}
 
-	/*
-	 * @PatchMapping("/{pestId}") public ResponseEntity<Common_pest>
-	 * editPest(@PathVariable Long pestId, @RequestBody CommonPestDTO pestDTO) {
-	 * 
-	 * System.out.println("Patch pest received by backend");
-	 * System.out.println("DTO name: " + pestDTO.getName());
-	 * System.out.println("DTO todo: " + pestDTO.getTodo());
-	 * 
-	 * 
-	 * Optional<Common_pest> foundPestOptional = pestService.findPestById(pestId);
-	 * 
-	 * if (foundPestOptional.isPresent()) { Common_pest foundPest =
-	 * foundPestOptional.get();
-	 * 
-	 * System.out.println("Found a pest to patch.");
-	 * 
-	 * if (foundPest.getTodo() != pestDTO.getTodo()) {
-	 * System.out.println("diff todo"); System.out.println(pestDTO.getTodo());
-	 * foundPest.setTodo(pestDTO.getTodo()); } if (foundPest.getName() !=
-	 * pestDTO.getName()) { foundPest.setName(pestDTO.getName()); } if
-	 * (foundPest.getImageFile() != pestDTO.getImageFile()) {
-	 * foundPest.setImageFile(pestDTO.getImageFile()); }
-	 * 
-	 * List<Long> existingIds = foundPest.getPlantList().stream() .map(Plant::getId)
-	 * .collect(Collectors.toList());
-	 * 
-	 * 
-	 * if (!new HashSet<>(existingIds).equals(new
-	 * HashSet<>(pestDTO.getPlantList()))) { // get correspojnding plants
-	 * 
-	 * List<Plant> plants = plantRepository.findAllById(pestDTO.getPlantList());
-	 * foundPest.setPlantList(plants);
-	 * 
-	 * 
-	 * }
-	 * 
-	 * 
-	 * 
-	 * 
-	 * Common_pest updatedPest = pestService.save(foundPest);
-	 * System.out.println(updatedPest.toString());
-	 * System.out.println("Updated pest"); return ResponseEntity.ok(updatedPest); }
-	 * 
-	 * return ResponseEntity.notFound().build(); }
-	 */
-	 
+	
 
 	@DeleteMapping("/{pestId}")
 	public ResponseEntity<?> deletePest(@PathVariable Long pestId) {
