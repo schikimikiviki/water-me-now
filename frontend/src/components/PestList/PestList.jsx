@@ -62,6 +62,7 @@ function PestList() {
 
   const closePopup = () => {
     setIsPopupOpen(false);
+    fetchData();
   };
 
   const handlePestEdit = (id) => {
@@ -72,27 +73,25 @@ function PestList() {
 
   const pathToimg = 'http://localhost:8888/uploads/';
 
-  const generateSusceptiblePlants = () => {
-    // this will be an array with ids
-    //console.log(allPlantsData);
-    //TODO: adapt this
-    // for (let i = 0; i < plantList.length; i++) {
-    //   // search for the plant with that id
-    //   let plant = allPlantsData.find((plant) => plant.id == plantList[i]);
-    //   console.log('Displaying plant: ', plant);
-    //   return (
-    //     <div className='plant-div' key={plantList[i]}>
-    //       <div className='inner-plant'>
-    //         <div className='plant-name'>
-    //           <ul>
-    //             <li>{plant.name}</li>
-    //           </ul>
-    //         </div>
-    //         <button onClick={() => removePlant(plant.id)}>✖</button>
-    //       </div>
-    //     </div>
-    //   );
-    // }
+  const generateSusceptiblePlants = (plantIds) => {
+    if (!plants || plants.length === 0) return null;
+
+    return plantIds.map((id) => {
+      const plant = plants.find((plant) => plant.id == id);
+      if (!plant) return null;
+
+      return (
+        <div className='plant-div' key={id}>
+          <div className='inner-plant'>
+            <div className='plant-name'>
+              <ul>
+                <li>{plant.name}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      );
+    });
   };
 
   return (
@@ -150,7 +149,7 @@ function PestList() {
                   </p>
                   <p>
                     {pest.plantList.length > 0 ? (
-                      generateSusceptiblePlants()
+                      generateSusceptiblePlants(pest.plantList)
                     ) : (
                       <div>No susceptible plants.</div>
                     )}

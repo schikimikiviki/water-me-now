@@ -16,14 +16,29 @@ const PestPopup = ({
   const [todo, setTodo] = useState(pestData.todo);
   const [plantList, setPlantList] = useState(pestData.plantList);
   const [imageFile, setImageFile] = useState(pestData.imageFile);
+  const [plantInput, setPlantInput] = useState('');
+  const [relatedPlants, setRelatedPlants] = useState([]);
 
   // other states
   const [width, setWidth] = useState(window.innerWidth);
   const [isMobile, setIsMobile] = useState(false);
+  const [isAddPlantThere, setIsAddPlantThere] = useState(false);
+  const [isAddPlantThereSecond, setIsAddPlantThereSecond] = useState(false);
+  const [isPlantListEmpty, setIsPlantListEmpty] = useState(false);
 
   function handleWindowSizeChange() {
     setWidth(window.innerWidth);
   }
+
+  useEffect(() => {
+    if (!plantList || plantList.length === 0) {
+      setIsAddPlantThere(false);
+      setIsPlantListEmpty(true);
+    } else {
+      setIsPlantListEmpty(false);
+    }
+  }, [plantList]);
+
   useEffect(() => {
     window.addEventListener('resize', handleWindowSizeChange);
     return () => {
@@ -46,26 +61,62 @@ const PestPopup = ({
   const submitForm = async (e) => {
     e.preventDefault();
 
+    console.log('PlantList original', plantList);
+
+    // if there is relatedPlants (user added new plant id), we need to consider this
+
+    console.log('Currently we have a related plant added: ', relatedPlants);
+    let combinedPlantIds;
+
+    if (relatedPlants.length > 0) {
+      // add ids
+      for (let i of relatedPlants) {
+        console.log(i.id);
+        const newPlantIds = relatedPlants.map((plant) => plant.id);
+
+        combinedPlantIds = [...plantList, ...newPlantIds];
+      }
+
+      console.log('Combined Plant IDs:', combinedPlantIds);
+    }
+
     const pestBody = {
       name: pestName,
       todo: todo,
-      plantList: plantList.map((p) => p.id),
+      plantList: relatedPlants.length > 0 ? combinedPlantIds : plantList,
     };
 
-    const formData = new FormData();
-    formData.append('imageFile', imageFile);
-    formData.append(
-      'pestBody',
-      new Blob([JSON.stringify(pestBody)], { type: 'application/json' })
-    );
+    // Verify the final payload
+    console.log('Final payload:', JSON.stringify(pestBody, null, 2));
 
-    console.log('Sending PATCH with:');
-    for (var pair of formData.entries()) {
-      console.log(pair[0], pair[1]);
+    const formData = new FormData();
+    if (imageFile) {
+      formData.append('imageFile', imageFile);
     }
 
-    let response = await patchSomethingWithId('pests', pestData.id, formData);
-    console.log('response: ', response);
+    // Create the Blob with proper type
+    const jsonBlob = new Blob([JSON.stringify(pestBody)], {
+      type: 'application/json',
+    });
+    formData.append('pestBody', jsonBlob);
+
+    // Debug the FormData contents
+    console.log('FormData contents:');
+    for (let [key, value] of formData.entries()) {
+      if (value instanceof Blob) {
+        console.log(key, '(Blob)');
+      } else {
+        console.log(key, value);
+      }
+    }
+
+    try {
+      let response = await patchSomethingWithId('pests', pestData.id, formData);
+      console.log('Response:', response);
+      onClose();
+    } catch (error) {
+      console.error('Request failed:', error);
+    }
   };
 
   const handleUpload = (e) => {
@@ -83,28 +134,114 @@ const PestPopup = ({
       };
   };
 
+  const displayAddPlant = () => {
+    setIsAddPlantThereSecond(true);
+  };
+
   const getPlantObjects = (plantList) => {
     // this will be an array with ids
-    //console.log(allPlantsData);
 
-    for (let i = 0; i < plantList.length; i++) {
-      // search for the plant with that id
-      let plant = allPlantsData.find((plant) => plant.id == plantList[i]);
-      console.log('Displaying plant: ', plant);
+    if (!plantList || plantList.length === 0) return null;
 
-      return (
-        <div className='plant-div' key={plantList[i]}>
-          <div className='inner-plant'>
-            <div className='plant-name'>
-              <ul>
-                <li>{plant.name}</li>
-              </ul>
+    return (
+      <div>
+        {isAddPlantThereSecond && (
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button type='button' onClick={displayAddPlant}>
+                +
+              </button>
+              <input
+                type='text'
+                list='plant-suggestions'
+                value={plantInput}
+                onChange={(e) => setPlantInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && addCompanionPlant(e)}
+                placeholder='Type plant name...'
+              />
             </div>
-            <button onClick={() => removePlant(plant.id)}>✖</button>
+
+            <datalist id='plant-suggestions'>
+              {allPlantsData?.length > 0 &&
+                allPlantsData.map((plant) => (
+                  <option key={plant.id} value={plant.name} />
+                ))}
+            </datalist>
+            <ul>
+              {relatedPlants.map((plant, index) => (
+                <li key={index}>
+                  {plant.name}
+                  <button
+                    className='remove-button'
+                    onClick={() => removeCompanionPlant(index)}
+                  >
+                    ✖
+                  </button>
+                </li>
+              ))}
+            </ul>
           </div>
-        </div>
-      );
+        )}
+
+        {!isAddPlantThereSecond && (
+          <button type='button' onClick={displayAddPlant}>
+            +
+          </button>
+        )}
+
+        {plantList.map((id) => {
+          const plant = allPlantsData.find((plant) => plant.id == id);
+          if (!plant) {
+            console.log('No plant found');
+            return null;
+          }
+
+          return (
+            <div className='plant-div' key={id}>
+              <div className='inner-plant'>
+                <div className='plant-name'>
+                  <ul>
+                    <li>{plant.name}</li>
+                  </ul>
+                </div>
+                <button
+                  className='small-button'
+                  onClick={() => removePlant(plant.id)}
+                >
+                  ✖
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const addPlantToPest = () => {
+    setIsAddPlantThere(!isAddPlantThere);
+  };
+
+  const addCompanionPlant = (e) => {
+    e.preventDefault();
+    const selectedPlant = allPlantsData.find((p) => p.name === plantInput);
+    console.log('Selected plant : ', selectedPlant);
+    console.log('plant input', plantInput);
+    if (
+      selectedPlant &&
+      !relatedPlants.some((p) => p.id === selectedPlant.id)
+    ) {
+      setRelatedPlants([...relatedPlants, selectedPlant]);
+      setPlantInput('');
     }
+
+    // also, hide the "no input sign"
+    setIsPlantListEmpty(false);
+  };
+
+  const removeCompanionPlant = (index) => {
+    setRelatedPlants(relatedPlants.filter((_, i) => i !== index));
+    setIsPlantListEmpty(true);
   };
 
   return (
@@ -114,7 +251,16 @@ const PestPopup = ({
           X
         </button>
 
-        <form className='popup-form' onSubmit={submitForm} noValidate>
+        <form
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+            }
+          }}
+          className='popup-form'
+          onSubmit={submitForm}
+          noValidate
+        >
           <div
             style={{
               display: 'flex',
@@ -157,7 +303,50 @@ const PestPopup = ({
                 {plantList && plantList.length > 0 ? (
                   getPlantObjects(plantList)
                 ) : (
-                  <p>No plants found</p>
+                  <div className='no-plants'>
+                    <p>{isPlantListEmpty ? 'No plants found' : ''}</p>
+                    <button
+                      onClick={addPlantToPest}
+                      type='button'
+                      className='plus-button'
+                    >
+                      +
+                    </button>
+                  </div>
+                )}
+                {isAddPlantThere && (
+                  <div>
+                    <p htmlFor='companions'>Add susceptible plants:</p>
+                    <input
+                      type='text'
+                      list='plant-suggestions'
+                      value={plantInput}
+                      onChange={(e) => setPlantInput(e.target.value)}
+                      onKeyDown={(e) =>
+                        e.key === 'Enter' && addCompanionPlant(e)
+                      }
+                      placeholder='Type plant name...'
+                    />
+                    <datalist id='plant-suggestions'>
+                      {allPlantsData?.length > 0 &&
+                        allPlantsData.map((plant) => (
+                          <option key={plant.id} value={plant.name} />
+                        ))}
+                    </datalist>
+                    <ul>
+                      {relatedPlants.map((plant, index) => (
+                        <li key={index}>
+                          {plant.name}
+                          <button
+                            className='remove-button'
+                            onClick={() => removeCompanionPlant(index)}
+                          >
+                            ✖
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 )}
               </div>
               <br /> <br />
