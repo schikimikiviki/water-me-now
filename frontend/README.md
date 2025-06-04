@@ -3,7 +3,7 @@
 ## Used technologies:
 
 - React and Vite for the frontend
-- Secure HTTP Only Cookies in combination with JWT Authentication
+- HTTP Authentication
 - Spring Boot and Spring security
 
 ## Plan

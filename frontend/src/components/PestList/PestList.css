@@ -1,0 +1,36 @@
+.pest-id {
+  font-style: italic;
+  font-size: 12px;
+  color: rgb(135, 135, 135);
+  margin-top: -15px;
+  margin-left: -10px;
+}
+
+.space {
+  margin-right: 10px;
+}
+
+.container-pest {
+  display: flex;
+  margin-bottom: 20px;
+  gap: 20px;
+  background-color: var(--color-yellow);
+  color: black;
+  border-radius: 20px;
+  padding: 50px;
+}
+
+.img-pest {
+  padding: 30px;
+  border-radius: 20px;
+}
+
+.pest-details {
+  min-width: 500px;
+}
+
+.pest-shortinfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

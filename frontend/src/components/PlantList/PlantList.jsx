@@ -239,7 +239,7 @@ function PlantList() {
                   <div>
                     🌿 <u className='space'>Common pests:</u>{' '}
                     {plant.commonPests.map((pest) => {
-                      return <li>{pest.name}</li>;
+                      return <li key={pest.id}>{pest.name}</li>;
                     })}
                   </div>
                 )}

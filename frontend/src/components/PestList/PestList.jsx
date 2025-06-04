@@ -1,22 +1,33 @@
 import './PestList.css';
 import { useState, useEffect } from 'react';
 import { getRequest } from '../../helpers/functions';
+import api from '../../api/axiosConfig';
+import { deleteSomethingWithId } from '../../helpers/functions';
+import PestPopup from '../PestPopup/PestPopup';
 
 function PestList() {
   const [pests, setPests] = useState(null);
   const [isLoggedIn, setLoggedIn] = useState();
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [chosenPest, setChosenPest] = useState();
+  const [plants, setPlants] = useState();
+
+  const fetchData = async () => {
+    let pests = await getRequest('pests');
+    console.log('GOT: ', pests);
+    setPests(pests);
+
+    let plants = await getRequest('plants');
+    console.log('GOT: ', plants);
+    setPlants(plants);
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      let pests = await getRequest('pests');
-      console.log('GOT: ', pests);
-      setPests(pests);
-    };
-
     const checkLoginStatus = async () => {
       try {
         await api.get('/auth/check', { withCredentials: true });
         setLoggedIn(true);
+        //console.log('User is logged in ');
       } catch (err) {
         setLoggedIn(false);
         console.error('Check login failed:', err);
@@ -27,27 +38,91 @@ function PestList() {
     checkLoginStatus();
   }, []);
 
+  const handlePestDelete = async (id) => {
+    console.log('Deleting pest with id: ', id);
+
+    try {
+      const response = await deleteSomethingWithId('pests', id);
+      console.log(response);
+
+      // If the delete is successful, refresh the  list
+      if (response.success) {
+        fetchData();
+      } else {
+        console.log('Failed to delete pest');
+      }
+    } catch (error) {
+      console.error('Error deleting pest:', error);
+    }
+  };
+
+  const openPopup = () => {
+    setIsPopupOpen(true);
+  };
+
+  const closePopup = () => {
+    setIsPopupOpen(false);
+  };
+
+  const handlePestEdit = (id) => {
+    console.log('Editing pest with id', id);
+    setChosenPest(pests.find((pest) => pest.id === id));
+    openPopup();
+  };
+
+  const pathToimg = 'http://localhost:8888/uploads/';
+
+  const generateSusceptiblePlants = () => {
+    // this will be an array with ids
+    //console.log(allPlantsData);
+    //TODO: adapt this
+    // for (let i = 0; i < plantList.length; i++) {
+    //   // search for the plant with that id
+    //   let plant = allPlantsData.find((plant) => plant.id == plantList[i]);
+    //   console.log('Displaying plant: ', plant);
+    //   return (
+    //     <div className='plant-div' key={plantList[i]}>
+    //       <div className='inner-plant'>
+    //         <div className='plant-name'>
+    //           <ul>
+    //             <li>{plant.name}</li>
+    //           </ul>
+    //         </div>
+    //         <button onClick={() => removePlant(plant.id)}>✖</button>
+    //       </div>
+    //     </div>
+    //   );
+    // }
+  };
+
   return (
     <div className='page-div'>
       <h1>Pests</h1>
       {pests && pests.length > 0 ? (
         <ul>
           {pests.map((pest) => (
-            <div className='container-plant' key={pest.id}>
+            <div className='container-pest' key={pest.id}>
+              <p className='pest-id'>{pest.id}</p>
               <div>
-                <p className='plant-id'>{pest.id}</p>
+                <img
+                  src={pathToimg + pest.imageFile}
+                  alt={pest.name}
+                  width={250}
+                  height={350}
+                  className='img-pest'
+                />
                 {isLoggedIn ? (
                   <div className='admin-functions'>
                     <div
                       onClick={() => {
-                        handlePlantEdit(plant.id);
+                        handlePestEdit(pest.id);
                       }}
                     >
                       🖊️
                     </div>
                     <div
                       onClick={() => {
-                        handlePlantDelete(plant.id);
+                        handlePestDelete(pest.id);
                       }}
                     >
                       🗑️
@@ -56,14 +131,42 @@ function PestList() {
                 ) : (
                   <div></div>
                 )}
-                <div className='plant-details'>
-                  <div className='plant-shortinfo'>
-                    <h2>{pest.name}</h2>
-                  </div>
+              </div>
+
+              <div className='pest-details'>
+                <div className='pest-shortinfo'>
+                  <h2>{pest.name}</h2>
+                </div>
+
+                <hr />
+                <p>
+                  <u>Todo when this pest occurs</u>
+                </p>
+                <p>{pest.todo}</p>
+
+                <div>
+                  <p>
+                    <u>Susceptible plants: </u>
+                  </p>
+                  <p>
+                    {pest.plantList.length > 0 ? (
+                      generateSusceptiblePlants()
+                    ) : (
+                      <div>No susceptible plants.</div>
+                    )}
+                  </p>
                 </div>
               </div>
             </div>
           ))}
+          {isPopupOpen && (
+            <PestPopup
+              pestData={chosenPest}
+              onClose={closePopup}
+              allPestsData={pests}
+              allPlantsData={plants}
+            />
+          )}
         </ul>
       ) : (
         <p>Loading pests...</p>

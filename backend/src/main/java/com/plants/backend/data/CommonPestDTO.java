@@ -1,15 +1,35 @@
 package com.plants.backend.data;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class CommonPestDTO {
     private Long id;
+    
+    
     private String name;
     private String imageFile;
     
+    @JsonProperty("todo")
     private String todo;
-    private List<Plant> plantList;
+    private List<Long> plantList;
     
+    public CommonPestDTO(){
+    }
+    
+    public CommonPestDTO(Common_pest pest) {
+        this.id = pest.getId();
+        this.name = pest.getName();
+        this.imageFile = pest.getImageFile();
+        this.todo = pest.getTodo();
+        this.plantList = pest.getPlantList() != null
+            ? pest.getPlantList().stream().map(Plant::getId).collect(Collectors.toList())
+            : new ArrayList<>();
+    }
+   
     public Long getId() {
 		return id;
 	}
@@ -38,10 +58,10 @@ public class CommonPestDTO {
 		this.todo = todo;
 	}
 	
-	public List<Plant> getPlantList(){
+	public List<Long> getPlantList(){
 		return plantList;
 	}
-	public void setPlantList(List<Plant> plantList) {
+	public void setPlantList(List<Long> plantList) {
 		this.plantList = plantList;
 	}
    
