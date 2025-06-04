@@ -145,6 +145,7 @@ public class PlantController {
 
 	        // 4. Save Plant
 	        plantService.save(plant);
+	        
 
 	        return ResponseEntity.ok(Map.of("success", true, "plant", plant));
 	    } catch (IOException e) {
@@ -157,6 +158,8 @@ public class PlantController {
 
 	@PatchMapping("/{plantId}")
 	public ResponseEntity<Plant> editPlant(@PathVariable Long plantId, @RequestBody Map<String, Object> updates) {
+		
+		System.out.println("Patch plant received by backend");
 	    Optional<Plant> foundPlantOptional = plantService.findPlantById(plantId);
 
 	    if (foundPlantOptional.isPresent()) {
@@ -272,6 +275,7 @@ public class PlantController {
 	        });
 
 	        Plant updatedPlant = plantService.save(foundPlant);
+	        System.out.println("Updated plant");
 	        return ResponseEntity.ok(updatedPlant);
 	    }
 

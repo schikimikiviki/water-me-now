@@ -30,9 +30,7 @@ export const getRequestSimple = async (url, options = {}) => {
 export const deleteSomethingWithId = async (url, id) => {
   try {
     const response = await api.delete(`/${url}/${id}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      withCredentials: true,
     });
     return response.data;
   } catch (error) {
@@ -42,11 +40,15 @@ export const deleteSomethingWithId = async (url, id) => {
 };
 
 export const patchSomethingWithId = async (url, id, body) => {
+  for (var pair of body.entries()) {
+    console.log(pair[0] + ', ' + pair[1]);
+  }
+
   try {
     const response = await api.patch(`/${url}/${id}`, body, {
+      withCredentials: true,
       headers: {
-        'Content-Type': 'application/json',
-        credentials: 'include',
+        'Content-Type': 'multipart/form-data',
       },
     });
     return response.data;

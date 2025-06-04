@@ -1,0 +1,15 @@
+.plant-div {
+  background-color: var(--color-blue);
+  padding: 5px;
+  border-radius: 20px;
+}
+
+.inner-plant {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.plant-name {
+  padding: 20px;
+}

@@ -28,6 +28,8 @@ function AddPest({ plantListFromParent }) {
   const addCompanionPlant = (e) => {
     e.preventDefault();
     const selectedPlant = allPlants.find((p) => p.name === plantInput);
+    console.log('Selected plant : ', selectedPlant);
+    console.log('plant input', plantInput);
     if (
       selectedPlant &&
       !relatedPlants.some((p) => p.id === selectedPlant.id)
@@ -44,15 +46,20 @@ function AddPest({ plantListFromParent }) {
   const handleAddPest = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append('name', pestName);
-    formData.append('imageFile', imageFile);
-    formData.append('todo', todo);
+    const pestData = {
+      name: pestName,
+      todo: todo,
+      plantList: relatedPlants.map((p) => p.id),
+    };
 
-    // Append each plant ID individually
-    relatedPlants.forEach((plant) => {
-      formData.append('plantList', plant.id); // same key for each entry
-    });
+    const formData = new FormData();
+
+    formData.append('imageFile', imageFile);
+    formData.append(
+      'pestData',
+      new Blob([JSON.stringify(pestData)], { type: 'application/json' })
+    );
+    console.log('pestData:', pestData); // Log the actual object
 
     console.log('Posting with this data:');
     for (var pair of formData.entries()) {

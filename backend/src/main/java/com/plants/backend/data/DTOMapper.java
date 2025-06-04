@@ -1,5 +1,6 @@
 package com.plants.backend.data;
 
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class DTOMapper {
@@ -62,6 +63,14 @@ public class DTOMapper {
         dto.setName(commonPest.getName());
         dto.setImageFile(commonPest.getImageFile());
         dto.setTodo(commonPest.getTodo());
+        if (commonPest.getPlantList() != null) {
+            dto.setPlantList(commonPest.getPlantList()
+                .stream()
+                .map(Plant::getId)
+                .collect(Collectors.toList()));
+        } else {
+            dto.setPlantList(new ArrayList<>()); // or null if preferred
+        }
         return dto;
     }
 }
