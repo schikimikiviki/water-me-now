@@ -81,6 +81,17 @@ function PlantList() {
     openPopup();
   };
 
+  const getCompanionList = (idList) => {
+    const companions = plants.filter((plant) => idList.includes(plant.id));
+
+    return (
+      <ul>
+        {companions.map((plant, index) => (
+          <li key={plant.id}>{plant.name}</li>
+        ))}
+      </ul>
+    );
+  };
   return (
     <div className='page-div'>
       <h1>Plants</h1>
@@ -227,7 +238,7 @@ function PlantList() {
                 {plant.companionPlants && plant.companionPlants.length > 0 && (
                   <div>
                     🌿 <u className='space'>Companion plants:</u>{' '}
-                    {plant.companionPlants.join(', ')}
+                    {getCompanionList(plant.companionPlants)}
                   </div>
                 )}
                 {plant.uses.length > 0 && (

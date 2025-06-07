@@ -10,9 +10,9 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
   const [origin, setPlantOrigin] = useState(plantData.origin);
   const [commonPests, setCommonPests] = useState(plantData.commonPests);
   const [companionPlants, setCompanionPlants] = useState(
-    plantData.companionPlants || [] // this arr holds the whole compagnion plant obj
+    plantData.companionPlants || []
   );
-  const [compagnionPlantIds, setCompagnionPlantIds] = useState([]);
+  // const [compagnionPlantIds, setCompagnionPlantIds] = useState([]);
 
   const [companionInput, setCompanionInput] = useState('');
   const [allPlants, setAllPlants] = useState(allPlantsData);
@@ -128,11 +128,6 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
     }
   };
 
-  const removeCompanionPlant = (index) => {
-    console.log('removing index: ', index);
-    setCompanionPlants(companionPlants.filter((_, i) => i !== index));
-  };
-
   const submitForm = async (e) => {
     e.preventDefault();
 
@@ -141,7 +136,7 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
     const plantBody = {
       name: plantName,
       origin: origin,
-      companionPlants: compagnionPlantIds,
+      companionPlants: companionPlants,
       hardiness: hardiness,
       uses: uses,
       hardiness_info: hardinessInfo,
@@ -198,7 +193,7 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
       validPlant &&
       !companionPlants.some((plant) => plant.name === validPlant.name)
     ) {
-      setCompagnionPlantIds([...compagnionPlantIds, validPlant.id]);
+      // setCompagnionPlantIds([...compagnionPlantIds, validPlant.id]);
       setCompanionPlants([...companionPlants, validPlant]);
 
       console.log('This was set to the ID array: ', validPlant.id);
@@ -207,6 +202,34 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
     }
 
     setCompanionInput(''); // Clear input after adding
+  };
+
+  const generateCompanionList = (idList) => {
+    const companions = allPlantsData.filter((plant) =>
+      idList.includes(plant.id)
+    );
+
+    return (
+      <ul>
+        {companions.map((plant, index) => (
+          <li key={plant.id}>
+            {plant.name}
+            <button
+              className='remove-button'
+              onClick={() => removeCompanionPlant(plant.id)}
+              type='button'
+            >
+              ✖
+            </button>
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
+  const removeCompanionPlant = (idToRemove) => {
+    console.log('removing plant with id: ', idToRemove);
+    setCompanionPlants(companionPlants.filter((id) => id !== idToRemove));
   };
 
   return (
@@ -420,20 +443,7 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
                   ))}
               </datalist>
               {companionPlants && companionPlants.length > 0 ? (
-                <ul>
-                  {companionPlants.map((plant, index) => (
-                    <li key={index}>
-                      {plant.name}
-                      <button
-                        className='remove-button'
-                        onClick={() => removeCompanionPlant(index)}
-                        type='button'
-                      >
-                        ✖
-                      </button>
-                    </li>
-                  ))}
-                </ul>
+                generateCompanionList(companionPlants)
               ) : (
                 <p>Currently no compagnion plants added</p>
               )}
