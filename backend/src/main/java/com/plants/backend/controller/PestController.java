@@ -116,12 +116,12 @@ public class PestController {
 	         System.out.println("PlantList: " + pestDTO.getPlantList());
 	         
 	        // 1. Find existing pest
-	        Optional<Common_pest> existingPestOpt = pestService.findPestById(pestId);
-	        if (!existingPestOpt.isPresent()) {
+	        Optional<Common_pest> existingPlantOpt = pestService.findPestById(pestId);
+	        if (!existingPlantOpt.isPresent()) {
 	            return ResponseEntity.notFound().build();
 	        }
 
-	        Common_pest existingPest = existingPestOpt.get();
+	        Common_pest existingPest = existingPlantOpt.get();
 
 	        // 2. Handle Image Upload (only if new image provided)
 	        if (imageFile != null && !imageFile.isEmpty()) {

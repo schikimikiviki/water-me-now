@@ -1,5 +1,6 @@
 package com.plants.backend.data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -48,14 +49,14 @@ public class Plant {
 	@Enumerated(EnumType.STRING)
 	private Fertilization_schedule fertilization_schedule;
 	
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(
 	    name = "plant_companions",
 	    joinColumns = @JoinColumn(name = "plant_id"),
 	    inverseJoinColumns = @JoinColumn(name = "companion_id")
 	)
 	@JsonManagedReference
-	private List<Plant> companionPlants;
+	private List<Plant> companionPlants = new ArrayList<>();
 
 	@ElementCollection
 	private List<String> uses;

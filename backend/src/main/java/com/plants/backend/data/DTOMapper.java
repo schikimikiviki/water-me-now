@@ -22,6 +22,7 @@ public class DTOMapper {
         dto.setPropagation(plant.getPropagation());
         dto.setFertilization_schedule(plant.getFertilization_schedule());
         dto.setUses(plant.getUses());
+        
 
         // Map plantTasks to PlantTaskDTO
         if (plant.getPlantTaskList() != null) {
@@ -29,6 +30,16 @@ public class DTOMapper {
                 .map(DTOMapper::toPlantTaskDTO)
                 .collect(Collectors.toList()));
         }
+        
+      
+        
+        if (plant.getCompanionPlants() != null) {
+            dto.setCompanionPlants(plant.getCompanionPlants().stream()
+                .map(Plant::getId)
+                .collect(Collectors.toList()));
+        }
+
+        
         
         if (plant.getCommonPests() != null) {
             dto.setCommonPests(plant.getCommonPests().stream()

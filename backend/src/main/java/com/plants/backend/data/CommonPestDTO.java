@@ -15,6 +15,7 @@ public class CommonPestDTO {
     
     @JsonProperty("todo")
     private String todo;
+    
     private List<Long> plantList;
     
     public CommonPestDTO(){

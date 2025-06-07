@@ -24,7 +24,7 @@ function PlantList() {
   const fetchData = async () => {
     let plants = await getRequest('plants');
     setPlants(plants);
-    // console.log(plants[0].commonPests);
+    console.log(plants);
   };
 
   const checkLoginStatus = async () => {
@@ -50,6 +50,7 @@ function PlantList() {
 
   const closePopup = () => {
     setIsPopupOpen(false);
+    fetchData();
   };
 
   const handlePlantDelete = async (id) => {
@@ -73,6 +74,10 @@ function PlantList() {
   const handlePlantEdit = (id) => {
     console.log('Editing plant with id', id);
     setChosenPlant(plants.find((plant) => plant.id === id));
+    console.log(
+      'this is the data we work with: ',
+      plants.find((plant) => plant.id === id)
+    );
     openPopup();
   };
 

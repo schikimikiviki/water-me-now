@@ -10,8 +10,10 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
   const [origin, setPlantOrigin] = useState(plantData.origin);
   const [commonPests, setCommonPests] = useState(plantData.commonPests);
   const [companionPlants, setCompanionPlants] = useState(
-    plantData.companionPlants
+    plantData.companionPlants || [] // this arr holds the whole compagnion plant obj
   );
+  const [compagnionPlantIds, setCompagnionPlantIds] = useState([]);
+
   const [companionInput, setCompanionInput] = useState('');
   const [allPlants, setAllPlants] = useState(allPlantsData);
   const [features, setFeatures] = useState(plantData.featureList);
@@ -37,6 +39,7 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
 
   const [width, setWidth] = useState(window.innerWidth);
   const [isMobile, setIsMobile] = useState(false);
+  const [imageFileName, setImageFileName] = useState(plantData.imageFile);
 
   //   console.log(plantData);
 
@@ -102,7 +105,7 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
   };
 
   const handleFertilizationChange = (e) => {
-    setFertilization(e.taget.value);
+    setFertilization(e.target.value);
   };
 
   const removeUse = (index) => {
@@ -125,40 +128,85 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
     }
   };
 
+  const removeCompanionPlant = (index) => {
+    console.log('removing index: ', index);
+    setCompanionPlants(companionPlants.filter((_, i) => i !== index));
+  };
+
   const submitForm = async (e) => {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append('name', plantName);
-    formData.append('origin', origin);
-    formData.append('imageFile', imageFile);
-    formData.append('hardiness', hardiness);
-    formData.append('hardiness_info', hardinessInfo);
-    formData.append('ideal_location', idealLocation);
-    formData.append('watering', watering);
-    formData.append('soil_type', soilType);
-    formData.append('perennial', perennial);
-    formData.append('features', JSON.stringify(features));
-    formData.append('ideal_placement', idealPlacement);
-    formData.append('propagation', propagation);
-    formData.append('fertilization_schedule', fertilization);
-    formData.append('companionPlants', JSON.stringify(companionPlants));
-    formData.append('uses', JSON.stringify(uses));
-    selectedPlantTasks.forEach((taskId) =>
-      formData.append('plantTasks', taskId)
-    );
-    selectedPests.forEach((pestID) => formData.append('commonPests', pestID));
 
-    console.log('Patching with this data :');
-    for (var pair of formData.entries()) {
-      console.log(pair[0] + ', ' + pair[1]);
+    const plantBody = {
+      name: plantName,
+      origin: origin,
+      companionPlants: compagnionPlantIds,
+      hardiness: hardiness,
+      uses: uses,
+      hardiness_info: hardinessInfo,
+      ideal_location: idealLocation,
+      watering: watering,
+      soil_type: soilType,
+      perennial: perennial,
+      featureList: features,
+      ideal_placement: idealPlacement,
+      propagation: propagation,
+      fertilization_schedule: fertilization,
+    };
+
+    // Verify the final payload
+    console.log('Final payload:', JSON.stringify(plantBody, null, 2));
+
+    if (imageFile) {
+      formData.append('imageFile', imageFile);
     }
 
-    let response = await patchSomethingWithId('plants', plantData.id, formData);
+    // Create the Blob with proper type
+    const jsonBlob = new Blob([JSON.stringify(plantBody)], {
+      type: 'application/json',
+    });
+    formData.append('plantBody', jsonBlob);
+
+    try {
+      let response = await patchSomethingWithId(
+        'plants',
+        plantData.id,
+        formData
+      );
+      console.log(response);
+      onClose();
+    } catch (error) {
+      console.error('Request failed:', error);
+    }
   };
 
   const handleUpload = (e) => {
     setImageFile(e);
+  };
+
+  const addCompanionPlant = (e) => {
+    e.preventDefault();
+    const trimmedInput = companionInput.trim();
+
+    // Check if input matches a valid plant name
+    const validPlant = allPlants.find((plant) => plant.name === trimmedInput);
+    console.log('valid plant: ', validPlant);
+    //console.log(companionPlants);
+
+    if (
+      validPlant &&
+      !companionPlants.some((plant) => plant.name === validPlant.name)
+    ) {
+      setCompagnionPlantIds([...compagnionPlantIds, validPlant.id]);
+      setCompanionPlants([...companionPlants, validPlant]);
+
+      console.log('This was set to the ID array: ', validPlant.id);
+    } else {
+      console.warn('Invalid plant name or already added');
+    }
+
+    setCompanionInput(''); // Clear input after adding
   };
 
   return (
@@ -168,7 +216,16 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
           X
         </button>
 
-        <form className='popup-form' onSubmit={submitForm} noValidate>
+        <form
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+            }
+          }}
+          className='popup-form'
+          onSubmit={submitForm}
+          noValidate
+        >
           <div
             style={{
               display: 'flex',
@@ -198,7 +255,10 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
               />
               <br />
               <br />
-              <UploadImage id='upload3' onUploadImage={handleUpload} />
+              <div style={{ display: 'flex' }}>
+                <UploadImage id='upload4' onUploadImage={handleUpload} />
+                <p>{imageFileName}</p>
+              </div>
               <hr className='hr-styled' />
               <label htmlFor='hardiness'>Choose hardiness:</label>
               <select
@@ -346,7 +406,10 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
                 type='text'
                 list='plant-suggestions'
                 value={companionInput}
-                onChange={(e) => setCompanionInput(e.target.value)}
+                onChange={(e) => {
+                  //console.log(e.target.value);
+                  setCompanionInput(e.target.value);
+                }}
                 onKeyDown={(e) => e.key === 'Enter' && addCompanionPlant(e)}
                 placeholder='Type plant name...'
               />
@@ -360,10 +423,11 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
                 <ul>
                   {companionPlants.map((plant, index) => (
                     <li key={index}>
-                      {plant}
+                      {plant.name}
                       <button
                         className='remove-button'
                         onClick={() => removeCompanionPlant(index)}
+                        type='button'
                       >
                         ✖
                       </button>
