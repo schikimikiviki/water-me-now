@@ -100,7 +100,6 @@ const PestPopup = ({
     });
     formData.append('pestBody', jsonBlob);
 
-    // Debug the FormData contents
     console.log('FormData contents:');
     for (let [key, value] of formData.entries()) {
       if (value instanceof Blob) {
@@ -283,7 +282,10 @@ const PestPopup = ({
               />
               <br />
               <br />
-              <UploadImage id='upload3' onUploadImage={handleUpload} />
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <UploadImage id='upload3' onUploadImage={handleUpload} />
+                <p>{imageFile}</p>
+              </div>
               <hr className='hr-styled' />
               <div>Todo:</div>
               <input

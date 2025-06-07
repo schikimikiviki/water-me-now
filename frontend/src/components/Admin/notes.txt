@@ -1,0 +1,6 @@
+		
+		patch : 
+		
+		this.companionPlants = companionPlants;
+		this.commonPests = commonPests;
+		this.plantTasks = plantTasks;

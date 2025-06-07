@@ -1,6 +1,10 @@
 package com.plants.backend.data;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PlantDTO {
     private Long id;
@@ -13,14 +17,32 @@ public class PlantDTO {
     private Watering watering;
     private Soil_type soil_type;
     private Boolean perennial;
+    
+    @JsonProperty("featureList")
     private List<Feature> featureList;
     private Ideal_placement ideal_placement;
     private String propagation;
     private Fertilization_schedule fertilization_schedule;
-    private List<Plant> companionPlants;
+    
+    @JsonProperty("companionPlants")
+    private List<Long> companionPlants;
     private List<String> uses;
     private List<CommonPestDTO> commonPests;
     private List<PlantTaskDTO> plantTasks; 
+    
+    public PlantDTO(){
+    }
+    
+    
+    public PlantDTO(Plant plant) {
+        this.id = plant.getId();
+        this.name = plant.getName();
+        this.imageFile = plant.getImageFile();
+        
+        this.companionPlants = plant.getCompanionPlants() != null ? plant.getCompanionPlants().stream().map(Plant::getId).collect(Collectors.toList())
+            : new ArrayList<>();
+    }
+   
     
 	public Long getId() {
 		return id;
@@ -106,10 +128,10 @@ public class PlantDTO {
 	public void setFertilization_schedule(Fertilization_schedule fertilization_schedule) {
 		this.fertilization_schedule = fertilization_schedule;
 	}
-	public List<Plant> getCompanionPlants() {
+	public List<Long> getCompanionPlants() {
 		return companionPlants;
 	}
-	public void setCompanionPlants(List<Plant> companionPlants) {
+	public void setCompanionPlants(List<Long> companionPlants) {
 		this.companionPlants = companionPlants;
 	}
 	public List<String> getUses() {

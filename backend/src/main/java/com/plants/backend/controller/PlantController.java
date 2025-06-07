@@ -13,20 +13,19 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.plants.backend.data.Common_pest;
 import com.plants.backend.data.Feature;
@@ -40,6 +39,7 @@ import com.plants.backend.data.PlantTask;
 import com.plants.backend.data.Soil_type;
 import com.plants.backend.data.Watering;
 import com.plants.backend.repository.PestRepository;
+import com.plants.backend.repository.PlantRepository;
 import com.plants.backend.repository.PlantTaskRepository;
 import com.plants.backend.service.PlantService;
 
@@ -54,12 +54,15 @@ public class PlantController {
 	private final PlantTaskRepository plantTaskRepository;
 	
 	private final PestRepository pestRepository;
+	
+	private final PlantRepository plantRepository; 
 
 
-	public PlantController(PlantService plantService, PlantTaskRepository plantTaskRepository, PestRepository pestRepository) {
+	public PlantController(PlantService plantService, PlantTaskRepository plantTaskRepository, PestRepository pestRepository, PlantRepository plantRepository) {
 		this.plantService = plantService;
 		this.plantTaskRepository = plantTaskRepository;
 		this.pestRepository = pestRepository;
+		this.plantRepository = plantRepository; 
 	}
 
 
@@ -154,135 +157,225 @@ public class PlantController {
 	    }
 	}
 
+	 @PatchMapping(value = "/{plantId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+		public ResponseEntity<?> updatePlant(
+		        @PathVariable Long plantId,
+		        @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
+		        @RequestPart("plantBody") String plantBodyJson) {
+
+		    System.out.println("Received PATCH request for pestId: " + plantId);
+		    System.out.println("Received raw plantBody: " + plantBodyJson);
+
+
+		    try {
+		    	
+		    	 ObjectMapper objectMapper = new ObjectMapper();
+		        PlantDTO plantDTO = objectMapper.readValue(plantBodyJson, PlantDTO.class);
+
+		       
+		        // 1. Find existing pest
+		        Optional<Plant> existingPlantOpt = plantService.findPlantById(plantId);
+		        if (!existingPlantOpt.isPresent()) {
+		            return ResponseEntity.notFound().build();
+		        }
+
+		        Plant existingPlant = existingPlantOpt.get();
+
+		        // 2. Handle Image Upload (only if new image provided)
+		        if (imageFile != null && !imageFile.isEmpty()) {
+		            // Delete old image if it exists
+		            if (existingPlant.getImageFile() != null) {
+		                Path oldImagePath = Paths.get("uploads/" + existingPlant.getImageFile());
+		                Files.deleteIfExists(oldImagePath);
+		            }
+
+		            // Save new image
+		            String uploadDir = "uploads/";
+		            String imageName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
+		            Path imagePath = Paths.get(uploadDir + imageName);
+		            Files.createDirectories(imagePath.getParent());
+		            Files.write(imagePath, imageFile.getBytes());
+		            existingPlant.setImageFile(imageName);
+		        }
+
+		        // 3. Update pest properties
+		        if (plantDTO.getName() != null) {
+		            existingPlant.setName(plantDTO.getName());
+		        }
+		        
+		        if (plantDTO.getOrigin() != null ) {
+		        	existingPlant.setOrigin(plantDTO.getOrigin());
+		        }
+		       
+		        if(plantDTO.getHardiness() != null) {
+		        	existingPlant.setHardiness(plantDTO.getHardiness());
+		        }
+		        
+		        if (plantDTO.getHardiness_info() != null) {
+		        	existingPlant.setHardiness_info(plantDTO.getHardiness_info());
+		        }
+		        
+		        if (plantDTO.getWatering() != null) {
+		        	existingPlant.setWatering(plantDTO.getWatering());
+		        }
+		        
+		        if (plantDTO.getSoil_type() != null) {
+		        	existingPlant.setSoil_type(plantDTO.getSoil_type());
+		        }
+		        
+		        if (plantDTO.getPerennial() != null) {
+		        	existingPlant.setPerennial(plantDTO.getPerennial());
+		        }
+		        
+		        if (plantDTO.getIdeal_location() !=null ) {
+		        	existingPlant.setIdeal_location(plantDTO.getIdeal_location());
+		        }
+		        
+		        if(plantDTO.getIdeal_placement() != null ) {
+		        	existingPlant.setIdeal_placement(plantDTO.getIdeal_placement());
+		        }
+		        
+		        if (plantDTO.getPropagation() != null ) {
+		        	existingPlant.setPropagation(plantDTO.getPropagation());
+		        }
+		        
+		        if (plantDTO.getUses() != null ) {
+		        	existingPlant.setUses(plantDTO.getUses());
+		        }
+		        
+		        if (plantDTO.getFertilization_schedule() !=null) {
+		        	existingPlant.setFertilization_schedule(plantDTO.getFertilization_schedule());
+		        }
+		        
+				
+				  if (plantDTO.getFeatureList() != null) {
+					  System.out.println("Feature List updated");
+				  existingPlant.setFeatureList(plantDTO.getFeatureList()); }
+				
+				  if (plantDTO.getCompanionPlants() != null &&
+				  !plantDTO.getCompanionPlants().isEmpty()) {
+					  System.out.println("Compagnion List updated");
+					  List<Plant> plants =
+				  plantRepository.findAllById(plantDTO.getCompanionPlants());
+					  
+					  System.out.println("plants"+ plants);
+				  existingPlant.setCompanionPlants(plants);
+				  
+				  
+				  
+				  }
+				 
+
+		        // 5. Save updated pest
+		        Plant updatedPlant = plantService.save(existingPlant);
+
+		        return ResponseEntity.ok(Map.of(
+		                "success", true,
+		                "plant", updatedPlant
+		        ));
+		    } catch (IOException e) {
+		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+		                .body(Map.of(
+		                        "success", false,
+		                        "error", "File processing error: " + e.getMessage()
+		                ));
+		    } catch (Exception e) {
+		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+		                .body(Map.of(
+		                        "success", false,
+		                        "error", "Server error: " + e.getMessage()
+		                ));
+		    }
+		}
+
 	
 
-	@PatchMapping("/{plantId}")
-	public ResponseEntity<Plant> editPlant(@PathVariable Long plantId, @RequestBody Map<String, Object> updates) {
-		
-		System.out.println("Patch plant received by backend");
-	    Optional<Plant> foundPlantOptional = plantService.findPlantById(plantId);
-
-	    if (foundPlantOptional.isPresent()) {
-	        Plant foundPlant = foundPlantOptional.get();
-
-	        updates.forEach((key, value) -> {
-	            switch (key) {
-	                case "name":
-	                    foundPlant.setName((String) value);
-	                    break;
-	                case "origin":
-	                    foundPlant.setOrigin((String) value);
-	                    break;
-	                case "imageFile":
-	                    foundPlant.setImageFile((String) value);
-	                    break;
-	                case "hardiness":
-	                    foundPlant.setHardiness(Hardiness.valueOf((String) value));
-	                    break;
-	                case "hardiness_info":
-	                    foundPlant.setHardiness_info((String) value);
-	                    break;
-	                case "perennial":
-	                foundPlant.setPerennial(Boolean.parseBoolean(value.toString()));
-	                    break;
-
-	                case "ideal_location":
-	                    foundPlant.setIdeal_location(Ideal_location.valueOf((String) value));
-	                    break;
-	                case "watering":
-	                    foundPlant.setWatering(Watering.valueOf((String) value));
-	                    break;
-	                case "soil_type":
-	                    foundPlant.setSoil_type(Soil_type.valueOf((String) value));
-	                    break;
-	               
-	                case "featureList":
-	                    ObjectMapper objectMapper4 = new ObjectMapper();
-	                    try {
-	                        List<Feature> features = objectMapper4.readValue(value.toString(), new TypeReference<List<Feature>>() {});
-	                        foundPlant.setFeatureList(features);
-	                    } catch (JsonProcessingException e) {
-	                        throw new IllegalArgumentException("Invalid JSON for features: " + value, e);
-	                    }
-	                    break;
-
-	                case "ideal_placement":
-	                    foundPlant.setIdeal_placement(Ideal_placement.valueOf((String) value));
-	                    break;
-	                case "propagation":
-	                    foundPlant.setPropagation((String) value);
-	                    break;
-	                case "fertilization_schedule":
-	                    foundPlant.setFertilization_schedule(Fertilization_schedule.valueOf((String) value));
-	                    break;
-	                case "companionPlants":
-	                    ObjectMapper objectMapper = new ObjectMapper();
-	                    try {
-	                        List<Long> companionPlantIds = objectMapper.readValue(value.toString(), new TypeReference<List<Long>>() {});
-	                        List<Plant> companionPlants = plantService.findPlantsByIds(companionPlantIds);
-	                        foundPlant.setCompanionPlants(companionPlants);
-	                    } catch (JsonProcessingException e) {
-	                        throw new IllegalArgumentException("Invalid JSON for companionPlants: " + value, e);
-	                    }
-	                    break;
-
-
-	                case "uses":
-	                    ObjectMapper objectMapper1 = new ObjectMapper();
-	                    try {
-	                        List<String> uses = objectMapper1.readValue(value.toString(), new TypeReference<List<String>>() {});
-	                        foundPlant.setUses(uses);
-	                    } catch (JsonProcessingException e) {
-	                        throw new IllegalArgumentException("Invalid JSON for uses: " + value, e);
-	                    }
-	                    break;
-	                case "commonPests":
-	                    ObjectMapper objectMapper3 = new ObjectMapper();
-	                    try {
-	                        List<Common_pest> commonPests = objectMapper3.readValue(value.toString(), new TypeReference<List<Common_pest>>() {});
-	                        foundPlant.setCommonPests(commonPests);
-	                    } catch (JsonProcessingException e) {
-	                        throw new IllegalArgumentException("Invalid JSON for commonPests: " + value, e);
-	                    }
-	                    break;
-
-	                
-	                case "plantTasks":
-	                    ObjectMapper objectMapper2 = new ObjectMapper();
-	                    try {
-	                        List<PlantTask> plantTasks = objectMapper2.readValue(value.toString(), new TypeReference<List<PlantTask>>() {});
-	                        foundPlant.setPlantTasks(plantTasks);
-	                    } catch (JsonProcessingException e) {
-	                        throw new IllegalArgumentException("Invalid JSON for plantTasks: " + value, e);
-	                    }
-	                    break;
-
-	                case "features":
-	                    ObjectMapper objectMapper11 = new ObjectMapper();
-	                    try {
-	                        List<Feature> featureList = objectMapper11.readValue(value.toString(), new TypeReference<List<Feature>>() {});
-	                        foundPlant.setFeatureList(featureList);
-	                    } catch (JsonProcessingException e) {
-	                        throw new IllegalArgumentException("Invalid JSON for features: " + value, e);
-	                    }
-	                    break;
-
-	                	
-	                	
-	                default:
-	                    throw new IllegalArgumentException("Invalid field: " + key);
-	            }
-	        });
-
-	        Plant updatedPlant = plantService.save(foundPlant);
-	        System.out.println("Updated plant");
-	        return ResponseEntity.ok(updatedPlant);
-	    }
-
-	    return ResponseEntity.notFound().build();
-	}
-
+	/*
+	 * @PatchMapping("/{plantId}") public ResponseEntity<Plant>
+	 * editPlant(@PathVariable Long plantId, @RequestBody Map<String, Object>
+	 * updates) {
+	 * 
+	 * System.out.println("Patch plant received by backend"); Optional<Plant>
+	 * foundPlantOptional = plantService.findPlantById(plantId);
+	 * 
+	 * if (foundPlantOptional.isPresent()) { Plant foundPlant =
+	 * foundPlantOptional.get();
+	 * 
+	 * updates.forEach((key, value) -> { switch (key) { case "name":
+	 * foundPlant.setName((String) value); break; case "origin":
+	 * foundPlant.setOrigin((String) value); break; case "imageFile":
+	 * foundPlant.setImageFile((String) value); break; case "hardiness":
+	 * foundPlant.setHardiness(Hardiness.valueOf((String) value)); break; case
+	 * "hardiness_info": foundPlant.setHardiness_info((String) value); break; case
+	 * "perennial": foundPlant.setPerennial(Boolean.parseBoolean(value.toString()));
+	 * break;
+	 * 
+	 * case "ideal_location":
+	 * foundPlant.setIdeal_location(Ideal_location.valueOf((String) value)); break;
+	 * case "watering": foundPlant.setWatering(Watering.valueOf((String) value));
+	 * break; case "soil_type": foundPlant.setSoil_type(Soil_type.valueOf((String)
+	 * value)); break;
+	 * 
+	 * case "featureList": ObjectMapper objectMapper4 = new ObjectMapper(); try {
+	 * List<Feature> features = objectMapper4.readValue(value.toString(), new
+	 * TypeReference<List<Feature>>() {}); foundPlant.setFeatureList(features); }
+	 * catch (JsonProcessingException e) { throw new
+	 * IllegalArgumentException("Invalid JSON for features: " + value, e); } break;
+	 * 
+	 * case "ideal_placement":
+	 * foundPlant.setIdeal_placement(Ideal_placement.valueOf((String) value));
+	 * break; case "propagation": foundPlant.setPropagation((String) value); break;
+	 * case "fertilization_schedule":
+	 * foundPlant.setFertilization_schedule(Fertilization_schedule.valueOf((String)
+	 * value)); break; case "companionPlants": ObjectMapper objectMapper = new
+	 * ObjectMapper(); try { List<Long> companionPlantIds =
+	 * objectMapper.readValue(value.toString(), new TypeReference<List<Long>>() {});
+	 * List<Plant> companionPlants =
+	 * plantService.findPlantsByIds(companionPlantIds);
+	 * foundPlant.setCompanionPlants(companionPlants); } catch
+	 * (JsonProcessingException e) { throw new
+	 * IllegalArgumentException("Invalid JSON for companionPlants: " + value, e); }
+	 * break;
+	 * 
+	 * 
+	 * case "uses": ObjectMapper objectMapper1 = new ObjectMapper(); try {
+	 * List<String> uses = objectMapper1.readValue(value.toString(), new
+	 * TypeReference<List<String>>() {}); foundPlant.setUses(uses); } catch
+	 * (JsonProcessingException e) { throw new
+	 * IllegalArgumentException("Invalid JSON for uses: " + value, e); } break; case
+	 * "commonPests": ObjectMapper objectMapper3 = new ObjectMapper(); try {
+	 * List<Common_pest> commonPests = objectMapper3.readValue(value.toString(), new
+	 * TypeReference<List<Common_pest>>() {});
+	 * foundPlant.setCommonPests(commonPests); } catch (JsonProcessingException e) {
+	 * throw new IllegalArgumentException("Invalid JSON for commonPests: " + value,
+	 * e); } break;
+	 * 
+	 * 
+	 * case "plantTasks": ObjectMapper objectMapper2 = new ObjectMapper(); try {
+	 * List<PlantTask> plantTasks = objectMapper2.readValue(value.toString(), new
+	 * TypeReference<List<PlantTask>>() {}); foundPlant.setPlantTasks(plantTasks); }
+	 * catch (JsonProcessingException e) { throw new
+	 * IllegalArgumentException("Invalid JSON for plantTasks: " + value, e); }
+	 * break;
+	 * 
+	 * case "features": ObjectMapper objectMapper11 = new ObjectMapper(); try {
+	 * List<Feature> featureList = objectMapper11.readValue(value.toString(), new
+	 * TypeReference<List<Feature>>() {}); foundPlant.setFeatureList(featureList); }
+	 * catch (JsonProcessingException e) { throw new
+	 * IllegalArgumentException("Invalid JSON for features: " + value, e); } break;
+	 * 
+	 * 
+	 * 
+	 * default: throw new IllegalArgumentException("Invalid field: " + key); } });
+	 * 
+	 * Plant updatedPlant = plantService.save(foundPlant);
+	 * System.out.println("Updated plant"); return ResponseEntity.ok(updatedPlant);
+	 * }
+	 * 
+	 * return ResponseEntity.notFound().build(); }
+	 */
 	
+	 
 
 
 	@DeleteMapping("/{plantId}")
