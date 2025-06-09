@@ -48,7 +48,7 @@ public class PestController {
 
 	@GetMapping("/all")
 	public List<CommonPestDTO> getAllPests() {
-		// Return list of users from the database
+		
 		return pestService.findAll();
 	}
 

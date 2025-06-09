@@ -62,9 +62,15 @@ public class Plant {
 	private List<String> uses;
 	
 	
-	@ManyToMany(mappedBy = "plantList", fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(
+	    name = "plant_pests",
+	    joinColumns = @JoinColumn(name = "plant_id"),
+	    inverseJoinColumns = @JoinColumn(name = "pest_id")
+	)
 	@JsonManagedReference
 	private List<Common_pest> commonPests;
+
 
 	@OneToMany(mappedBy = "plant", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference

@@ -27,7 +27,9 @@ public class PlantDTO {
     @JsonProperty("companionPlants")
     private List<Long> companionPlants;
     private List<String> uses;
-    private List<CommonPestDTO> commonPests;
+    
+    @JsonProperty("commonPests")
+    private List<Long> commonPests;
     private List<PlantTaskDTO> plantTasks; 
     
     public PlantDTO(){
@@ -38,9 +40,26 @@ public class PlantDTO {
         this.id = plant.getId();
         this.name = plant.getName();
         this.imageFile = plant.getImageFile();
+        this.origin = plant.getOrigin();
+        this.hardiness = plant.getHardiness();
+        this.hardiness_info = plant.getHardiness_info();
+        this.ideal_location = plant.getIdeal_location();
+        this.watering = plant.getWatering();
+        this.soil_type = plant.getSoil_type();
+        this.perennial = plant.getPerennial();
+        this.featureList = plant.getFeatureList();
+        this.ideal_placement = plant.getIdeal_placement();
+        this.fertilization_schedule = plant.getFertilization_schedule();
+        this.propagation = plant.getPropagation();
+        this.uses = plant.getUses();
         
         this.companionPlants = plant.getCompanionPlants() != null ? plant.getCompanionPlants().stream().map(Plant::getId).collect(Collectors.toList())
             : new ArrayList<>();
+        
+        this.commonPests = plant.getCommonPests() != null ? plant.getCommonPests().stream().map(Common_pest::getId).collect(Collectors.toList())
+                : new ArrayList<>();
+        
+        
     }
    
     
@@ -140,10 +159,10 @@ public class PlantDTO {
 	public void setUses(List<String> uses) {
 		this.uses = uses;
 	}
-	public List<CommonPestDTO> getCommonPests() {
+	public List<Long> getCommonPests() {
 		return commonPests;
 	}
-	public void setCommonPests(List<CommonPestDTO> commonPests) {
+	public void setCommonPests(List<Long> commonPests) {
 		this.commonPests = commonPests;
 	}
 	public List<PlantTaskDTO> getPlantTasks() {

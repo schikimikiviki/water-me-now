@@ -4,11 +4,12 @@ import './Popup.css';
 import { patchSomethingWithId } from '../../helpers/functions';
 import UploadImage from '../UploadImage/UploadImage';
 
-const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
+const Popup = ({ onClose, onAdd, plantData, allPlantsData, allPestsData }) => {
   // plant states
   const [plantName, setPlantName] = useState(plantData.name);
   const [origin, setPlantOrigin] = useState(plantData.origin);
   const [commonPests, setCommonPests] = useState(plantData.commonPests);
+
   const [companionPlants, setCompanionPlants] = useState(
     plantData.companionPlants || []
   );
@@ -35,17 +36,24 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
   const [customUse, setCustomUse] = useState('');
   const [watering, setWatering] = useState(plantData.watering);
   const [selectedPlantTasks, setSelectedPlantTasks] = useState([]);
-  const [selectedPests, setSelectedPests] = useState([]);
+  const [selectedPests, setSelectedPests] = useState(commonPests);
 
   const [width, setWidth] = useState(window.innerWidth);
   const [isMobile, setIsMobile] = useState(false);
   const [imageFileName, setImageFileName] = useState(plantData.imageFile);
 
+  console.log('selcted pests: ', selectedPests);
+
   //   console.log(plantData);
+  // console.log(
+  //   new Set(plantData.commonPests.map((p) => p.id)).size,
+  //   plantData.commonPests.length
+  // );
 
   function handleWindowSizeChange() {
     setWidth(window.innerWidth);
   }
+
   useEffect(() => {
     window.addEventListener('resize', handleWindowSizeChange);
     return () => {
@@ -148,6 +156,7 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
       ideal_placement: idealPlacement,
       propagation: propagation,
       fertilization_schedule: fertilization,
+      commonPests: selectedPests,
     };
 
     // Verify the final payload
@@ -500,8 +509,8 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData }) => {
               <hr className='hr-styled' />
               <label>Choose common pests:</label>
               <div className='feature-checkboxes'>
-                {commonPests && commonPests.length > 0 ? (
-                  commonPests.map((task) => (
+                {allPestsData && allPestsData.length > 0 ? (
+                  allPestsData.map((task) => (
                     <div key={task.id}>
                       <input
                         type='checkbox'
