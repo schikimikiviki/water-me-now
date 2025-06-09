@@ -20,11 +20,15 @@ function PlantList() {
   const [isLoggedIn, setLoggedIn] = useState();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [chosenPlant, setChosenPlant] = useState(null);
+  const [pests, setPests] = useState(null);
 
   const fetchData = async () => {
     let plants = await getRequest('plants');
     setPlants(plants);
     console.log(plants);
+    let pests = await getRequest('pests');
+    console.log(pests);
+    setPests(pests);
   };
 
   const checkLoginStatus = async () => {
@@ -92,6 +96,21 @@ function PlantList() {
       </ul>
     );
   };
+
+  const generateCommonPestList = (idList) => {
+    if (pests?.length > 0) {
+      const pestsFiltered = pests.filter((pest) => idList.includes(pest.id));
+
+      return (
+        <ul>
+          {pestsFiltered.map((pest) => (
+            <li key={pest.id}>{pest.name}</li>
+          ))}
+        </ul>
+      );
+    }
+  };
+
   return (
     <div className='page-div'>
       <h1>Plants</h1>
@@ -253,12 +272,11 @@ function PlantList() {
                 )}
                 {plant.commonPests.length > 0 && (
                   <div>
-                    🌿 <u className='space'>Common pests:</u>{' '}
-                    {plant.commonPests.map((pest) => {
-                      return <li key={pest.id}>{pest.name}</li>;
-                    })}
+                    🌿 <u className='space'>Common pests:</u>
+                    {generateCommonPestList(plant.commonPests)}
                   </div>
                 )}
+
                 {plant.plantTasks.length > 0 && (
                   <div>
                     🌿 <u className='space'>Plant tasks:</u>
@@ -277,6 +295,7 @@ function PlantList() {
               plantData={chosenPlant}
               onClose={closePopup}
               allPlantsData={plants}
+              allPestsData={pests}
             />
           )}
         </div>

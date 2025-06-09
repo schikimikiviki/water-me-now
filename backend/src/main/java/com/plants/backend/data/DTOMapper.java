@@ -43,7 +43,7 @@ public class DTOMapper {
         
         if (plant.getCommonPests() != null) {
             dto.setCommonPests(plant.getCommonPests().stream()
-                .map(DTOMapper::toCommonPestDTO)
+                .map(Common_pest::getId)
                 .collect(Collectors.toList()));
         }
 

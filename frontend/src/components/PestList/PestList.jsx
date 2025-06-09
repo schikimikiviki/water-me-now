@@ -147,13 +147,13 @@ function PestList() {
                   <p>
                     <u>Susceptible plants: </u>
                   </p>
-                  <p>
+                  <div>
                     {pest.plantList.length > 0 ? (
                       generateSusceptiblePlants(pest.plantList)
                     ) : (
                       <div>No susceptible plants.</div>
                     )}
-                  </p>
+                  </div>
                 </div>
               </div>
             </div>

@@ -23,12 +23,13 @@ public class Common_pest {
 	private String imageFile; 
 	private String todo; 
 	@ManyToMany
+	
 	@JoinTable(
-	    name = "plant_pest",
+	    name = "plant_pests",
 	    joinColumns = @JoinColumn(name = "pest_id"),
 	    inverseJoinColumns = @JoinColumn(name = "plant_id")
 	)
-	/* @JsonBackReference */
+	
 	private List<Plant> plantList;
 	
 	public Common_pest() {}

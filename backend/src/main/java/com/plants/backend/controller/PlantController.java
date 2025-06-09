@@ -261,12 +261,60 @@ public class PlantController {
 					  System.out.println("plants"+ plants);
 				  existingPlant.setCompanionPlants(plants);
 				  
-				  
-				  
 				  }
-				 
+				  
+					/*
+					 * if (plantDTO.getCommonPests() !=null && !plantDTO.getCommonPests().isEmpty())
+					 * { System.out.println("Common pest updated"); List<Common_pest> pests =
+					 * pestRepository.findAllById(plantDTO.getCommonPests());
+					 * System.out.println("Fetched pests: " + pests.size());
+					 * 
+					 * 
+					 * existingPlant.setCommonPests(pests); }
+					 */
+				  
+				  if (plantDTO.getCommonPests() != null) {
+					    // Get all pests from the DTO IDs
+					    List<Common_pest> newPests = pestRepository.findAllById(plantDTO.getCommonPests());
+					    
+					    // Get current pests to identify removals
+					    List<Common_pest> currentPests = existingPlant.getCommonPests();
+					    if (currentPests == null) {
+					        currentPests = new ArrayList<>();
+					    }
 
-		        // 5. Save updated pest
+					    // Remove this plant from pests that are no longer associated
+					    for (Common_pest currentPest : new ArrayList<>(currentPests)) {
+					        if (!newPests.contains(currentPest)) {
+					            currentPest.getPlantList().remove(existingPlant);
+					            pestRepository.save(currentPest);
+					            currentPests.remove(currentPest);
+					        }
+					    }
+
+					    // Add to new pests (with duplicate check)
+					    for (Common_pest newPest : newPests) {
+					        if (!currentPests.contains(newPest)) {
+					            currentPests.add(newPest);
+					            
+					            // Update the pest's plant list
+					            List<Plant> pestPlants = newPest.getPlantList();
+					            if (pestPlants == null) {
+					                pestPlants = new ArrayList<>();
+					                newPest.setPlantList(pestPlants);
+					            }
+					            
+					            if (!pestPlants.contains(existingPlant)) {
+					                pestPlants.add(existingPlant);
+					            }
+					        }
+					    }
+
+					    existingPlant.setCommonPests(currentPests);
+					    pestRepository.saveAll(newPests);
+					}
+
+		        // 5. Save updated plant
 		        Plant updatedPlant = plantService.save(existingPlant);
 
 		        return ResponseEntity.ok(Map.of(
@@ -288,94 +336,6 @@ public class PlantController {
 		    }
 		}
 
-	
-
-	/*
-	 * @PatchMapping("/{plantId}") public ResponseEntity<Plant>
-	 * editPlant(@PathVariable Long plantId, @RequestBody Map<String, Object>
-	 * updates) {
-	 * 
-	 * System.out.println("Patch plant received by backend"); Optional<Plant>
-	 * foundPlantOptional = plantService.findPlantById(plantId);
-	 * 
-	 * if (foundPlantOptional.isPresent()) { Plant foundPlant =
-	 * foundPlantOptional.get();
-	 * 
-	 * updates.forEach((key, value) -> { switch (key) { case "name":
-	 * foundPlant.setName((String) value); break; case "origin":
-	 * foundPlant.setOrigin((String) value); break; case "imageFile":
-	 * foundPlant.setImageFile((String) value); break; case "hardiness":
-	 * foundPlant.setHardiness(Hardiness.valueOf((String) value)); break; case
-	 * "hardiness_info": foundPlant.setHardiness_info((String) value); break; case
-	 * "perennial": foundPlant.setPerennial(Boolean.parseBoolean(value.toString()));
-	 * break;
-	 * 
-	 * case "ideal_location":
-	 * foundPlant.setIdeal_location(Ideal_location.valueOf((String) value)); break;
-	 * case "watering": foundPlant.setWatering(Watering.valueOf((String) value));
-	 * break; case "soil_type": foundPlant.setSoil_type(Soil_type.valueOf((String)
-	 * value)); break;
-	 * 
-	 * case "featureList": ObjectMapper objectMapper4 = new ObjectMapper(); try {
-	 * List<Feature> features = objectMapper4.readValue(value.toString(), new
-	 * TypeReference<List<Feature>>() {}); foundPlant.setFeatureList(features); }
-	 * catch (JsonProcessingException e) { throw new
-	 * IllegalArgumentException("Invalid JSON for features: " + value, e); } break;
-	 * 
-	 * case "ideal_placement":
-	 * foundPlant.setIdeal_placement(Ideal_placement.valueOf((String) value));
-	 * break; case "propagation": foundPlant.setPropagation((String) value); break;
-	 * case "fertilization_schedule":
-	 * foundPlant.setFertilization_schedule(Fertilization_schedule.valueOf((String)
-	 * value)); break; case "companionPlants": ObjectMapper objectMapper = new
-	 * ObjectMapper(); try { List<Long> companionPlantIds =
-	 * objectMapper.readValue(value.toString(), new TypeReference<List<Long>>() {});
-	 * List<Plant> companionPlants =
-	 * plantService.findPlantsByIds(companionPlantIds);
-	 * foundPlant.setCompanionPlants(companionPlants); } catch
-	 * (JsonProcessingException e) { throw new
-	 * IllegalArgumentException("Invalid JSON for companionPlants: " + value, e); }
-	 * break;
-	 * 
-	 * 
-	 * case "uses": ObjectMapper objectMapper1 = new ObjectMapper(); try {
-	 * List<String> uses = objectMapper1.readValue(value.toString(), new
-	 * TypeReference<List<String>>() {}); foundPlant.setUses(uses); } catch
-	 * (JsonProcessingException e) { throw new
-	 * IllegalArgumentException("Invalid JSON for uses: " + value, e); } break; case
-	 * "commonPests": ObjectMapper objectMapper3 = new ObjectMapper(); try {
-	 * List<Common_pest> commonPests = objectMapper3.readValue(value.toString(), new
-	 * TypeReference<List<Common_pest>>() {});
-	 * foundPlant.setCommonPests(commonPests); } catch (JsonProcessingException e) {
-	 * throw new IllegalArgumentException("Invalid JSON for commonPests: " + value,
-	 * e); } break;
-	 * 
-	 * 
-	 * case "plantTasks": ObjectMapper objectMapper2 = new ObjectMapper(); try {
-	 * List<PlantTask> plantTasks = objectMapper2.readValue(value.toString(), new
-	 * TypeReference<List<PlantTask>>() {}); foundPlant.setPlantTasks(plantTasks); }
-	 * catch (JsonProcessingException e) { throw new
-	 * IllegalArgumentException("Invalid JSON for plantTasks: " + value, e); }
-	 * break;
-	 * 
-	 * case "features": ObjectMapper objectMapper11 = new ObjectMapper(); try {
-	 * List<Feature> featureList = objectMapper11.readValue(value.toString(), new
-	 * TypeReference<List<Feature>>() {}); foundPlant.setFeatureList(featureList); }
-	 * catch (JsonProcessingException e) { throw new
-	 * IllegalArgumentException("Invalid JSON for features: " + value, e); } break;
-	 * 
-	 * 
-	 * 
-	 * default: throw new IllegalArgumentException("Invalid field: " + key); } });
-	 * 
-	 * Plant updatedPlant = plantService.save(foundPlant);
-	 * System.out.println("Updated plant"); return ResponseEntity.ok(updatedPlant);
-	 * }
-	 * 
-	 * return ResponseEntity.notFound().build(); }
-	 */
-	
-	 
 
 
 	@DeleteMapping("/{plantId}")
