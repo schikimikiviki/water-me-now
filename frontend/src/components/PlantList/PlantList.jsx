@@ -115,7 +115,7 @@ function PlantList() {
     <div className='page-div'>
       <h1>Plants</h1>
       {plants && plants.length > 0 ? (
-        <div>
+        <ul>
           {plants.map((plant) => (
             <div className='container-plant' key={plant.id}>
               <div>
@@ -298,7 +298,7 @@ function PlantList() {
               allPestsData={pests}
             />
           )}
-        </div>
+        </ul>
       ) : (
         <p>Loading plants...</p>
       )}

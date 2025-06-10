@@ -4,13 +4,7 @@ import './PestPopup.css';
 import { patchSomethingWithId } from '../../helpers/functions';
 import UploadImage from '../UploadImage/UploadImage';
 
-const PestPopup = ({
-  onClose,
-  onAdd,
-  pestData,
-  allPestsData,
-  allPlantsData,
-}) => {
+const PestPopup = ({ onClose, pestData, allPlantsData }) => {
   // pest states
   const [pestName, setPestName] = useState(pestData.name);
   const [todo, setTodo] = useState(pestData.todo);

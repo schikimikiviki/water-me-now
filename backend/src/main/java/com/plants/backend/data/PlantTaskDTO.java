@@ -1,22 +1,25 @@
 package com.plants.backend.data;
 
 public class PlantTaskDTO {
-    private Long id;
-    private TaskDTO task;
+    private Long plantId;
+    private String todo;
+
     
     
-	public Long getId() {
-		return id;
+	public Long getPlantId() {
+		return plantId;
 	}
-	public void setId(Long id) {
-		this.id = id;
+	public void setPlantId(Long plantId) {
+		this.plantId = plantId;
 	}
-	public TaskDTO getTask() {
-		return task;
+	
+	public String getTodo() {
+		return todo; 
 	}
-	public void setTask(TaskDTO task) {
-		this.task = task;
-	} 
-    
-    
+	
+	public void setTodo(String todo)
+    {
+		this.todo = todo;
+    }
+	
 }
