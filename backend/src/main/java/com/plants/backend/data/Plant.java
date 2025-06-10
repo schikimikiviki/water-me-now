@@ -237,7 +237,7 @@ public class Plant {
 		this.commonPests = commonPests;
 	}
 
-	public List<PlantTask> getPlantTaskList() {
+	public List<PlantTask> getPlantTasks() {
 		return plantTasks;
 	}
 

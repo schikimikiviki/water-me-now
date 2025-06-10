@@ -138,11 +138,12 @@ function PestList() {
                 </div>
 
                 <hr />
-                <p>
-                  <u>Todo when this pest occurs</u>
-                </p>
-                <p>{pest.todo}</p>
-
+                <div style={{ display: 'flex' }}>
+                  <p>
+                    <u>Todo when this pest occurs</u>
+                  </p>
+                  <p>&emsp; {pest.todo}</p>
+                </div>
                 <div>
                   <p>
                     <u>Susceptible plants: </u>

@@ -1,6 +1,7 @@
 package com.plants.backend.data;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -23,7 +24,9 @@ public class Task {
 	private String imageFile; 
 	private String todo; 
 	@OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<PlantTask> plantTasks;
+	private List<PlantTask> plantTasks = new ArrayList<>();
+	
+	
 
 	private LocalDate date;
 	
@@ -38,6 +41,11 @@ public class Task {
 		this.plantTasks = plantTasks;
 		this.date = date;
 	}
+	
+	 public void addPlantTask(PlantTask plantTask) {
+	        plantTasks.add(plantTask);
+	        plantTask.setTask(this);
+	    }
 
 	public Long getId() {
 		return id;
@@ -71,7 +79,7 @@ public class Task {
 		this.todo = todo;
 	}
 
-	public List<PlantTask> getPlantTaskList() {
+	public List<PlantTask> getPlantTasks() {
 		return plantTasks;
 	}
 

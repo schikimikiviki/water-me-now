@@ -19,6 +19,7 @@ const AddTask = () => {
   };
 
   const handleDateChange = (e) => {
+    //console.log(e.target.value);
     setDate(e.target.value);
   };
 
@@ -41,6 +42,7 @@ const AddTask = () => {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
+        withCredentials: true,
       });
       console.log('Task added:', response.data);
       setMessage('Task added successfully! 🌷');

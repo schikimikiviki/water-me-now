@@ -25,8 +25,8 @@ public class DTOMapper {
         
 
         // Map plantTasks to PlantTaskDTO
-        if (plant.getPlantTaskList() != null) {
-            dto.setPlantTasks(plant.getPlantTaskList().stream()
+        if (plant.getPlantTasks() != null) {
+            dto.setPlantTasks(plant.getPlantTasks().stream()
                 .map(DTOMapper::toPlantTaskDTO)
                 .collect(Collectors.toList()));
         }
@@ -53,8 +53,8 @@ public class DTOMapper {
 
     public static PlantTaskDTO toPlantTaskDTO(PlantTask plantTask) {
         PlantTaskDTO dto = new PlantTaskDTO();
-        dto.setId(plantTask.getId());
-        dto.setTask(toTaskDTO(plantTask.getTask())); // Map Task to TaskDTO
+        dto.setPlantId(plantTask.getId());
+        dto.setTodo(plantTask.getTodo()); 
         return dto;
     }
 
@@ -65,6 +65,16 @@ public class DTOMapper {
         dto.setImageFile(task.getImageFile());
         dto.setTodo(task.getTodo());
         dto.setDate(task.getDate());
+        if (task.getPlantTasks() != null) {
+            dto.setPlantTasks(task.getPlantTasks().stream()
+                .map(pt -> {
+                    PlantTaskDTO ptDto = new PlantTaskDTO();
+                    ptDto.setPlantId(pt.getPlant().getId());
+                    ptDto.setTodo(pt.getTodo());
+                    return ptDto;
+                })
+                .collect(Collectors.toList()));
+        }
         return dto;
     }
     
