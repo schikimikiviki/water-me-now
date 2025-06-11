@@ -282,7 +282,7 @@ function PlantList() {
                     🌿 <u className='space'>Plant tasks:</u>
                     <ul>
                       {plant.plantTasks.map((task, index) => (
-                        <li key={index}>{task}</li>
+                        <li key={index}>{task.todo}</li>
                       ))}
                     </ul>
                   </div>

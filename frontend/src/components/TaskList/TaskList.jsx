@@ -3,6 +3,7 @@ import { getRequest } from '../../helpers/functions';
 import './TaskList.css';
 import api from '../../api/axiosConfig';
 import TaskPopup from '../TaskPopup/TaskPopup';
+import { deleteSomethingWithId } from '../../helpers/functions';
 
 function TaskList() {
   const [tasks, setTasks] = useState(null);
@@ -77,6 +78,7 @@ function TaskList() {
   };
 
   const generateDate = (dateString) => {
+    dateString = dateString.split('-');
     let year = dateString[0];
     let month = dateString[1];
     let day = dateString[2];
@@ -86,6 +88,18 @@ function TaskList() {
         On the {day}.{month}.{year}
       </div>
     );
+  };
+
+  const generatePlantForPlantId = (plantID, todo) => {
+    if (plants?.length > 0) {
+      let chosenPlant = plants?.find((plant) => plant.id == plantID);
+
+      return (
+        <p>
+          {chosenPlant.name} : {todo}
+        </p>
+      );
+    }
   };
 
   return (
@@ -132,12 +146,25 @@ function TaskList() {
 
                 <hr />
                 <div>
-                  🌿 <u className='space'>Todo:</u> {task.origin}
+                  🌿 <u className='space'>Todo:</u> {task.todo}
                 </div>
                 <div className='flex'>
                   🌿 <u className='space'>Due date:</u>{' '}
                   {generateDate(task.date)}
                 </div>
+
+                {task.plantTasks.length > 0 && (
+                  <div>
+                    🌿 <u className='space'>Plants for task:</u>
+                    <ul>
+                      {task.plantTasks.map((task, index) => (
+                        <li key={index}>
+                          {generatePlantForPlantId(task.plantId, task.todo)}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
           ))}
