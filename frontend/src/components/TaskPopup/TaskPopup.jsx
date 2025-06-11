@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import api from '../../api/axiosConfig';
 import './TaskPopup.css';
 import { patchSomethingWithId } from '../../helpers/functions';
 import UploadImage from '../UploadImage/UploadImage';
@@ -11,6 +10,10 @@ const TaskPopup = ({ onClose, taskData, allPlants }) => {
   const [date, setDate] = useState(taskData.date);
   const [plantInput, setPlantInput] = useState('');
   const [relatedPlants, setRelatedPlants] = useState([]);
+  const [plantObjectWithTodo, setPlantObjectWithTodo] = useState(
+    taskData.plantTasks
+  );
+  const [plantTodos, setPlantTodos] = useState({});
 
   // other states
   const [width, setWidth] = useState(window.innerWidth);
@@ -19,6 +22,10 @@ const TaskPopup = ({ onClose, taskData, allPlants }) => {
   function handleWindowSizeChange() {
     setWidth(window.innerWidth);
   }
+
+  useEffect(() => {
+    loadRelatedPlants();
+  }, []);
 
   useEffect(() => {
     window.addEventListener('resize', handleWindowSizeChange);
@@ -30,6 +37,23 @@ const TaskPopup = ({ onClose, taskData, allPlants }) => {
   useEffect(() => {
     setIsMobile(width <= 768 ? true : false);
   }, [width]);
+
+  // [ {plantId: 152, todo "some shit"}, {plantId: 1, todo: "some other shit"}]
+  const loadRelatedPlants = () => {
+    // wir erhalten die tasks ---> diese müssen in den relatedPlants state gespeichert werden, aber richtig!
+
+    for (let i of plantObjectWithTodo) {
+      let plant = allPlants.find((plant) => plant.id == i.plantId);
+      console.log(plant);
+      setRelatedPlants([...relatedPlants, plant]);
+
+      // für jede related plant müssen wir noch das todo laden und in den state speichern
+      setPlantTodos({
+        ...plantTodos,
+        [plant.id]: i.todo,
+      });
+    }
+  };
 
   const handleToDo = (e) => {
     setTodo(e.target.value);
@@ -47,18 +71,14 @@ const TaskPopup = ({ onClose, taskData, allPlants }) => {
   const submitForm = async (e) => {
     e.preventDefault();
 
-    console.log(relatedPlants);
+    console.log(plantObjectWithTodo);
+    console.log(date);
 
     const taskBody = {
       name: taskName,
       todo: todo,
-      //   date: date, //TODO: if the date isnt changed, it should still be in the correct format
-      // TODO: the date box should initially display the date too
-      // TODO: change this to real data
-      plantTasks: [
-        { plantId: 152, todo: 'do something' },
-        { plantId: 2, todo: 'Special instructions for this plant' },
-      ],
+      date: date,
+      plantTasks: plantObjectWithTodo,
     };
 
     // Verify the final payload
@@ -100,6 +120,32 @@ const TaskPopup = ({ onClose, taskData, allPlants }) => {
       setRelatedPlants([...relatedPlants, selectedPlant]);
       setPlantInput('');
     }
+  };
+
+  const addTodoForPlant = (e, id) => {
+    const newTodo = e.target.value;
+
+    setPlantTodos((prev) => ({
+      ...prev,
+      [id]: newTodo,
+    }));
+
+    setPlantObjectWithTodo((prev) => {
+      const exists = prev.some((item) => item.plantId === id);
+
+      if (exists) {
+        return prev.map((item) =>
+          item.plantId === id ? { ...item, todo: newTodo } : item
+        );
+      } else {
+        return [...prev, { plantId: id, todo: newTodo }];
+      }
+    });
+
+    console.log('Saved plant obj with todo: ', {
+      plantId: id,
+      todo: newTodo,
+    });
   };
 
   const removeCompanionPlant = (index) => {
@@ -165,6 +211,7 @@ const TaskPopup = ({ onClose, taskData, allPlants }) => {
               <input type='date' value={date} onChange={handleDateChange} />
               <hr className='hr-styled' />
               <p htmlFor='companions'>Add plants for this task:</p>
+
               <input
                 type='text'
                 list='plant-suggestions'
@@ -183,6 +230,10 @@ const TaskPopup = ({ onClose, taskData, allPlants }) => {
                 {relatedPlants.map((plant, index) => (
                   <li key={index}>
                     {plant.name}
+                    <input
+                      value={plantTodos[plant.id] || ''}
+                      onChange={(e) => addTodoForPlant(e, plant.id)}
+                    />
                     <button
                       className='remove-button'
                       onClick={() => removeCompanionPlant(index)}
