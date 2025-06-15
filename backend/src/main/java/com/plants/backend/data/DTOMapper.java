@@ -53,7 +53,8 @@ public class DTOMapper {
 
     public static PlantTaskDTO toPlantTaskDTO(PlantTask plantTask) {
         PlantTaskDTO dto = new PlantTaskDTO();
-        dto.setPlantId(plantTask.getId());
+        dto.setPlantId(plantTask.getPlant() != null ? plantTask.getPlant().getId() : null);
+        dto.setTaskId(plantTask.getTask() != null ? plantTask.getTask().getId() : null);
         dto.setTodo(plantTask.getTodo()); 
         return dto;
     }

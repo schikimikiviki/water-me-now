@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,12 +37,15 @@ import com.plants.backend.data.Ideal_placement;
 import com.plants.backend.data.Plant;
 import com.plants.backend.data.PlantDTO;
 import com.plants.backend.data.PlantTask;
+import com.plants.backend.data.PlantTaskDTO;
 import com.plants.backend.data.Soil_type;
+import com.plants.backend.data.Task;
 import com.plants.backend.data.Watering;
 import com.plants.backend.repository.PestRepository;
 import com.plants.backend.repository.PlantRepository;
 import com.plants.backend.repository.PlantTaskRepository;
 import com.plants.backend.service.PlantService;
+import com.plants.backend.service.TaskService;
 
 @RestController
 @RequestMapping("/plants")
@@ -56,13 +60,16 @@ public class PlantController {
 	private final PestRepository pestRepository;
 	
 	private final PlantRepository plantRepository; 
+	
+	private final TaskService taskService; 
 
 
-	public PlantController(PlantService plantService, PlantTaskRepository plantTaskRepository, PestRepository pestRepository, PlantRepository plantRepository) {
+	public PlantController(PlantService plantService, PlantTaskRepository plantTaskRepository, PestRepository pestRepository, PlantRepository plantRepository, TaskService taskService) {
 		this.plantService = plantService;
 		this.plantTaskRepository = plantTaskRepository;
 		this.pestRepository = pestRepository;
 		this.plantRepository = plantRepository; 
+		this.taskService = taskService;
 	}
 
 
@@ -263,15 +270,6 @@ public class PlantController {
 				  
 				  }
 				  
-					/*
-					 * if (plantDTO.getCommonPests() !=null && !plantDTO.getCommonPests().isEmpty())
-					 * { System.out.println("Common pest updated"); List<Common_pest> pests =
-					 * pestRepository.findAllById(plantDTO.getCommonPests());
-					 * System.out.println("Fetched pests: " + pests.size());
-					 * 
-					 * 
-					 * existingPlant.setCommonPests(pests); }
-					 */
 				  
 				  if (plantDTO.getCommonPests() != null) {
 					    // Get all pests from the DTO IDs
@@ -313,7 +311,50 @@ public class PlantController {
 					    existingPlant.setCommonPests(currentPests);
 					    pestRepository.saveAll(newPests);
 					}
-
+				  if (plantDTO.getPlantTasks() != null) {
+					    System.out.println("PlantTasks updating ...");
+					    
+					    // Clear existing tasks
+					    existingPlant.getPlantTasks().clear();
+					    
+					    for (PlantTaskDTO plantTaskDTO : plantDTO.getPlantTasks()) {
+					        System.out.println("Processing plantTask: " + plantTaskDTO);
+					        
+					        if (plantTaskDTO.getTaskId() == null) {
+					            throw new IllegalArgumentException("Task ID cannot be null");
+					        }
+					        
+					        Task task = taskService.findTaskById(plantTaskDTO.getTaskId())
+					            .orElseThrow(() -> new IllegalArgumentException("Task not found for ID: " + plantTaskDTO.getTaskId()));
+					        
+					        PlantTask plantTask = new PlantTask();
+					        plantTask.setPlant(existingPlant);
+					        plantTask.setTask(task);
+					        plantTask.setTodo(StringUtils.defaultIfBlank(plantTaskDTO.getTodo(), ""));
+					        
+					        System.out.println("Created plantTask: " + plantTask);
+					        
+					        existingPlant.getPlantTasks().add(plantTask);
+					    }
+					}
+					/*
+					 * if (plantDTO.getPlantTasks() != null) {
+					 * System.out.println("PlantTasks updating ... ");
+					 * existingPlant.getPlantTasks().clear();
+					 * 
+					 * for (PlantTaskDTO plantTaskDTO : plantDTO.getPlantTasks()) { if
+					 * (plantTaskDTO.getPlantId() == null) { throw new
+					 * IllegalArgumentException("Task ID cannot be null"); }
+					 * 
+					 * Task task = taskService.findTaskById(plantTaskDTO.getPlantId())
+					 * .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+					 * 
+					 * PlantTask plantTask = new PlantTask(); plantTask.setPlant(existingPlant);
+					 * plantTask.setTask(task); plantTask.setTodo(StringUtils.defaultIfBlank(
+					 * plantTaskDTO.getTodo(), plantTask.getTodo()));
+					 * 
+					 * existingPlant.getPlantTasks().add(plantTask); } }
+					 */
 		        // 5. Save updated plant
 		        Plant updatedPlant = plantService.save(existingPlant);
 

@@ -21,14 +21,33 @@ function PlantList() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [chosenPlant, setChosenPlant] = useState(null);
   const [pests, setPests] = useState(null);
+  const [tasks, setTasks] = useState(null);
+  const [relevantTaskObject, setRelevantTaskObject] = useState({});
 
   const fetchData = async () => {
+    let tasks = await getRequest('tasks');
+    console.log(tasks);
+    setTasks(tasks);
+
     let plants = await getRequest('plants');
     setPlants(plants);
     console.log(plants);
+
     let pests = await getRequest('pests');
     console.log(pests);
     setPests(pests);
+
+    const taskMap = {};
+    plants.forEach((plant) => {
+      const relevantTasks = tasks.filter((task) =>
+        task.plantTasks.some((pt) => pt.plantId === plant.id)
+      );
+      taskMap[plant.id] = { relevantTasks };
+    });
+
+    console.log(taskMap);
+
+    setRelevantTaskObject(taskMap);
   };
 
   const checkLoginStatus = async () => {
@@ -82,6 +101,7 @@ function PlantList() {
       'this is the data we work with: ',
       plants.find((plant) => plant.id === id)
     );
+
     openPopup();
   };
 
@@ -110,6 +130,8 @@ function PlantList() {
       );
     }
   };
+
+  // TODO: patch ermöglichen
 
   return (
     <div className='page-div'>
@@ -281,9 +303,15 @@ function PlantList() {
                   <div>
                     🌿 <u className='space'>Plant tasks:</u>
                     <ul>
-                      {plant.plantTasks.map((task, index) => (
-                        <li key={index}>{task.todo}</li>
-                      ))}
+                      {relevantTaskObject[plant.id]?.relevantTasks.map((task) =>
+                        task.plantTasks
+                          ?.filter((pt) => pt.plantId === plant.id)
+                          .map((pt, index) => (
+                            <li key={`${task.id}-${index}`}>
+                              {task.name}: {pt.todo}
+                            </li>
+                          ))
+                      )}
                     </ul>
                   </div>
                 )}
@@ -296,6 +324,8 @@ function PlantList() {
               onClose={closePopup}
               allPlantsData={plants}
               allPestsData={pests}
+              plantRelevantTasks={relevantTaskObject[chosenPlant.id]}
+              allTasksData={tasks}
             />
           )}
         </ul>

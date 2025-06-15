@@ -38,21 +38,21 @@ const TaskPopup = ({ onClose, taskData, allPlants }) => {
     setIsMobile(width <= 768 ? true : false);
   }, [width]);
 
-  // [ {plantId: 152, todo "some shit"}, {plantId: 1, todo: "some other shit"}]
+  // [ {"plantId": 152, "todo": "some shit"}, {"plantId": 1, "todo": "some other shit"}]
   const loadRelatedPlants = () => {
-    // wir erhalten die tasks ---> diese müssen in den relatedPlants state gespeichert werden, aber richtig!
+    const newRelatedPlants = [];
+    const newPlantTodos = {};
 
     for (let i of plantObjectWithTodo) {
-      let plant = allPlants.find((plant) => plant.id == i.plantId);
-      console.log(plant);
-      setRelatedPlants([...relatedPlants, plant]);
-
-      // für jede related plant müssen wir noch das todo laden und in den state speichern
-      setPlantTodos({
-        ...plantTodos,
-        [plant.id]: i.todo,
-      });
+      const plant = allPlants.find((plant) => plant.id == i.plantId);
+      if (plant) {
+        newRelatedPlants.push(plant);
+        newPlantTodos[plant.id] = i.todo;
+      }
     }
+
+    setRelatedPlants(newRelatedPlants);
+    setPlantTodos(newPlantTodos);
   };
 
   const handleToDo = (e) => {
@@ -150,12 +150,14 @@ const TaskPopup = ({ onClose, taskData, allPlants }) => {
 
   const removeCompanionPlant = (index) => {
     setRelatedPlants(relatedPlants.filter((_, i) => i !== index));
+
+    setPlantObjectWithTodo(plantObjectWithTodo.filter((_, i) => i !== index));
   };
 
   return (
     <div className='popup-overlay'>
       <div className='popup'>
-        <button className='close-button' onClick={onClose}>
+        <button className='close-task' onClick={onClose}>
           X
         </button>
 
