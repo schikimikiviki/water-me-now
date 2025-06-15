@@ -30,6 +30,8 @@ public class PlantDTO {
     
     @JsonProperty("commonPests")
     private List<Long> commonPests;
+    
+    @JsonProperty("plantTasks")
     private List<PlantTaskDTO> plantTasks; 
     
     public PlantDTO(){
@@ -59,7 +61,14 @@ public class PlantDTO {
         this.commonPests = plant.getCommonPests() != null ? plant.getCommonPests().stream().map(Common_pest::getId).collect(Collectors.toList())
                 : new ArrayList<>();
         
-        
+        this.plantTasks = plant.getPlantTasks() != null ?
+                plant.getPlantTasks().stream().map(plantTask -> {
+                    PlantTaskDTO dto = new PlantTaskDTO();
+                    dto.setPlantId(plantTask.getPlant() != null ? plantTask.getPlant().getId() : null);
+                    dto.setTodo(plantTask.getTodo());
+                    return dto;
+                }).collect(Collectors.toList()) :
+                new ArrayList<>();
     }
    
     

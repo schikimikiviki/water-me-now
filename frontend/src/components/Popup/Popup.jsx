@@ -4,7 +4,14 @@ import './Popup.css';
 import { patchSomethingWithId } from '../../helpers/functions';
 import UploadImage from '../UploadImage/UploadImage';
 
-const Popup = ({ onClose, onAdd, plantData, allPlantsData, allPestsData }) => {
+const Popup = ({
+  onClose,
+  plantData,
+  allPlantsData,
+  allPestsData,
+  plantRelevantTasks,
+  allTasksData,
+}) => {
   // plant states
   const [plantName, setPlantName] = useState(plantData.name);
   const [origin, setPlantOrigin] = useState(plantData.origin);
@@ -42,13 +49,8 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData, allPestsData }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [imageFileName, setImageFileName] = useState(plantData.imageFile);
 
-  console.log('selcted pests: ', selectedPests);
-
-  //   console.log(plantData);
-  // console.log(
-  //   new Set(plantData.commonPests.map((p) => p.id)).size,
-  //   plantData.commonPests.length
-  // );
+  //console.log('selcted pests: ', selectedPests);
+  console.log('relevant tasks for this plant: ', plantRelevantTasks);
 
   function handleWindowSizeChange() {
     setWidth(window.innerWidth);
@@ -157,6 +159,7 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData, allPestsData }) => {
       propagation: propagation,
       fertilization_schedule: fertilization,
       commonPests: selectedPests,
+      plantTasks: [{ taskId: 52, todo: 'idk' }],
     };
 
     // Verify the final payload
@@ -489,8 +492,8 @@ const Popup = ({ onClose, onAdd, plantData, allPlantsData, allPestsData }) => {
               <hr className='hr-styled' />
               <label>Choose Plant Tasks:</label>
               <div className='plant-tasks-checkboxes'>
-                {plantTasks && plantTasks.length > 0 ? (
-                  plantTasks.map((task) => (
+                {allTasksData && allTasksData.length > 0 ? (
+                  allTasksData.map((task) => (
                     <div key={task.id}>
                       <input
                         type='checkbox'

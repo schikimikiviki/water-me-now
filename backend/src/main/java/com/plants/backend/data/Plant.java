@@ -74,7 +74,9 @@ public class Plant {
 
 	@OneToMany(mappedBy = "plant", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	private List<PlantTask> plantTasks;
+	private List<PlantTask> plantTasks= new ArrayList<>();
+	
+	 
 
 	public Plant() {}
 	
