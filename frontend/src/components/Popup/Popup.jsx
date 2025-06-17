@@ -42,7 +42,9 @@ const Popup = ({
   const [uses, setUses] = useState(plantData.uses);
   const [customUse, setCustomUse] = useState('');
   const [watering, setWatering] = useState(plantData.watering);
-  const [selectedPlantTasks, setSelectedPlantTasks] = useState([]);
+  const [selectedPlantTasks, setSelectedPlantTasks] = useState(
+    plantData.plantTasks
+  );
   const [selectedPests, setSelectedPests] = useState(commonPests);
 
   const [width, setWidth] = useState(window.innerWidth);
@@ -50,7 +52,12 @@ const Popup = ({
   const [imageFileName, setImageFileName] = useState(plantData.imageFile);
 
   //console.log('selcted pests: ', selectedPests);
-  console.log('relevant tasks for this plant: ', plantRelevantTasks);
+  // console.log('relevant tasks for this plant: ', plantRelevantTasks);
+
+  useEffect(() => {
+    // console.log(selectedPlantTasks);
+    console.log(allTasksData);
+  }, []);
 
   function handleWindowSizeChange() {
     setWidth(window.innerWidth);
@@ -124,9 +131,20 @@ const Popup = ({
 
   const handleTaskChange = (e, taskId) => {
     if (e.target.checked) {
-      setSelectedPlantTasks([...selectedPlantTasks, taskId]);
+      setSelectedPlantTasks([
+        ...selectedPlantTasks,
+        {
+          plantId: plantData.id,
+          taskId: taskId,
+          todo: '', // todo is initially empty
+        },
+      ]);
     } else {
-      setSelectedPlantTasks(selectedPlantTasks.filter((id) => id !== taskId));
+      setSelectedPlantTasks(
+        selectedPlantTasks.filter(
+          (t) => !(t.taskId === taskId && t.plantId === plantData.id)
+        )
+      );
     }
   };
 
@@ -143,6 +161,7 @@ const Popup = ({
 
     const formData = new FormData();
 
+    console.log(selectedPlantTasks);
     const plantBody = {
       name: plantName,
       origin: origin,
@@ -159,7 +178,7 @@ const Popup = ({
       propagation: propagation,
       fertilization_schedule: fertilization,
       commonPests: selectedPests,
-      plantTasks: [{ taskId: 52, todo: 'idk' }],
+      plantTasks: selectedPlantTasks, // [{ taskId: 52, todo: 'idk' }],
     };
 
     // Verify the final payload
@@ -499,10 +518,36 @@ const Popup = ({
                         type='checkbox'
                         id={`task-${task.id}`}
                         value={task.id}
-                        checked={selectedPlantTasks.includes(task.id)}
+                        checked={selectedPlantTasks.some(
+                          (t) => t.taskId === task.id
+                        )}
                         onChange={(e) => handleTaskChange(e, task.id)}
                       />
                       <label htmlFor={`task-${task.id}`}>{task.name}</label>
+                      <input
+                        type='text'
+                        name='plantTaskSpecificTodo'
+                        style={{ fontSize: isMobile ? '12px' : '20px' }}
+                        placeholder='Edit task for this plant'
+                        value={
+                          selectedPlantTasks.find(
+                            (t) =>
+                              t.taskId === task.id && t.plantId === plantData.id
+                          )?.todo || ''
+                        }
+                        onChange={(e) => {
+                          const updated = selectedPlantTasks.map((t) => {
+                            if (
+                              t.taskId === task.id &&
+                              t.plantId === plantData.id
+                            ) {
+                              return { ...t, todo: e.target.value };
+                            }
+                            return t;
+                          });
+                          setSelectedPlantTasks(updated);
+                        }}
+                      />
                     </div>
                   ))
                 ) : (

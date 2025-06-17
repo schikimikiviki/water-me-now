@@ -131,8 +131,6 @@ function PlantList() {
     }
   };
 
-  // TODO: patch ermöglichen
-
   return (
     <div className='page-div'>
       <h1>Plants</h1>
