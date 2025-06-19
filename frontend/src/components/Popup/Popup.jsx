@@ -161,7 +161,7 @@ const Popup = ({
 
     const formData = new FormData();
 
-    console.log(selectedPlantTasks);
+    console.log(companionPlants);
     const plantBody = {
       name: plantName,
       origin: origin,
@@ -224,8 +224,7 @@ const Popup = ({
       validPlant &&
       !companionPlants.some((plant) => plant.name === validPlant.name)
     ) {
-      // setCompagnionPlantIds([...compagnionPlantIds, validPlant.id]);
-      setCompanionPlants([...companionPlants, validPlant]);
+      setCompanionPlants([...companionPlants, validPlant.id]);
 
       console.log('This was set to the ID array: ', validPlant.id);
     } else {

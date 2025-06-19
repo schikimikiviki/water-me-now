@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../api/axiosConfig';
 import './Admin.css';
-import { getRequest } from '../../helpers/functions';
+import { getRequest, patchSomethingWithId } from '../../helpers/functions';
 import AddPest from '../AddPest/AddPest';
 import AddTask from '../AddTask/AddTask';
 import UploadImage from '../UploadImage/UploadImage';
@@ -32,11 +32,11 @@ function Admin() {
   const [allPlants, setAllPlants] = useState(null); // Available plants
   const [companionInput, setCompanionInput] = useState('');
   const [companionPlants, setCompanionPlants] = useState([]);
-  const [plantTasks, setPlantTasks] = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [selectedPlantTasks, setSelectedPlantTasks] = useState([]);
   const [commonPests, setCommonPests] = useState([]);
   const [selectedPests, setSelectedPests] = useState([]);
-  const [plantBigTasks, setPlantBigTasks] = useState([]);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const fetchPlants = async () => {
@@ -44,19 +44,16 @@ function Admin() {
       setAllPlants(response);
     };
 
-    const fetchPlantTasks = async () => {
-      const response = await getRequest('plant-tasks');
-      setPlantTasks(response.data);
-    };
-
     const fetchPests = async () => {
       const response = await getRequest('pests');
-      setCommonPests(response.data);
+      setCommonPests(response);
+      console.log(response);
     };
 
     const fetchTasks = async () => {
       const response = await getRequest('tasks');
-      setPlantBigTasks(response.data);
+      console.log(response);
+      setTasks(response);
     };
 
     const checkLoginStatus = async () => {
@@ -71,7 +68,7 @@ function Admin() {
 
     checkLoginStatus();
     fetchPlants();
-    fetchPlantTasks();
+
     fetchPests();
     fetchTasks();
   }, []);
@@ -82,9 +79,16 @@ function Admin() {
 
     // Check if input matches a valid plant name
     const validPlant = allPlants.find((plant) => plant.name === trimmedInput);
+    console.log('valid plant: ', validPlant);
+    //console.log(companionPlants);
 
-    if (validPlant && !companionPlants.includes(trimmedInput)) {
-      setCompanionPlants([...companionPlants, trimmedInput]);
+    if (
+      validPlant &&
+      !companionPlants.some((plant) => plant.name === validPlant.name)
+    ) {
+      setCompanionPlants([...companionPlants, validPlant.id]);
+
+      console.log('This was set to the ID array: ', validPlant.id);
     } else {
       console.warn('Invalid plant name or already added');
     }
@@ -132,6 +136,8 @@ function Admin() {
   const handleAddPlant = async (e) => {
     e.preventDefault();
 
+    // console.log(selectedPests);
+
     const formData = new FormData();
     formData.append('name', plantName);
     formData.append('origin', origin);
@@ -142,15 +148,13 @@ function Admin() {
     formData.append('watering', watering);
     formData.append('soil_type', soilType);
     formData.append('perennial', perennial);
-    formData.append('features', JSON.stringify(features));
+    formData.append('featureList', features);
     formData.append('ideal_placement', idealPlacement);
     formData.append('propagation', propagation);
     formData.append('fertilization_schedule', fertilization);
-    formData.append('companionPlants', JSON.stringify(companionPlants));
-    formData.append('uses', JSON.stringify(uses));
-    selectedPlantTasks.forEach((taskId) =>
-      formData.append('plantTasks', taskId)
-    );
+    formData.append('companionPlants', companionPlants);
+    formData.append('uses', uses);
+    formData.append('commonPests', selectedPests);
 
     console.log('Posting with this data :');
     for (var pair of formData.entries()) {
@@ -171,6 +175,14 @@ function Admin() {
         document.querySelector('.message').classList.add('fade-out');
         setTimeout(() => setMessage(''), 500);
       }, 4500);
+
+      // patch the plant with the plantTask - id because we could not do that earlier
+      // because the plantID is created at POST
+      let plantJustCreatedID = response.data.plant.id;
+
+      setTimeout(() => {
+        patchPlantTasks(plantJustCreatedID);
+      }, 1000);
     } catch (error) {
       console.error('Error adding plant:', error);
       setMessage('Error posting to the database. ❌');
@@ -178,6 +190,46 @@ function Admin() {
         document.querySelector('.message').classList.add('fade-out');
         setTimeout(() => setMessage(''), 500);
       }, 4500);
+    }
+  };
+
+  const patchPlantTasks = async (plantToPatchId) => {
+    const formData = new FormData();
+
+    // Now update plantId in all tasks
+    const updatedTasks = selectedPlantTasks.map((t) => ({
+      ...t,
+      plantId: plantToPatchId,
+    }));
+    setSelectedPlantTasks(updatedTasks);
+
+    console.log(selectedPlantTasks);
+
+    const plantBody = {
+      plantTasks: updatedTasks,
+    };
+
+    // Verify the final payload
+    console.log('Final payload:', JSON.stringify(plantBody, null, 2));
+
+    // Create the Blob with proper type
+    const jsonBlob = new Blob([JSON.stringify(plantBody)], {
+      type: 'application/json',
+    });
+    formData.append('plantBody', jsonBlob);
+
+    // only do this if necessary
+    if (updatedTasks.length > 0) {
+      try {
+        let response = await patchSomethingWithId(
+          'plants',
+          plantToPatchId,
+          formData
+        );
+        console.log(response);
+      } catch (error) {
+        console.error('Request failed:', error);
+      }
     }
   };
 
@@ -238,9 +290,18 @@ function Admin() {
 
   const handleTaskChange = (e, taskId) => {
     if (e.target.checked) {
-      setSelectedPlantTasks([...selectedPlantTasks, taskId]);
+      setSelectedPlantTasks([
+        ...selectedPlantTasks,
+        {
+          // no plantId because the plant does not exist yet lol
+          taskId: taskId,
+          todo: '', // todo is initially empty
+        },
+      ]);
     } else {
-      setSelectedPlantTasks(selectedPlantTasks.filter((id) => id !== taskId));
+      setSelectedPlantTasks(
+        selectedPlantTasks.filter((t) => !(t.taskId === taskId))
+      );
     }
   };
 
@@ -254,6 +315,27 @@ function Admin() {
 
   const handleUpload = (e) => {
     setImageFile(e);
+  };
+
+  const generateCompanionList = (idList) => {
+    const companions = allPlants.filter((plant) => idList.includes(plant.id));
+
+    return (
+      <ul>
+        {companions.map((plant, index) => (
+          <li key={plant.id}>
+            {plant.name}
+            <button
+              className='remove-button'
+              onClick={() => removeCompanionPlant(plant.id)}
+              type='button'
+            >
+              ✖
+            </button>
+          </li>
+        ))}
+      </ul>
+    );
   };
 
   return (
@@ -485,17 +567,11 @@ function Admin() {
                     ))}
                 </datalist>
                 <ul>
-                  {companionPlants.map((plant, index) => (
-                    <li key={index}>
-                      {plant}
-                      <button
-                        className='remove-button'
-                        onClick={() => removeCompanionPlant(index)}
-                      >
-                        ✖
-                      </button>
-                    </li>
-                  ))}
+                  {companionPlants && companionPlants.length > 0 ? (
+                    generateCompanionList(companionPlants)
+                  ) : (
+                    <p>Currently no compagnion plants added</p>
+                  )}
                 </ul>
                 <hr className='hr-styled' />
                 <label htmlFor='uses'>Enter Uses:</label>
@@ -530,17 +606,41 @@ function Admin() {
                 <hr className='hr-styled' />
                 <label>Choose Plant Tasks:</label>
                 <div className='plant-tasks-checkboxes'>
-                  {plantTasks && plantTasks.length > 0 ? (
-                    plantTasks.map((task) => (
+                  {tasks && tasks.length > 0 ? (
+                    tasks.map((task) => (
                       <div key={task.id}>
                         <input
                           type='checkbox'
                           id={`task-${task.id}`}
                           value={task.id}
-                          checked={selectedPlantTasks.includes(task.id)}
+                          checked={selectedPlantTasks.some(
+                            (t) => t.taskId === task.id
+                          )}
                           onChange={(e) => handleTaskChange(e, task.id)}
                         />
                         <label htmlFor={`task-${task.id}`}>{task.name}</label>
+                        <input
+                          type='text'
+                          name={task.todo}
+                          style={{ fontSize: isMobile ? '12px' : '20px' }}
+                          placeholder='Edit task for this plant'
+                          defaultValue={task.todo}
+                          // wir gehen davon aus, dass der Task bereits existiert --> checkbox
+                          // dh wir suchen ihn und setzen das todo
+                          onChange={(e) => {
+                            const updatedTasks = selectedPlantTasks.map((t) => {
+                              if (t.taskId === task.id) {
+                                return {
+                                  ...t,
+                                  todo: e.target.value,
+                                };
+                              }
+                              return t;
+                            });
+
+                            setSelectedPlantTasks(updatedTasks);
+                          }}
+                        />
                       </div>
                     ))
                   ) : (

@@ -2,6 +2,8 @@ package com.plants.backend.data;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,6 +31,7 @@ public class Common_pest {
 	    joinColumns = @JoinColumn(name = "pest_id"),
 	    inverseJoinColumns = @JoinColumn(name = "plant_id")
 	)
+	@JsonIgnore
 	
 	private List<Plant> plantList;
 	

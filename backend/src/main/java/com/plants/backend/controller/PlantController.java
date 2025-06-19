@@ -101,8 +101,9 @@ public class PlantController {
 	    @RequestParam(value = "propagation", required = false) String propagation,
 	    @RequestParam("fertilization_schedule") Fertilization_schedule fertilizationSchedule,
 	    @RequestParam(value = "uses", required = false) List<String> uses,
-	    @RequestParam(value = "plantTasks", required = false) List<Long> plantTaskIds,
-	    @RequestParam(value = "commonPests", required = false) List<Long> commonPestIds
+	    @RequestParam(value = "commonPests", required = false) List<Long> commonPestIds,
+	    @RequestParam(value = "companionPlants", required = false) List<Long> companionPlantIds,
+	    @RequestPart(value = "plantTasks", required = false) List<PlantTaskDTO> plantTasks
 	) {
 		 System.out.println("Received POST /plants/add");
 	    try {
@@ -143,16 +144,15 @@ public class PlantController {
 	        
 	        System.out.println("Common Pests: " + plant.getCommonPests());
 
-
-	        // 3. Handle Plant Tasks
-	        if (plantTaskIds != null && !plantTaskIds.isEmpty()) {
-	            List<PlantTask> tasks = plantTaskIds.stream()
-	                .map(id -> plantTaskRepository.findById(id).orElse(null))
-	                .filter(Objects::nonNull)
-	                .collect(Collectors.toList());
-	            plant.setPlantTasks(tasks);
+	        if (companionPlantIds != null && !companionPlantIds.isEmpty()) {
+	        	  // set compagnion Plats
+				List<Plant> plants = plantRepository.findAllById(companionPlantIds);	  
+				System.out.println("plants"+ plants);
+				plant.setCompanionPlants(plants);
 	        }
-
+	      
+			
+		
 	        // 4. Save Plant
 	        plantService.save(plant);
 	        
@@ -337,24 +337,7 @@ public class PlantController {
 					        existingPlant.getPlantTasks().add(plantTask);
 					    }
 					}
-					/*
-					 * if (plantDTO.getPlantTasks() != null) {
-					 * System.out.println("PlantTasks updating ... ");
-					 * existingPlant.getPlantTasks().clear();
-					 * 
-					 * for (PlantTaskDTO plantTaskDTO : plantDTO.getPlantTasks()) { if
-					 * (plantTaskDTO.getPlantId() == null) { throw new
-					 * IllegalArgumentException("Task ID cannot be null"); }
-					 * 
-					 * Task task = taskService.findTaskById(plantTaskDTO.getPlantId())
-					 * .orElseThrow(() -> new IllegalArgumentException("Task not found"));
-					 * 
-					 * PlantTask plantTask = new PlantTask(); plantTask.setPlant(existingPlant);
-					 * plantTask.setTask(task); plantTask.setTodo(StringUtils.defaultIfBlank(
-					 * plantTaskDTO.getTodo(), plantTask.getTodo()));
-					 * 
-					 * existingPlant.getPlantTasks().add(plantTask); } }
-					 */
+					
 		        // 5. Save updated plant
 		        Plant updatedPlant = plantService.save(existingPlant);
 

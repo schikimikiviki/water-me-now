@@ -26,15 +26,15 @@ function PlantList() {
 
   const fetchData = async () => {
     let tasks = await getRequest('tasks');
-    console.log(tasks);
+    //console.log(tasks);
     setTasks(tasks);
 
     let plants = await getRequest('plants');
     setPlants(plants);
-    console.log(plants);
+    // console.log(plants);
 
     let pests = await getRequest('pests');
-    console.log(pests);
+    //console.log(pests);
     setPests(pests);
 
     const taskMap = {};
@@ -45,7 +45,7 @@ function PlantList() {
       taskMap[plant.id] = { relevantTasks };
     });
 
-    console.log(taskMap);
+    //console.log(taskMap);
 
     setRelevantTaskObject(taskMap);
   };
