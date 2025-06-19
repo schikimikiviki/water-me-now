@@ -5,13 +5,15 @@ import { getRequest, patchSomethingWithId } from '../../helpers/functions';
 import AddPest from '../AddPest/AddPest';
 import AddTask from '../AddTask/AddTask';
 import UploadImage from '../UploadImage/UploadImage';
+import DatabaseButton from '../DatabaseButton/DatabaseButton';
+import { useAuth } from '../../AuthContext.jsx';
 
 function Admin() {
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const [warning, setWarning] = useState('');
   const [message, setMessage] = useState('');
-  const [isLoggedIn, setLoggedIn] = useState();
+  const { isLoggedIn, setLoggedIn } = useAuth();
   const [formKey, setFormKey] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [postCompleted, setIsPostCompleted] = useState(false);
@@ -401,7 +403,15 @@ function Admin() {
         </div>
       ) : (
         <div>
-          <h1>Hello, admin!</h1>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+            }}
+          >
+            <h1>Hello, admin!</h1>
+            <DatabaseButton />
+          </div>
 
           <div style={{ display: 'flex', gap: '20px' }}>
             <div className='post-box'>

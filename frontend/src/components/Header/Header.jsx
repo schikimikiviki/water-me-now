@@ -1,22 +1,23 @@
 import { useState, useEffect } from 'react';
 import api from '../../api/axiosConfig';
+import { useAuth } from '../../AuthContext.jsx';
 
 function Header() {
-  const [isLoggedIn, setLoggedIn] = useState();
+  const { isLoggedIn } = useAuth();
 
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        await api.get('/auth/check', { withCredentials: true });
-        setLoggedIn(true);
-      } catch (err) {
-        setLoggedIn(false);
-        console.error('Check login failed:', err);
-      }
-    };
+  // useEffect(() => {
+  //   const checkLoginStatus = async () => {
+  //     try {
+  //       await api.get('/auth/check', { withCredentials: true });
+  //       setLoggedIn(true);
+  //     } catch (err) {
+  //       setLoggedIn(false);
+  //       console.error('Check login failed:', err);
+  //     }
+  //   };
 
-    checkLoginStatus();
-  }, []);
+  //   checkLoginStatus();
+  // }, []);
 
   return (
     <div
