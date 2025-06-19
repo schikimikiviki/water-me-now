@@ -131,6 +131,10 @@ function PlantList() {
     }
   };
 
+  const openPlantSubPage = (id) => {
+    // open page
+  };
+
   return (
     <div className='page-div'>
       <h1>Plants</h1>
@@ -170,7 +174,9 @@ function PlantList() {
               </div>
               <div className='plant-details'>
                 <div className='plant-shortinfo'>
-                  <h2>{plant.name}</h2>
+                  <h2 onClick={() => openPlantSubPage(plant.id)}>
+                    {plant.name}
+                  </h2>
                   <div className='plant-emojis'>
                     {plant.hardiness == 'HARDY' ||
                     plant.hardiness == 'PARTIALLY_HARDY' ? (
