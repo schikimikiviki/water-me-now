@@ -1,8 +1,11 @@
 package com.plants.backend.controller;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.File;
+import java.io.FileInputStream;
 
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,39 +16,38 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/run-command")
 public class CommandController {
 
-    @PostMapping("/download")
-    public ResponseEntity<String> runCommand(
-    		 @RequestParam("command") String command) {
-    	
-   	System.out.println("Received POST /run-command/download");
-   	System.out.println("Command: " + command);
+	@PostMapping("/download")
+	public ResponseEntity<InputStreamResource> runCommandAndDownload(
+	        @RequestParam("command") String command) {
 
-   	 
-        try {
-            ProcessBuilder builder = new ProcessBuilder();
-          
-            builder.command("bash", "-c", command);
+	    try {
+	        ProcessBuilder builder = new ProcessBuilder();
+	        builder.command("bash", "-c", command);
+	        Process process = builder.start();
 
-            Process process = builder.start();
+	        int exitCode = process.waitFor();
+	        if (exitCode != 0) {
+	            return ResponseEntity.status(500).body(null);
+	        }
 
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream()));
+	        // Path to the generated file
+	        File file = new File("dump.sql");
 
-            StringBuilder output = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                output.append(line).append("\n");
-            }
+	        if (!file.exists()) {
+	            return ResponseEntity.status(404).body(null);
+	        }
 
-            int exitCode = process.waitFor();
-            if (exitCode == 0) {
-                return ResponseEntity.ok(output.toString());
-            } else {
-                return ResponseEntity.status(500).body("Command failed with exit code: " + exitCode);
-            }
+	        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
 
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error: " + e.getMessage());
-        }
-    }
+	        return ResponseEntity.ok()
+	                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=dump.sql")
+	                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+	                .contentLength(file.length())
+	                .body(resource);
+
+	    } catch (Exception e) {
+	        return ResponseEntity.status(500).body(null);
+	    }
+	}
+
 }
