@@ -257,7 +257,7 @@ function PlantList() {
                     🌿 <u className='space'>Features:</u>{' '}
                     {plant.featureList
                       .join(', ')
-                      .replace('_', ' ')
+                      .replaceAll('_', ' ')
                       .toLowerCase()}
                   </div>
                 )}

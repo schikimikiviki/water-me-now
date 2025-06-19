@@ -9,6 +9,7 @@ const AddTask = () => {
   const [todo, setTodo] = useState('');
   const [date, setDate] = useState('');
   const [message, setMessage] = useState('');
+  const [postCompleted, setIsPostCompleted] = useState(false);
 
   const handleTodoChange = (e) => {
     setTodo(e.target.value);
@@ -51,6 +52,13 @@ const AddTask = () => {
         document.querySelector('.message').classList.add('fade-out');
         setTimeout(() => setMessage(''), 500);
       }, 4500);
+
+      //reset fields
+      setName('');
+      setImageFile('');
+      setTodo('');
+      setDate('');
+      setIsPostCompleted(true);
     } catch (error) {
       console.error('Error adding task:', error);
       setMessage('Error posting to the database. ❌');
@@ -62,7 +70,7 @@ const AddTask = () => {
   };
 
   const handleUpload = (e) => {
-    console.log('bbbb');
+    setIsPostCompleted(false);
     setImageFile(e);
   };
 
@@ -88,7 +96,11 @@ const AddTask = () => {
           onChange={handleNameChange}
           required
         />
-        <UploadImage id='upload2' onUploadImage={handleUpload} />
+        <UploadImage
+          id='upload2'
+          onUploadImage={handleUpload}
+          postCompleted={postCompleted}
+        />
         <hr className='hr-styled' />
         <input
           type='text'

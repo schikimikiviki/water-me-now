@@ -12,6 +12,9 @@ function Admin() {
   const [warning, setWarning] = useState('');
   const [message, setMessage] = useState('');
   const [isLoggedIn, setLoggedIn] = useState();
+  const [formKey, setFormKey] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const [postCompleted, setIsPostCompleted] = useState(false);
 
   // plant fields
   const [plantName, setPlantName] = useState('');
@@ -36,7 +39,6 @@ function Admin() {
   const [selectedPlantTasks, setSelectedPlantTasks] = useState([]);
   const [commonPests, setCommonPests] = useState([]);
   const [selectedPests, setSelectedPests] = useState([]);
-  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const fetchPlants = async () => {
@@ -231,6 +233,29 @@ function Admin() {
         console.error('Request failed:', error);
       }
     }
+
+    // clear fields after post
+    setPlantName('');
+    setOrigin('');
+    setImageFile('');
+    setHardiness('FULLY_HARDY');
+    setHardinessInfo('');
+    setIdealLocation('FULL_SUN');
+    setWatering('ONCE_A_WEEK');
+    setSoilType('CULTIVATION_SOIL');
+    setPerennial(false);
+    setFeatures([]);
+    setIdealPlacement('INDOORS');
+    setPropagation('');
+    setFertilization('ONCE_A_MONTH');
+    setUses([]);
+    setCustomUse('');
+    setCompanionInput('');
+    setSelectedPlantTasks([]);
+    setSelectedPests([]);
+    setCompanionPlants([]);
+    setFormKey((prev) => prev + 1); // ===> we need this to clearly reset the form fields like plantTasks
+    setIsPostCompleted(true); // ===> we need this state so that the UploadImage component knwos to clear the text
   };
 
   const handlePlantNameChange = (e) => {
@@ -281,7 +306,7 @@ function Admin() {
   };
 
   const handleFertilizationChange = (e) => {
-    setFertilization(e.taget.value);
+    setFertilization(e.target.value);
   };
 
   const removeUse = (index) => {
@@ -315,6 +340,7 @@ function Admin() {
 
   const handleUpload = (e) => {
     setImageFile(e);
+    setIsPostCompleted(false);
   };
 
   const generateCompanionList = (idList) => {
@@ -411,7 +437,11 @@ function Admin() {
                   onChange={handlePlantOriginChange}
                   required
                 />
-                <UploadImage id='upload1' onUploadImage={handleUpload} />
+                <UploadImage
+                  id='upload1'
+                  onUploadImage={handleUpload}
+                  postCompleted={postCompleted}
+                />
                 <hr className='hr-styled' />
                 <label htmlFor='hardiness'>Choose hardiness:</label>
                 <select
@@ -544,7 +574,7 @@ function Admin() {
                 </label>
                 <select
                   value={fertilization}
-                  onChange={handleFertilizationChange}
+                  onChange={(e) => handleFertilizationChange(e)}
                   name='fertilization'
                   id='fertilization'
                 >
@@ -605,7 +635,7 @@ function Admin() {
                 </ul>
                 <hr className='hr-styled' />
                 <label>Choose Plant Tasks:</label>
-                <div className='plant-tasks-checkboxes'>
+                <div key={formKey} className='plant-tasks-checkboxes'>
                   {tasks && tasks.length > 0 ? (
                     tasks.map((task) => (
                       <div key={task.id}>

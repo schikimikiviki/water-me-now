@@ -3,6 +3,7 @@ package com.plants.backend.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -50,6 +51,7 @@ public class Plant {
 	private Fertilization_schedule fertilization_schedule;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
+	@JsonIgnore
 	@JoinTable(
 	    name = "plant_companions",
 	    joinColumns = @JoinColumn(name = "plant_id"),

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const UploadImage = ({ id, onUploadImage }) => {
+const UploadImage = ({ id, onUploadImage, postCompleted }) => {
   const [imgText, setImgText] = useState('');
   const [imageFile, setImageFile] = useState('');
 
@@ -23,7 +23,11 @@ const UploadImage = ({ id, onUploadImage }) => {
   return (
     <>
       <label htmlFor={id} className='custom-file-upload'>
-        {imgText.length > 0 ? imgText : 'Choose Image'}
+        {imgText.length > 0
+          ? postCompleted
+            ? 'Choose Image'
+            : imgText
+          : 'Choose Image'}
       </label>
       <input
         type='file'

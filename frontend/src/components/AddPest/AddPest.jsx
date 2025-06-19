@@ -11,6 +11,7 @@ function AddPest({ plantListFromParent }) {
   const [plantInput, setPlantInput] = useState('');
   const [relatedPlants, setRelatedPlants] = useState([]);
   const [message, setMessage] = useState('');
+  const [postCompleted, setIsPostCompleted] = useState(false);
 
   useEffect(() => {
     console.log('Received plant list:', plantListFromParent);
@@ -81,6 +82,14 @@ function AddPest({ plantListFromParent }) {
         document.querySelector('.message').classList.add('fade-out');
         setTimeout(() => setMessage(''), 500);
       }, 4500);
+
+      // clear fields
+      setPestName('');
+      setImageFile('');
+      setTodo('');
+      setPlantInput('');
+      setRelatedPlants([]);
+      setIsPostCompleted(true);
     } catch (error) {
       console.error('Error adding pest:', error);
       setMessage('Error posting to the database. ❌');
@@ -93,6 +102,7 @@ function AddPest({ plantListFromParent }) {
 
   const handleUpload = (e) => {
     setImageFile(e);
+    setIsPostCompleted(false);
   };
 
   return (
@@ -118,7 +128,11 @@ function AddPest({ plantListFromParent }) {
           onChange={handlePestNameChange}
           required
         />
-        <UploadImage id='upload3' onUploadImage={handleUpload} />
+        <UploadImage
+          id='upload3'
+          onUploadImage={handleUpload}
+          postCompleted={postCompleted}
+        />
         <hr className='hr-styled' />
         <input
           type='text'
