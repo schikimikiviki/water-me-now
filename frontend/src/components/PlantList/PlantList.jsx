@@ -1,9 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  getRequestSimple,
-  getRequest,
-  deleteSomethingWithId,
-} from '../../helpers/functions';
+import { getRequest, deleteSomethingWithId } from '../../helpers/functions';
 import api from '../../api/axiosConfig';
 import './PlantList.css';
 import SunIcon from '../../assets/images/sun.svg';
@@ -14,6 +10,7 @@ import NoSlowFlakeIcon from '../../assets/images/no-snowflake.svg';
 import PerennialIcon from '../../assets/images/perennial.svg';
 import NotPerennialIcon from '../../assets/images/not-perennial.svg';
 import Popup from '../Popup/Popup';
+import { Link } from 'react-router-dom';
 
 function PlantList() {
   const [plants, setPlants] = useState(null);
@@ -131,10 +128,6 @@ function PlantList() {
     }
   };
 
-  const openPlantSubPage = (id) => {
-    // open page
-  };
-
   return (
     <div className='page-div'>
       <h1>Plants</h1>
@@ -174,9 +167,9 @@ function PlantList() {
               </div>
               <div className='plant-details'>
                 <div className='plant-shortinfo'>
-                  <h2 onClick={() => openPlantSubPage(plant.id)}>
-                    {plant.name}
-                  </h2>
+                  <Link to={`/plants/${plant.id}`}>
+                    <h2>{plant.name}</h2>
+                  </Link>
                   <div className='plant-emojis'>
                     {plant.hardiness == 'HARDY' ||
                     plant.hardiness == 'PARTIALLY_HARDY' ? (
