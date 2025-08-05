@@ -1,11 +1,18 @@
-import { useState } from 'react';
 import './Menu.css';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 function Menu({ setMenuItem }) {
   const [activeComponent, setActiveComponent] = useState('plants');
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const clickOnMenu = (value) => {
-    // console.log(value);
+    // eg when we are on some subpage
+    if (location.pathname !== '/') {
+      navigate('/');
+    }
+
     setActiveComponent(value);
     setMenuItem(value);
   };
