@@ -11,6 +11,8 @@ import com.plants.backend.data.Plant;
 import com.plants.backend.data.PlantDTO;
 import com.plants.backend.repository.PlantRepository;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 public class PlantService {
 
@@ -38,8 +40,23 @@ public class PlantService {
     }
 
     public void deletePlantById(Long id) {
-    	plantRepository.deleteById(id);
+        Plant plant = plantRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Plant not found"));
+
+        // Remove plant from other plants' companion lists
+        List<Plant> allPlants = plantRepository.findAll();
+        for (Plant p : allPlants) {
+            p.getCompanionPlants().removeIf(companion -> companion.getId().equals(id));
+        }
+        plantRepository.saveAll(allPlants);
+
+        // Clear its own companion list
+        plant.getCompanionPlants().clear();
+        plantRepository.save(plant);
+
+        plantRepository.delete(plant);
     }
+
 
     public List<Plant> findPlantsByIds(List<Long> plantIds) {
         return plantRepository.findAllById(plantIds); 

@@ -106,7 +106,7 @@ function PlantList() {
     const companions = plants.filter((plant) => idList.includes(plant.id));
 
     return (
-      <ul>
+      <ul className='companion-list'>
         {companions.map((plant, index) => (
           <Link to={`/plants/${plant.id}`}>
             <li key={plant.id}>{plant.name}</li>

@@ -1,0 +1,12 @@
+.companion-list {
+  gap: 10px;
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+
+  li {
+    background-color: var(--color-green);
+    padding: 15px;
+    border-radius: 20px;
+  }
+}

@@ -95,6 +95,9 @@ function Admin() {
       console.log('This was set to the ID array: ', validPlant.id);
     } else {
       console.warn('Invalid plant name or already added');
+
+      // also tell the user
+      setMessage('Invalid plant name or already added');
     }
 
     setCompanionInput(''); // Clear input after adding

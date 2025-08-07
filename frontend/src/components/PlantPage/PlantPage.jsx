@@ -9,6 +9,7 @@ import NoSlowFlakeIcon from '../../assets/images/no-snowflake.svg';
 import PerennialIcon from '../../assets/images/perennial.svg';
 import NotPerennialIcon from '../../assets/images/not-perennial.svg';
 import { Link } from 'react-router-dom';
+import './PlantPage.css';
 
 function PlantPage() {
   const { id } = useParams();
@@ -58,7 +59,7 @@ function PlantPage() {
     const companions = plants.filter((plant) => idList.includes(plant.id));
 
     return (
-      <ul>
+      <ul className='companion-list'>
         {companions.map((plant, index) => (
           <Link to={`/plants/${plant.id}`}>
             <li key={plant.id}>{plant.name}</li>

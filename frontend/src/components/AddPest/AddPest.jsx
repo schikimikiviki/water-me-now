@@ -37,6 +37,8 @@ function AddPest({ plantListFromParent }) {
     ) {
       setRelatedPlants([...relatedPlants, selectedPlant]);
       setPlantInput('');
+    } else {
+      setMessage('Invalid plant name or already added');
     }
   };
 
