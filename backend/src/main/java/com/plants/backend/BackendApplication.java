@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -20,6 +21,7 @@ import jakarta.persistence.EntityManagerFactory;
 @EnableJpaRepositories(basePackages = "com.plants.backend.repository")
 @EntityScan("com.plants.backend.data") 
 @SpringBootApplication
+@EnableScheduling 
 public class BackendApplication {
 	
 	@Bean

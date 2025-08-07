@@ -1,5 +1,6 @@
 package com.plants.backend.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,6 +48,12 @@ public class TaskService {
     	taskRepository.deleteById(id);
     }
     
+    public List<Task> findByDate(LocalDate date) {
+        List<Task> task =  taskRepository.findByDate(date);
+        System.out.println(task);
+        return task;
+    }
+
     public Task updateTask(Long taskId, TaskDTO taskDTO) {
         Task task = taskRepository.findById(taskId)
             .orElseThrow();
