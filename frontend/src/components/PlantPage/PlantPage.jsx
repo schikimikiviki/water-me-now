@@ -8,6 +8,7 @@ import SnowflakeIcon from '../../assets/images/snowflake.svg';
 import NoSlowFlakeIcon from '../../assets/images/no-snowflake.svg';
 import PerennialIcon from '../../assets/images/perennial.svg';
 import NotPerennialIcon from '../../assets/images/not-perennial.svg';
+import { Link } from 'react-router-dom';
 
 function PlantPage() {
   const { id } = useParams();
@@ -51,7 +52,7 @@ function PlantPage() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [id]);
 
   const getCompanionList = (idList) => {
     const companions = plants.filter((plant) => idList.includes(plant.id));
@@ -59,7 +60,9 @@ function PlantPage() {
     return (
       <ul>
         {companions.map((plant, index) => (
-          <li key={plant.id}>{plant.name}</li>
+          <Link to={`/plants/${plant.id}`}>
+            <li key={plant.id}>{plant.name}</li>
+          </Link>
         ))}
       </ul>
     );
@@ -72,7 +75,9 @@ function PlantPage() {
       return (
         <ul>
           {pestsFiltered.map((pest) => (
-            <li key={pest.id}>{pest.name}</li>
+            <Link to={`/pests/${pest.id}`}>
+              <li key={pest.id}>{pest.name}</li>
+            </Link>
           ))}
         </ul>
       );
@@ -222,9 +227,11 @@ function PlantPage() {
                     task.plantTasks
                       ?.filter((pt) => pt.plantId === viewedPlant?.id)
                       .map((pt, index) => (
-                        <li key={`${task.id}-${index}`}>
-                          {task.name}: {pt.todo}
-                        </li>
+                        <Link to={`/tasks/${task.id}`}>
+                          <li key={`${task.id}-${index}`}>
+                            {task.name}: {pt.todo}
+                          </li>
+                        </Link>
                       ))
                 )}
               </ul>

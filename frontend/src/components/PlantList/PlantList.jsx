@@ -108,7 +108,9 @@ function PlantList() {
     return (
       <ul>
         {companions.map((plant, index) => (
-          <li key={plant.id}>{plant.name}</li>
+          <Link to={`/plants/${plant.id}`}>
+            <li key={plant.id}>{plant.name}</li>
+          </Link>
         ))}
       </ul>
     );
@@ -121,7 +123,9 @@ function PlantList() {
       return (
         <ul>
           {pestsFiltered.map((pest) => (
-            <li key={pest.id}>{pest.name}</li>
+            <Link to={`/pests/${pest.id}`}>
+              <li key={pest.id}>{pest.name}</li>
+            </Link>
           ))}
         </ul>
       );
@@ -304,9 +308,11 @@ function PlantList() {
                         task.plantTasks
                           ?.filter((pt) => pt.plantId === plant.id)
                           .map((pt, index) => (
-                            <li key={`${task.id}-${index}`}>
-                              {task.name}: {pt.todo}
-                            </li>
+                            <Link to={`/tasks/${task.id}`}>
+                              <li key={`${task.id}-${index}`}>
+                                {task.name}: {pt.todo}
+                              </li>
+                            </Link>
                           ))
                       )}
                     </ul>

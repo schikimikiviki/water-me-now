@@ -8,6 +8,8 @@ import TaskList from './components/TaskList/TaskList';
 import Admin from './components/Admin/Admin';
 import Header from './components/Header/Header';
 import PlantPage from './components/PlantPage/PlantPage';
+import PestPage from './components/PestPage/PestPage';
+import TaskPage from './components/TaskPage/TaskPage';
 
 function App() {
   const [activeItemMenu, setActiveItemMenu] = useState('');
@@ -39,6 +41,8 @@ function App() {
             />
 
             <Route path='/plants/:id' element={<PlantPage />} />
+            <Route path='/pests/:id' element={<PestPage />} />
+            <Route path='/tasks/:id' element={<TaskPage />} />
           </Routes>
         </div>
       </Router>

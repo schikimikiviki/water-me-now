@@ -44,7 +44,7 @@ a {
   text-decoration: inherit;
 }
 a:hover {
-  color: var(--color-blue);
+  color: var(--color-black);
 }
 
 body {

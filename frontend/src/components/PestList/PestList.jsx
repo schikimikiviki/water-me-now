@@ -4,6 +4,7 @@ import { getRequest } from '../../helpers/functions';
 import api from '../../api/axiosConfig';
 import { deleteSomethingWithId } from '../../helpers/functions';
 import PestPopup from '../PestPopup/PestPopup';
+import { Link } from 'react-router-dom';
 
 function PestList() {
   const [pests, setPests] = useState(null);
@@ -85,7 +86,9 @@ function PestList() {
           <div className='inner-plant'>
             <div className='plant-name'>
               <ul>
-                <li>{plant.name}</li>
+                <Link to={`/plants/${plant.id}`}>
+                  <li>{plant.name}</li>
+                </Link>
               </ul>
             </div>
           </div>
@@ -134,7 +137,9 @@ function PestList() {
 
               <div className='pest-details'>
                 <div className='pest-shortinfo'>
-                  <h2>{pest.name}</h2>
+                  <Link to={`/pests/${pest.id}`}>
+                    <h2>{pest.name}</h2>
+                  </Link>
                 </div>
 
                 <hr />

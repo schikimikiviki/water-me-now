@@ -4,6 +4,7 @@ import './TaskList.css';
 import api from '../../api/axiosConfig';
 import TaskPopup from '../TaskPopup/TaskPopup';
 import { deleteSomethingWithId } from '../../helpers/functions';
+import { Link } from 'react-router-dom';
 
 function TaskList() {
   const [tasks, setTasks] = useState(null);
@@ -96,7 +97,9 @@ function TaskList() {
 
       return (
         <p>
-          {chosenPlant.name} : {todo}
+          <Link to={`/plants/${chosenPlant.id}`}>
+            {chosenPlant.name} : {todo}
+          </Link>
         </p>
       );
     }
@@ -141,7 +144,9 @@ function TaskList() {
               </div>
               <div className='plant-details'>
                 <div className='plant-shortinfo'>
-                  <h2>{task.name}</h2>
+                  <Link to={`/tasks/${task.id}`}>
+                    <h2>{task.name}</h2>
+                  </Link>
                 </div>
 
                 <hr />
