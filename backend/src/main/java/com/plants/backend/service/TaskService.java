@@ -48,11 +48,15 @@ public class TaskService {
     	taskRepository.deleteById(id);
     }
     
-    public List<Task> findByDate(LocalDate date) {
-        List<Task> task =  taskRepository.findByDate(date);
-        System.out.println(task);
-        return task;
+    public List<Task> findTasksForToday() {
+        LocalDate today = LocalDate.now();
+        List<Task> allTasks = taskRepository.findAll();
+        return allTasks.stream()
+                .filter(task -> task.getDate().getMonth() == today.getMonth() &&
+                                task.getDate().getDayOfMonth() == today.getDayOfMonth())
+                .toList();
     }
+
 
     public Task updateTask(Long taskId, TaskDTO taskDTO) {
         Task task = taskRepository.findById(taskId)

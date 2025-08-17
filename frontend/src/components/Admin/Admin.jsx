@@ -711,7 +711,9 @@ function Admin() {
                   )}
                 </div>
                 <br /> <br />
-                <button type='submit'>Post</button>
+                <button style={{ marginTop: '20px' }} type='submit'>
+                  Post
+                </button>
               </form>
             </div>
             <div className='post-box'>

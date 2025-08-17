@@ -195,7 +195,13 @@ const TaskPopup = ({ onClose, taskData, allPlants }) => {
               <br />
               <div style={{ display: 'flex', gap: '10px' }}>
                 <UploadImage id='upload3' onUploadImage={handleUpload} />
-                <p>{imageFile}</p>
+                <p>
+                  {
+                    typeof imageFile === 'string'
+                      ? imageFile // existing filename
+                      : imageFile?.name || '' // new File object
+                  }
+                </p>
               </div>
               <hr className='hr-styled' />
               <div>Todo:</div>

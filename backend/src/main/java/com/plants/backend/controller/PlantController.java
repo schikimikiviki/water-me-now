@@ -272,45 +272,35 @@ public class PlantController {
 				  
 				  
 				  if (plantDTO.getCommonPests() != null) {
-					    // Get all pests from the DTO IDs
 					    List<Common_pest> newPests = pestRepository.findAllById(plantDTO.getCommonPests());
-					    
-					    // Get current pests to identify removals
+
+					    // Fetch current pests from managed entity
 					    List<Common_pest> currentPests = existingPlant.getCommonPests();
 					    if (currentPests == null) {
 					        currentPests = new ArrayList<>();
+					        existingPlant.setCommonPests(currentPests);
 					    }
 
-					    // Remove this plant from pests that are no longer associated
-					    for (Common_pest currentPest : new ArrayList<>(currentPests)) {
-					        if (!newPests.contains(currentPest)) {
-					            currentPest.getPlantList().remove(existingPlant);
-					            pestRepository.save(currentPest);
-					            currentPests.remove(currentPest);
-					        }
-					    }
+					    // Remove pests not in new list
+					    currentPests.removeIf(currentPest -> 
+					        newPests.stream().noneMatch(p -> p.getId().equals(currentPest.getId()))
+					    );
 
-					    // Add to new pests (with duplicate check)
+					    // Add new pests (check by ID)
 					    for (Common_pest newPest : newPests) {
-					        if (!currentPests.contains(newPest)) {
+					        boolean exists = currentPests.stream().anyMatch(p -> p.getId().equals(newPest.getId()));
+					        if (!exists) {
 					            currentPests.add(newPest);
-					            
-					            // Update the pest's plant list
-					            List<Plant> pestPlants = newPest.getPlantList();
-					            if (pestPlants == null) {
-					                pestPlants = new ArrayList<>();
-					                newPest.setPlantList(pestPlants);
-					            }
-					            
-					            if (!pestPlants.contains(existingPlant)) {
-					                pestPlants.add(existingPlant);
-					            }
 					        }
 					    }
 
-					    existingPlant.setCommonPests(currentPests);
-					    pestRepository.saveAll(newPests);
+					    // Save only the owning side
+					    //plantService.save(existingPlant);
 					}
+
+
+				  
+				  
 				  if (plantDTO.getPlantTasks() != null) {
 					    System.out.println("PlantTasks updating ...");
 					    
@@ -372,5 +362,15 @@ public class PlantController {
 					.body(Map.of("success", false, "message", "Plant not found"));
 		}
 	}
+	
+	
+	private boolean containsPest(List<Common_pest> pests, Common_pest pest) {
+	    return pests.stream().anyMatch(p -> p.getId().equals(pest.getId()));
+	}
+
+	private boolean containsPlant(List<Plant> plants, Plant plant) {
+	    return plants.stream().anyMatch(p -> p.getId().equals(plant.getId()));
+	}
+
 
 }

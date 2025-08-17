@@ -310,7 +310,13 @@ const Popup = ({
               <br />
               <div style={{ display: 'flex' }}>
                 <UploadImage id='upload4' onUploadImage={handleUpload} />
-                <p>{imageFileName}</p>
+                <p>
+                  {
+                    typeof imageFile === 'string'
+                      ? imageFile // existing filename
+                      : imageFile?.name || '' // new File object
+                  }
+                </p>
               </div>
               <hr className='hr-styled' />
               <label htmlFor='hardiness'>Choose hardiness:</label>
