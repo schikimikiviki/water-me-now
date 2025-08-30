@@ -55,7 +55,8 @@ public class SecurityConfig {
 			.requestMatchers("/tasks/all").permitAll()
 			.requestMatchers("/plant-tasks/all").permitAll()
 			.requestMatchers("/pests/all").permitAll()
-			
+				.requestMatchers("/test-mail").permitAll()
+				.requestMatchers("/test-mail/current-tasks").permitAll()
 						 
             .anyRequest().authenticated() 
         )

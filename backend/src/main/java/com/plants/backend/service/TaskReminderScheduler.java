@@ -3,6 +3,8 @@ package com.plants.backend.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.plants.backend.data.PlantTask;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -15,7 +17,7 @@ import com.plants.backend.repository.TaskRepository;
 public class TaskReminderScheduler {
 	
 	@Value("${mailadressReceiver}")
-    private String mailAdressToContact;
+    public String mailAdressToContact;
 
     @Autowired
     private TaskRepository taskRepo;
@@ -23,24 +25,46 @@ public class TaskReminderScheduler {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private PlantTaskService plantTaskService;
+
     @Scheduled(cron = "0 0 7 * * *") // Every day at 7 AM server time
   //  @Scheduled(cron = "0 */1 * * * *") // every 1 minute
-    public void checkAndSendReminders() {
-    	
-    	
+    public void checkAndSendReminders() throws MessagingException {
+
         LocalDate today = LocalDate.now();
-        
         System.out.println("Checking for tasks due on: " + today);
-        List<Task> dueTasks = taskRepo.findByDate(today);
+        List<Task> dueTasks = taskRepo.findByMonthAndDay(today.getMonthValue(), today.getDayOfMonth());
+
         System.out.println("Found " + dueTasks.size() + " tasks");
 
         if (!dueTasks.isEmpty()) {
-            StringBuilder content = new StringBuilder("Today's plant tasks:\n\n");
+            StringBuilder content = new StringBuilder();
+            content.append("<html><body style='font-family: Arial, sans-serif; font-size: 14px;'>");
+            content.append("<h2>\uD83C\uDF31 Today's plant tasks</h2>");
+
             for (Task task : dueTasks) {
-                content.append("- ").append(task.getTodo()).append("\n");
+                content.append("<p><b>")
+                        .append(task.getName())
+                        .append("</b> - ")
+                        .append(task.getTodo())
+                        .append("</p>");
+
+                List<PlantTask> plantTasks = task.getPlantTasks();
+                if (plantTasks != null && !plantTasks.isEmpty()) {
+                    content.append("<ul>");
+                    for (PlantTask pt : plantTasks) {
+                        String plantName = pt.getPlant() != null ? pt.getPlant().getName() : "Plant " + pt.getId();
+                        content.append("<li><b>").append(plantName).append("</b>: ").append(pt.getTodo()).append("</li>");
+                    }
+                    content.append("</ul>");
+                }
             }
 
-            
+            content.append("</body></html>");
+
+
+
             emailService.sendTaskReminder(
             		mailAdressToContact, 
                 "🌱 Plant Task Reminder for " + today.toString(), 
