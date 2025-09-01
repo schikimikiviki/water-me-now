@@ -185,9 +185,12 @@ function Admin() {
 
       // patch the plant with the plantTask - id because we could not do that earlier
       // because the plantID is created at POST
+      // also, patch the companionPlants, so that they also have
+      // our freshly created plant as compagnion
       let plantJustCreatedID = response.data.plant.id;
 
       setTimeout(() => {
+        patchCompanionPlants(companionPlants, plantJustCreatedID);
         patchPlantTasks(plantJustCreatedID);
       }, 1000);
     } catch (error) {
@@ -197,6 +200,41 @@ function Admin() {
         document.querySelector('.message').classList.add('fade-out');
         setTimeout(() => setMessage(''), 500);
       }, 4500);
+    }
+  };
+
+  const patchCompanionPlants = async (companionPlants, plantJustCreatedId) => {
+    // to each plant in the companionList, we need to do a patch request
+    console.log(companionPlants);
+    console.log(plantJustCreatedId);
+
+    for (let i = 0; i < companionPlants.length; i++) {
+      const formData = new FormData();
+
+      const plantBody = {
+        companionPlants: [plantJustCreatedId],
+      };
+      // Verify the final payload
+      console.log('Final payload:', JSON.stringify(plantBody, null, 2));
+
+      console.log(companionPlants[i]);
+
+      // Create the Blob with proper type
+      const jsonBlob = new Blob([JSON.stringify(plantBody)], {
+        type: 'application/json',
+      });
+      formData.append('plantBody', jsonBlob);
+
+      try {
+        let response = await patchSomethingWithId(
+          'plants',
+          companionPlants[i],
+          formData
+        );
+        console.log(response);
+      } catch (error) {
+        console.error('Request failed:', error);
+      }
     }
   };
 

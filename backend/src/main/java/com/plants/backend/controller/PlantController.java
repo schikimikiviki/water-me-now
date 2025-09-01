@@ -149,6 +149,7 @@ public class PlantController {
 				List<Plant> plants = plantRepository.findAllById(companionPlantIds);	  
 				System.out.println("plants"+ plants);
 				plant.setCompanionPlants(plants);
+
 	        }
 	      
 			
@@ -267,6 +268,14 @@ public class PlantController {
 					  
 					  System.out.println("plants"+ plants);
 				  existingPlant.setCompanionPlants(plants);
+
+					  // also, set the plant we are currently working on as a compagnion for all the others
+					  for (Plant p : plants) {
+						  List<Plant> theirCompanions = p.getCompanionPlants() != null ? p.getCompanionPlants() : new ArrayList<>();
+						  theirCompanions.add(existingPlant);
+						  p.setCompanionPlants(theirCompanions);
+						  plantService.save(p);
+					  }
 				  
 				  }
 				  

@@ -10,3 +10,7 @@
     border-radius: 20px;
   }
 }
+
+.container-plant-page {
+  max-width: 65vw;
+}

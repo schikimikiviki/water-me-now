@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.plants.backend.data.PlantTask;
 import jakarta.mail.MessagingException;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -28,7 +29,8 @@ public class TaskReminderScheduler {
     @Autowired
     private PlantTaskService plantTaskService;
 
-    @Scheduled(cron = "0 0 7 * * *") // Every day at 7 AM server time
+    @Transactional
+    @Scheduled(cron = "0 5 5 * * *") // Every day at 5 AM server time
   //  @Scheduled(cron = "0 */1 * * * *") // every 1 minute
     public void checkAndSendReminders() throws MessagingException {
 

@@ -89,7 +89,10 @@ function PlantPage() {
     <div>
       <h1>{viewedPlant?.name}</h1>
 
-      <div className='container-plant' key={viewedPlant?.id}>
+      <div
+        className='container-plant container-plant-page'
+        key={viewedPlant?.id}
+      >
         <div>
           <p className='plant-id'>{viewedPlant?.id}</p>
           <img
