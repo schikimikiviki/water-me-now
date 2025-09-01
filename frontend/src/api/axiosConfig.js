@@ -1,5 +1,6 @@
 import axios from 'axios';
+import { pathToBackend } from '../helpers/constants';
 
 export default axios.create({
-  baseURL: 'http://localhost:8888/',
+  baseURL: pathToBackend,
 });

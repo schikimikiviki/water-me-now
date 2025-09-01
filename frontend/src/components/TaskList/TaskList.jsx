@@ -5,6 +5,7 @@ import api from '../../api/axiosConfig';
 import TaskPopup from '../TaskPopup/TaskPopup';
 import { deleteSomethingWithId } from '../../helpers/functions';
 import { Link } from 'react-router-dom';
+import { pathToUploads } from '../../helpers/constants';
 
 function TaskList() {
   const [tasks, setTasks] = useState(null);
@@ -12,8 +13,6 @@ function TaskList() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [chosenTask, setChosenTask] = useState(null);
   const [plants, setPlants] = useState(null);
-
-  const pathToimg = 'http://localhost:8888/uploads/';
 
   const fetchData = async () => {
     let tasks = await getRequest('tasks');
@@ -115,7 +114,7 @@ function TaskList() {
               <div>
                 <p className='plant-id'>{task.id}</p>
                 <img
-                  src={pathToimg + task.imageFile}
+                  src={pathToUploads + task.imageFile}
                   alt={task.name}
                   width={250}
                   height={350}

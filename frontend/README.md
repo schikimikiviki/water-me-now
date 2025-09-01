@@ -1,5 +1,10 @@
 # Water me now
 
+## How to deploy
+
+1. Backend: mvn clean package locally, then copy to the server
+2. Frontend: When doing changes, copy the whole folder and run npm run build on the server.
+
 ## Used technologies:
 
 - React and Vite for the frontend

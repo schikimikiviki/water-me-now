@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { getRequest } from '../../helpers/functions';
+import { pathToUploads } from '../../helpers/constants';
 
 function TaskPage() {
   const { id } = useParams();
   const [plants, setPlants] = useState(null);
   const [viewedTask, setViewedTask] = useState(null);
-  const pathToimg = 'http://localhost:8888/uploads/';
   const [tasks, setTasks] = useState(null);
 
   const fetchData = async () => {
@@ -63,7 +63,7 @@ function TaskPage() {
         <div>
           <p className='plant-id'>{viewedTask?.id}</p>
           <img
-            src={pathToimg + viewedTask?.imageFile}
+            src={pathToUploads + viewedTask?.imageFile}
             alt={viewedTask?.name}
             width={250}
             height={350}

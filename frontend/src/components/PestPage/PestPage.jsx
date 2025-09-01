@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { getRequest } from '../../helpers/functions';
 import { Link } from 'react-router-dom';
+import { pathToUploads } from '../../helpers/constants';
 
 function PestPage() {
   const { id } = useParams();
 
   const [plants, setPlants] = useState(null);
   const [viewedPest, setViewedPest] = useState(null);
-  const pathToimg = 'http://localhost:8888/uploads/';
   const [pests, setPests] = useState(null);
 
   const fetchData = async () => {
@@ -59,7 +59,7 @@ function PestPage() {
         <p className='pest-id'>{viewedPest?.id}</p>
         <div>
           <img
-            src={pathToimg + viewedPest?.imageFile}
+            src={pathToUploads + viewedPest?.imageFile}
             alt={viewedPest?.name}
             width={250}
             height={350}

@@ -10,12 +10,12 @@ import PerennialIcon from '../../assets/images/perennial.svg';
 import NotPerennialIcon from '../../assets/images/not-perennial.svg';
 import { Link } from 'react-router-dom';
 import './PlantPage.css';
+import { pathToUploads } from '../../helpers/constants';
 
 function PlantPage() {
   const { id } = useParams();
   const [plants, setPlants] = useState(null);
   const [viewedPlant, setViewedPlant] = useState(null);
-  const pathToimg = 'http://localhost:8888/uploads/';
   const [pests, setPests] = useState(null);
   const [relevantTaskObject, setRelevantTaskObject] = useState({});
   const [tasks, setTasks] = useState(null);
@@ -96,7 +96,7 @@ function PlantPage() {
         <div>
           <p className='plant-id'>{viewedPlant?.id}</p>
           <img
-            src={pathToimg + viewedPlant?.imageFile}
+            src={pathToUploads + viewedPlant?.imageFile}
             alt={viewedPlant?.name}
             width={250}
             height={350}

@@ -11,6 +11,7 @@ import PerennialIcon from '../../assets/images/perennial.svg';
 import NotPerennialIcon from '../../assets/images/not-perennial.svg';
 import Popup from '../Popup/Popup';
 import { Link } from 'react-router-dom';
+import { pathToUploads } from '../../helpers/constants';
 
 function PlantList() {
   const [plants, setPlants] = useState(null);
@@ -61,8 +62,6 @@ function PlantList() {
     fetchData();
     checkLoginStatus();
   }, []);
-
-  const pathToimg = 'http://localhost:8888/uploads/';
 
   const openPopup = () => {
     setIsPopupOpen(true);
@@ -142,7 +141,7 @@ function PlantList() {
               <div>
                 <p className='plant-id'>{plant.id}</p>
                 <img
-                  src={pathToimg + plant.imageFile}
+                  src={pathToUploads + plant.imageFile}
                   alt={plant.name}
                   width={250}
                   height={350}

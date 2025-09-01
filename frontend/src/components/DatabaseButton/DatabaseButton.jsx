@@ -4,7 +4,7 @@ function DatabaseButton() {
     try {
       let command = `echo ${import.meta.env.VITE_PW} | pg_dump -U ${
         import.meta.env.VITE_USER
-      } -h localhost ${import.meta.env.VITE_URL} > dump.sql`;
+      } -h plants.vbdev.at/backend ${import.meta.env.VITE_URL} > dump.sql`;
 
       const params = new URLSearchParams();
       params.append('command', command);

@@ -5,6 +5,7 @@ import api from '../../api/axiosConfig';
 import { deleteSomethingWithId } from '../../helpers/functions';
 import PestPopup from '../PestPopup/PestPopup';
 import { Link } from 'react-router-dom';
+import { pathToUploads } from '../../helpers/constants';
 
 function PestList() {
   const [pests, setPests] = useState(null);
@@ -72,8 +73,6 @@ function PestList() {
     openPopup();
   };
 
-  const pathToimg = 'http://localhost:8888/uploads/';
-
   const generateSusceptiblePlants = (plantIds) => {
     if (!plants || plants.length === 0) return null;
 
@@ -107,7 +106,7 @@ function PestList() {
               <p className='pest-id'>{pest.id}</p>
               <div>
                 <img
-                  src={pathToimg + pest.imageFile}
+                  src={pathToUploads + pest.imageFile}
                   alt={pest.name}
                   width={250}
                   height={350}
