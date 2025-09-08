@@ -22,29 +22,29 @@ public class DTOMapper {
         dto.setPropagation(plant.getPropagation());
         dto.setFertilization_schedule(plant.getFertilization_schedule());
         dto.setUses(plant.getUses());
-        
+        dto.setIsAlive(plant.getIsAlive());
+        dto.setExtraInfo(plant.getExtraInfo());
+
 
         // Map plantTasks to PlantTaskDTO
         if (plant.getPlantTasks() != null) {
             dto.setPlantTasks(plant.getPlantTasks().stream()
-                .map(DTOMapper::toPlantTaskDTO)
-                .collect(Collectors.toList()));
-        }
-        
-      
-        
-        if (plant.getCompanionPlants() != null) {
-            dto.setCompanionPlants(plant.getCompanionPlants().stream()
-                .map(Plant::getId)
-                .collect(Collectors.toList()));
+                    .map(DTOMapper::toPlantTaskDTO)
+                    .collect(Collectors.toList()));
         }
 
-        
-        
+
+        if (plant.getCompanionPlants() != null) {
+            dto.setCompanionPlants(plant.getCompanionPlants().stream()
+                    .map(Plant::getId)
+                    .collect(Collectors.toList()));
+        }
+
+
         if (plant.getCommonPests() != null) {
             dto.setCommonPests(plant.getCommonPests().stream()
-                .map(Common_pest::getId)
-                .collect(Collectors.toList()));
+                    .map(Common_pest::getId)
+                    .collect(Collectors.toList()));
         }
 
 
@@ -55,7 +55,7 @@ public class DTOMapper {
         PlantTaskDTO dto = new PlantTaskDTO();
         dto.setPlantId(plantTask.getPlant() != null ? plantTask.getPlant().getId() : null);
         dto.setTaskId(plantTask.getTask() != null ? plantTask.getTask().getId() : null);
-        dto.setTodo(plantTask.getTodo()); 
+        dto.setTodo(plantTask.getTodo());
         return dto;
     }
 
@@ -68,17 +68,17 @@ public class DTOMapper {
         dto.setDate(task.getDate());
         if (task.getPlantTasks() != null) {
             dto.setPlantTasks(task.getPlantTasks().stream()
-                .map(pt -> {
-                    PlantTaskDTO ptDto = new PlantTaskDTO();
-                    ptDto.setPlantId(pt.getPlant().getId());
-                    ptDto.setTodo(pt.getTodo());
-                    return ptDto;
-                })
-                .collect(Collectors.toList()));
+                    .map(pt -> {
+                        PlantTaskDTO ptDto = new PlantTaskDTO();
+                        ptDto.setPlantId(pt.getPlant().getId());
+                        ptDto.setTodo(pt.getTodo());
+                        return ptDto;
+                    })
+                    .collect(Collectors.toList()));
         }
         return dto;
     }
-    
+
     public static CommonPestDTO toCommonPestDTO(Common_pest commonPest) {
         CommonPestDTO dto = new CommonPestDTO();
         dto.setId(commonPest.getId());
@@ -87,9 +87,9 @@ public class DTOMapper {
         dto.setTodo(commonPest.getTodo());
         if (commonPest.getPlantList() != null) {
             dto.setPlantList(commonPest.getPlantList()
-                .stream()
-                .map(Plant::getId)
-                .collect(Collectors.toList()));
+                    .stream()
+                    .map(Plant::getId)
+                    .collect(Collectors.toList()));
         } else {
             dto.setPlantList(new ArrayList<>()); // or null if preferred
         }

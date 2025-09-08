@@ -30,7 +30,7 @@ public class TaskReminderScheduler {
     private PlantTaskService plantTaskService;
 
     @Transactional
-    @Scheduled(cron = "0 5 5 * * *") // Every day at 5 AM server time
+    @Scheduled(cron = "0 10 10 * * *") // Every day at 5 AM server time
   //  @Scheduled(cron = "0 */1 * * * *") // every 1 minute
     public void checkAndSendReminders() throws MessagingException {
 

@@ -9,6 +9,8 @@ public enum Soil_type {
 	CITRUS_SOIL, // Zitruserde
 	ORCHID_SOIL, // Orchideenerde
 	TOMATO_SOIL, // Tomatenerde
-	COMPOST // Kompost
+	COMPOST, // Kompost
+	SANDY_MIX, // Sandige Erde
+	POTTING_MIX // Erdmischung
 	
 }

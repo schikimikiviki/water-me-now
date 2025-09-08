@@ -41,6 +41,8 @@ function Admin() {
   const [selectedPlantTasks, setSelectedPlantTasks] = useState([]);
   const [commonPests, setCommonPests] = useState([]);
   const [selectedPests, setSelectedPests] = useState([]);
+  const [extraInfo, setExtraInfo] = useState('');
+  const [isAlive, setIsAlive] = useState(true);
 
   useEffect(() => {
     const fetchPlants = async () => {
@@ -162,6 +164,8 @@ function Admin() {
     formData.append('companionPlants', companionPlants);
     formData.append('uses', uses);
     formData.append('commonPests', selectedPests);
+    formData.append('isAlive', isAlive);
+    formData.append('extraInfo', extraInfo);
 
     console.log('Posting with this data :');
     for (var pair of formData.entries()) {
@@ -331,6 +335,10 @@ function Admin() {
 
   const handlePerennialChange = (e) => {
     setPerennial(e.target.value);
+  };
+
+  const handleIsAliveChange = (e) => {
+    setIsAlive(e.target.value);
   };
 
   const handleCheckboxChange = (e) => {
@@ -728,6 +736,27 @@ function Admin() {
                     <p>No plant tasks found</p>
                   )}
                 </div>
+                <hr className='hr-styled' />
+                <input
+                  type='text'
+                  name={extraInfo}
+                  style={{ fontSize: isMobile ? '12px' : '20px' }}
+                  placeholder='Edit extra info for this plant'
+                  defaultValue={''}
+                  onChange={(e) => {
+                    setExtraInfo(e.target.value);
+                  }}
+                />
+                <label htmlFor='isAlive'>Choose alive status:</label>
+                <select
+                  value={isAlive}
+                  onChange={handleIsAliveChange}
+                  name='isAlive'
+                  id='isAlive'
+                >
+                  <option value='true'>yes</option>
+                  <option value='false'>no</option>
+                </select>
                 <hr className='hr-styled' />
                 <label>Choose common pests:</label>
                 <div className='plant-tasks-checkboxes'>

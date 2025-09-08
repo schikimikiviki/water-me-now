@@ -9,6 +9,7 @@ import SnowflakeIcon from '../../assets/images/snowflake.svg';
 import NoSlowFlakeIcon from '../../assets/images/no-snowflake.svg';
 import PerennialIcon from '../../assets/images/perennial.svg';
 import NotPerennialIcon from '../../assets/images/not-perennial.svg';
+import GraveIcon from '../../assets/images/grave.png';
 import Popup from '../Popup/Popup';
 import { Link } from 'react-router-dom';
 import { pathToUploads } from '../../helpers/constants';
@@ -21,6 +22,7 @@ function PlantList() {
   const [pests, setPests] = useState(null);
   const [tasks, setTasks] = useState(null);
   const [relevantTaskObject, setRelevantTaskObject] = useState({});
+  const [showAliveOnly, setShowAliveOnly] = useState(false);
 
   const fetchData = async () => {
     let tasks = await getRequest('tasks');
@@ -29,7 +31,7 @@ function PlantList() {
 
     let plants = await getRequest('plants');
     setPlants(plants);
-    // console.log(plants);
+    console.log(plants);
 
     let pests = await getRequest('pests');
     //console.log(pests);
@@ -131,12 +133,49 @@ function PlantList() {
     }
   };
 
+  const handleShowAliveOnly = () => {
+    setShowAliveOnly((prev) => !prev);
+  };
+
+  const filteredPlants = showAliveOnly
+    ? plants.filter((plant) => plant.isAlive)
+    : plants;
+
   return (
     <div className='page-div'>
-      <h1>Plants</h1>
+      <div style={{ display: 'flex', gap: '350px' }}>
+        <h1>Plants</h1>
+
+        <div style={{ display: 'flex', gap: '30px' }}>
+          <h3 style={{ marginTop: '50px' }}>Show only alive plants?</h3>
+
+          <label class='switch'>
+            <input
+              type='checkbox'
+              value={showAliveOnly}
+              onChange={handleShowAliveOnly}
+            />
+            <span class='slider'>
+              <svg
+                class='slider-icon'
+                viewBox='0 0 32 32'
+                xmlns='http://www.w3.org/2000/svg'
+                aria-hidden='true'
+                role='presentation'
+              >
+                <path fill='none' d='m4 16.5 8 8 16-16'></path>
+              </svg>
+            </span>
+          </label>
+
+          <div style={{ marginTop: '50px' }}>
+            Num of plants: {filteredPlants && filteredPlants.length}
+          </div>
+        </div>
+      </div>
       {plants && plants.length > 0 ? (
         <ul>
-          {plants.map((plant) => (
+          {filteredPlants.map((plant) => (
             <div className='container-plant' key={plant.id}>
               <div>
                 <p className='plant-id'>{plant.id}</p>
@@ -224,6 +263,18 @@ function PlantList() {
                         width={35}
                         height={35}
                         className='perennial-icon'
+                      />
+                    )}
+                    {plant.isAlive ? (
+                      <></>
+                    ) : (
+                      <img
+                        src={GraveIcon}
+                        alt='grave'
+                        width={35}
+                        height={38}
+                        className='perennial-icon'
+                        style={{ paddingLeft: '5px' }}
                       />
                     )}
                   </div>
@@ -315,6 +366,13 @@ function PlantList() {
                           ))
                       )}
                     </ul>
+                  </div>
+                )}
+
+                {plant.extraInfo?.length > 0 && (
+                  <div>
+                    🌿 <u className='space'>Extra info:</u>
+                    {plant.extraInfo}
                   </div>
                 )}
               </div>

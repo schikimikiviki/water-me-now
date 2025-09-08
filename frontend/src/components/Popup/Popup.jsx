@@ -51,6 +51,8 @@ const Popup = ({
   const [isMobile, setIsMobile] = useState(false);
   const [imageFileName, setImageFileName] = useState(plantData.imageFile);
 
+  const [extraInfo, setExtraInfo] = useState(plantData.extraInfo);
+  const [isAlive, setIsAlive] = useState(plantData.isAlive);
   //console.log('selcted pests: ', selectedPests);
   // console.log('relevant tasks for this plant: ', plantRelevantTasks);
 
@@ -125,6 +127,10 @@ const Popup = ({
     setFertilization(e.target.value);
   };
 
+  const handleIsAliveChange = (e) => {
+    setIsAlive(e.target.value);
+  };
+
   const removeUse = (index) => {
     setUses(uses.filter((_, i) => i !== index));
   };
@@ -179,6 +185,8 @@ const Popup = ({
       fertilization_schedule: fertilization,
       commonPests: selectedPests,
       plantTasks: selectedPlantTasks, // [{ taskId: 52, todo: 'idk' }],
+      extraInfo: extraInfo,
+      isAlive: isAlive,
     };
 
     // Verify the final payload
@@ -421,6 +429,31 @@ const Popup = ({
                     </label>
                   </div>
                 ))}
+              </div>
+              <div>
+                <label htmlFor='extraInfo'>Extra info:</label>
+                <input
+                  type='text'
+                  name={extraInfo}
+                  style={{ fontSize: isMobile ? '12px' : '20px' }}
+                  placeholder='Edit extra info for this plant'
+                  defaultValue={extraInfo}
+                  onChange={(e) => {
+                    setExtraInfo(e.target.value);
+                  }}
+                />
+              </div>
+              <div>
+                <label htmlFor='isAlive'>Alive status:</label>
+                <select
+                  value={isAlive}
+                  onChange={handleIsAliveChange}
+                  name='isAlive'
+                  id='isAlive'
+                >
+                  <option value='true'>yes</option>
+                  <option value='false'>no</option>
+                </select>
               </div>
             </div>
             <div>
