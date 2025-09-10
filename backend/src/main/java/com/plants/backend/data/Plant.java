@@ -83,7 +83,7 @@ public class Plant {
     public Plant() {
     }
 
-    public Plant(Long id, String name, String origin, String imageFile, Hardiness hardiness, String hardiness_info, Ideal_location ideal_location, Watering watering, Soil_type soil_type, List<Feature> featureList, Ideal_placement ideal_placement, String propagation, Fertilization_schedule fertilization_schedule, List<Plant> companionPlants, List<String> uses, List<Common_pest> commonPests, List<PlantTask> plantTasks, Boolean perennial, Boolean isAlive, String extraInfo, boolean isVegetable, SeedTime seedTime, List<TrimmingTime> trimmingTimes, List<HarvestTime> harvestTimes) {
+    public Plant(Long id, String name, String origin, String imageFile, Hardiness hardiness, String hardiness_info, Ideal_location ideal_location, Watering watering, Soil_type soil_type, List<Feature> featureList, Ideal_placement ideal_placement, String propagation, Fertilization_schedule fertilization_schedule, List<Plant> companionPlants, List<String> uses, List<Common_pest> commonPests, List<PlantTask> plantTasks, Boolean perennial, Boolean isAlive, String extraInfo, Boolean isVegetable, SeedTime seedTime, List<TrimmingTime> trimmingTimes, List<HarvestTime> harvestTimes) {
         super();
         this.id = id;
         this.name = name;
@@ -117,7 +117,7 @@ public class Plant {
     }
 
     public void setIsVegetable(Boolean isVegetable) {
-        isVegetable = isVegetable;
+        this.isVegetable = isVegetable;
     }
 
     public SeedTime getSeedTime() {

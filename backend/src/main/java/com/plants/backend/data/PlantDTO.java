@@ -91,7 +91,7 @@ public class PlantDTO {
     }
 
     public void setIsVegetable(Boolean isVegetable) {
-        isVegetable = isVegetable;
+        this.isVegetable = isVegetable;
     }
 
     public SeedTime getSeedTime() {

@@ -8,6 +8,6 @@ public enum SeedTime {
     APRIL_TO_MAY,
     MAY_TO_JUNE,
     JUNE_TO_JULY,
-    AUGUST_SEPTEMBER
+    AUGUST_TO_SEPTEMBER
 
 }

@@ -53,8 +53,15 @@ const Popup = ({
 
   const [extraInfo, setExtraInfo] = useState(plantData.extraInfo);
   const [isAlive, setIsAlive] = useState(plantData.isAlive);
-  //console.log('selcted pests: ', selectedPests);
-  // console.log('relevant tasks for this plant: ', plantRelevantTasks);
+
+  // vegetable fields
+  const [isVegetable, setIsVegetable] = useState(plantData.isVegetable);
+  const [areVegetableFieldsOpen, setAreVegetableFieldsOpen] = useState(
+    plantData.isVegetable
+  );
+  const [seedTime, setSeedTime] = useState(plantData.seedTime);
+  const [trimmingTimes, setTrimmingTimes] = useState(plantData.trimmingTimes);
+  const [harvestTimes, setHarvestTimes] = useState(plantData.harvestTimes);
 
   useEffect(() => {
     // console.log(selectedPlantTasks);
@@ -189,6 +196,13 @@ const Popup = ({
       isAlive: isAlive,
     };
 
+    if (isVegetable) {
+      plantBody.isVegetable = isVegetable;
+      plantBody.seedTime = seedTime;
+      plantBody.harvestTimes = harvestTimes;
+      plantBody.trimmingTimes = trimmingTimes;
+    }
+
     // Verify the final payload
     console.log('Final payload:', JSON.stringify(plantBody, null, 2));
 
@@ -213,6 +227,33 @@ const Popup = ({
     } catch (error) {
       console.error('Request failed:', error);
     }
+  };
+
+  const handleHarvestTimeChange = (e) => {
+    const { value, checked } = e.target;
+    setHarvestTimes((prev) =>
+      checked ? [...prev, value] : prev.filter((f) => f !== value)
+    );
+  };
+
+  const handleTrimmingTimeChange = (e) => {
+    const { value, checked } = e.target;
+    setTrimmingTimes((prev) =>
+      checked ? [...prev, value] : prev.filter((f) => f !== value)
+    );
+  };
+
+  const handleIsVegetableChange = (e) => {
+    if (e.target.value == 'true') {
+      setAreVegetableFieldsOpen(true);
+    } else {
+      setAreVegetableFieldsOpen(false);
+    }
+    setIsVegetable(e.target.value);
+  };
+
+  const handleIdealSeedChange = (e) => {
+    setSeedTime(e.target.value);
   };
 
   const handleUpload = (e) => {
@@ -612,6 +653,125 @@ const Popup = ({
                   <p>No pests found</p>
                 )}
               </div>
+              <div>
+                <label htmlFor='isVegetable'>Is this plant a vegetable?:</label>
+                <select
+                  value={isVegetable}
+                  onChange={handleIsVegetableChange}
+                  name='isVegetable'
+                  id='isVegetable'
+                >
+                  <option value='true'>yes</option>
+                  <option value='false'>no</option>
+                </select>
+              </div>
+              {areVegetableFieldsOpen && (
+                <>
+                  <u style={{ paddingBottom: '10px' }}>
+                    Enter vegetable values
+                  </u>
+                  <div>
+                    <label htmlFor='seedTime'>Choose best planting time:</label>
+                    <select
+                      value={seedTime}
+                      onChange={handleIdealSeedChange}
+                      name='seedTime'
+                      id='seedTime'
+                    >
+                      <option value='END_OF_JANUARY_BEGINNING_OF_FEBRUARY'>
+                        End of january - beginning of february
+                      </option>
+                      <option value='ICE_SAINTS'>Ice Saints</option>
+                      <option value='MARCH_TO_APRIL'>March - April</option>
+                      <option value='APRIL_TO_MAY'>April - May</option>
+                      <option value='MAY_TO_JUNE'>May - June</option>
+                      <option value='JUNE_TO_JULY'>June - July</option>
+                      <option value='AUGUST_TO_SEPTEMBER'>
+                        August - September
+                      </option>
+                    </select>
+                  </div>
+                  <hr className='hr-styled' />
+                  <label>Choose time for harvesting:</label>
+                  <div className='feature-checkboxes'>
+                    {[
+                      'THROUGHOUT_THE_SUMMER',
+                      'APRIL_TO_JUNE', //Asparagus
+                      'MAY_TO_JULY', // beans
+                      'JUNE_TO_AUGUST', // Peas
+
+                      'SEPTEMBER_TO_NOVEMBER', // Spinach
+                      'MAY_TO_SEPTEMBER', // Lettuce & Salad Greens
+                      'SEPTEMBER_TO_OCTOBER', //Radishes, Pumpkins & Squash
+                      'JUNE_TO_OCTOBER', // Carrots, beetroot, Cauliflower
+
+                      'JUNE_TO_JULY', //Potatoes
+                      'AUGUST_TO_OCTOBER', // Potatoes (maincrop)
+                      'MAY_TO_JUNE', //Cabbage
+                      'AUGUST_TO_NOVEMBER', //Cabbage
+
+                      'JULY_TO_OCTOBER', // Broccoli , Tomatoes
+                      'SEPTEMBER_TO_MARCH', // Kale
+                      'JULY_TO_SEPTEMBER', // Zucchini , Cucumbers
+
+                      'AUGUST_TO_SEPTEMBER', //Sweetcorn, Onions
+                      'JULY_TO_AUGUST', //Garlic
+
+                      'SEPTEMBER_TO_FEBRUARY', // Leeks
+                      'OCTOBER_TO_FEBRUARY', // Brussels sprouts , Parsnips
+                    ].map((time) => (
+                      <div key={time}>
+                        <input
+                          type='checkbox'
+                          id={time}
+                          value={time}
+                          checked={harvestTimes.includes(time)}
+                          onChange={handleHarvestTimeChange}
+                        />
+                        <label htmlFor={harvestTimes}>
+                          {time
+                            .replace(/_/g, ' ')
+                            .toLowerCase()
+                            .replace(/^\w|\s\w/g, (c) => c.toUpperCase())}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                  <hr className='hr-styled' />
+                  <label>Choose time for trimming:</label>
+                  <div className='feature-checkboxes'>
+                    {[
+                      'MAY_TO_SEPTEMBER', // Tomatoes
+                      'JUNE_TO_SEPTEMBER', // Courgettes / Zucchini
+                      'JUNE_TO_AUGUST', // Cucumbers
+                      'AUGUST_TO_SEPTEMBER', // Peas, Beans , Sweetcorn
+                      'JUNE_TO_OCTOBER', // Carrots, Beets, Radishes, Cabbage, Cauliflower, Broccoli
+                      'SEPTEMBER_TO_OCTOBER', //   Pumpkins & Squash
+                      'AUGUST_TO_OCTOBER', // Potatoes
+                      'SEPTEMBER_TO_MARCH', // Leeks, Kale
+                      'JULY_TO_AUGUST', // Onions / Garlic
+                      'OCTOBER_TO_FEBRUARY', // Brussels sprouts
+                      'JUNE_TO_JULY', // Asparagus
+                    ].map((time) => (
+                      <div key={time}>
+                        <input
+                          type='checkbox'
+                          id={time}
+                          value={time}
+                          checked={trimmingTimes.includes(time)}
+                          onChange={handleTrimmingTimeChange}
+                        />
+                        <label htmlFor={trimmingTimes}>
+                          {time
+                            .replace(/_/g, ' ')
+                            .toLowerCase()
+                            .replace(/^\w|\s\w/g, (c) => c.toUpperCase())}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
               <br /> <br />
             </div>
           </div>

@@ -138,6 +138,7 @@ public class PlantController {
             plant.setExtraInfo(extraInfo);
             plant.setHarvestTimes(harvestTimes);
             plant.setTrimmingTimes(trimmingTimes);
+            System.out.println("isvegetable: " + isVegetable);
             plant.setIsVegetable(isVegetable);
             plant.setSeedTime(seedTime);
 
