@@ -1,6 +1,7 @@
 package com.plants.backend.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.plants.backend.data.enums.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,11 @@ public class PlantDTO {
 
     private Boolean isAlive;
     private String extraInfo;
+
+    private Boolean isVegetable;
+    private SeedTime seedTime;
+    private List<HarvestTime> harvestTimes;
+    private List<TrimmingTime> trimmingTimes;
 
     public PlantDTO() {
     }
@@ -74,6 +80,42 @@ public class PlantDTO {
                 new ArrayList<>();
         this.isAlive = plant.getIsAlive();
         this.extraInfo = plant.getExtraInfo();
+        this.isVegetable = plant.getIsVegetable();
+        this.seedTime = plant.getSeedTime();
+        this.trimmingTimes = plant.getTrimmingTimes();
+        this.harvestTimes = plant.getHarvestTimes();
+    }
+
+    public Boolean getIsVegetable() {
+        return isVegetable;
+    }
+
+    public void setIsVegetable(Boolean isVegetable) {
+        isVegetable = isVegetable;
+    }
+
+    public SeedTime getSeedTime() {
+        return seedTime;
+    }
+
+    public void setSeedTime(SeedTime seedTime) {
+        this.seedTime = seedTime;
+    }
+
+    public List<HarvestTime> getHarvestTimes() {
+        return harvestTimes;
+    }
+
+    public void setHarvestTimes(List<HarvestTime> harvestTimes) {
+        this.harvestTimes = harvestTimes;
+    }
+
+    public List<TrimmingTime> getTrimmingTimes() {
+        return trimmingTimes;
+    }
+
+    public void setTrimmingTimes(List<TrimmingTime> trimmingTimes) {
+        this.trimmingTimes = trimmingTimes;
     }
 
     public Boolean getIsAlive() {

@@ -2,6 +2,7 @@ package com.plants.backend.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.plants.backend.data.enums.*;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -68,10 +69,21 @@ public class Plant {
 
     private String extraInfo;
 
+    private Boolean isVegetable;
+
+    @Enumerated(EnumType.STRING)
+    private SeedTime seedTime;
+
+    @Enumerated(EnumType.STRING)
+    private List<HarvestTime> harvestTimes;
+
+    @Enumerated(EnumType.STRING)
+    private List<TrimmingTime> trimmingTimes;
+
     public Plant() {
     }
 
-    public Plant(Long id, String name, String origin, String imageFile, Hardiness hardiness, String hardiness_info, Ideal_location ideal_location, Watering watering, Soil_type soil_type, List<Feature> featureList, Ideal_placement ideal_placement, String propagation, Fertilization_schedule fertilization_schedule, List<Plant> companionPlants, List<String> uses, List<Common_pest> commonPests, List<PlantTask> plantTasks, Boolean perennial, Boolean isAlive, String extraInfo) {
+    public Plant(Long id, String name, String origin, String imageFile, Hardiness hardiness, String hardiness_info, Ideal_location ideal_location, Watering watering, Soil_type soil_type, List<Feature> featureList, Ideal_placement ideal_placement, String propagation, Fertilization_schedule fertilization_schedule, List<Plant> companionPlants, List<String> uses, List<Common_pest> commonPests, List<PlantTask> plantTasks, Boolean perennial, Boolean isAlive, String extraInfo, boolean isVegetable, SeedTime seedTime, List<TrimmingTime> trimmingTimes, List<HarvestTime> harvestTimes) {
         super();
         this.id = id;
         this.name = name;
@@ -93,7 +105,43 @@ public class Plant {
         this.plantTasks = plantTasks;
         this.isAlive = isAlive;
         this.extraInfo = extraInfo;
+        this.isVegetable = isVegetable;
+        this.seedTime = seedTime;
+        this.harvestTimes = harvestTimes;
+        this.trimmingTimes = trimmingTimes;
 
+    }
+
+    public Boolean getIsVegetable() {
+        return isVegetable;
+    }
+
+    public void setIsVegetable(Boolean isVegetable) {
+        isVegetable = isVegetable;
+    }
+
+    public SeedTime getSeedTime() {
+        return seedTime;
+    }
+
+    public void setSeedTime(SeedTime seedTime) {
+        this.seedTime = seedTime;
+    }
+
+    public List<HarvestTime> getHarvestTimes() {
+        return harvestTimes;
+    }
+
+    public void setHarvestTimes(List<HarvestTime> harvestTimes) {
+        this.harvestTimes = harvestTimes;
+    }
+
+    public List<TrimmingTime> getTrimmingTimes() {
+        return trimmingTimes;
+    }
+
+    public void setTrimmingTimes(List<TrimmingTime> trimmingTimes) {
+        this.trimmingTimes = trimmingTimes;
     }
 
     public Boolean getIsAlive() {

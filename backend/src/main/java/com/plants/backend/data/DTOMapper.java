@@ -24,6 +24,10 @@ public class DTOMapper {
         dto.setUses(plant.getUses());
         dto.setIsAlive(plant.getIsAlive());
         dto.setExtraInfo(plant.getExtraInfo());
+        dto.setHarvestTimes(plant.getHarvestTimes());
+        dto.setIsVegetable(plant.getIsVegetable());
+        dto.setTrimmingTimes(plant.getTrimmingTimes());
+        dto.setSeedTime(plant.getSeedTime());
 
 
         // Map plantTasks to PlantTaskDTO

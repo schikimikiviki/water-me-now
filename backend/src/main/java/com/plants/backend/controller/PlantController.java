@@ -2,6 +2,7 @@ package com.plants.backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.plants.backend.data.*;
+import com.plants.backend.data.enums.*;
 import com.plants.backend.repository.PestRepository;
 import com.plants.backend.repository.PlantRepository;
 import com.plants.backend.repository.PlantTaskRepository;
@@ -78,7 +79,12 @@ public class PlantController {
             @RequestParam(value = "companionPlants", required = false) List<Long> companionPlantIds,
             @RequestPart(value = "plantTasks", required = false) List<PlantTaskDTO> plantTasks,
             @RequestParam(value = "isAlive", required = false) Boolean isAlive,
-            @RequestParam(value = "extraInfo", required = false) String extraInfo
+            @RequestParam(value = "extraInfo", required = false) String extraInfo,
+            @RequestParam(value = "isVegetable", required = false) Boolean isVegetable,
+            @RequestParam(value = "seedTime", required = false) SeedTime seedTime,
+            @RequestParam(value = "harvestTimes", required = false) List<HarvestTime> harvestTimes,
+            @RequestParam(value = "trimmingTimes", required = false) List<TrimmingTime> trimmingTimes
+
     ) {
         System.out.println("Received POST /plants/add");
         try {
@@ -130,6 +136,10 @@ public class PlantController {
 
             plant.setIsAlive(isAlive);
             plant.setExtraInfo(extraInfo);
+            plant.setHarvestTimes(harvestTimes);
+            plant.setTrimmingTimes(trimmingTimes);
+            plant.setIsVegetable(isVegetable);
+            plant.setSeedTime(seedTime);
 
             // 4. Save Plant
             plantService.save(plant);
@@ -315,14 +325,31 @@ public class PlantController {
             }
 
             if (plantDTO.getIsAlive() != null) {
-                System.out.println("setting: " + plantDTO.getIsAlive());
+//                System.out.println("setting: " + plantDTO.getIsAlive());
                 existingPlant.setIsAlive(plantDTO.getIsAlive());
             }
 
             if (plantDTO.getExtraInfo() != null) {
-                System.out.println("setting: " + plantDTO.getExtraInfo());
+//                System.out.println("setting: " + plantDTO.getExtraInfo());
                 existingPlant.setExtraInfo(plantDTO.getExtraInfo());
             }
+
+            if (plantDTO.getIsVegetable() != null) {
+                existingPlant.setIsVegetable(plantDTO.getIsVegetable());
+            }
+
+            if (plantDTO.getSeedTime() != null) {
+                existingPlant.setSeedTime(plantDTO.getSeedTime());
+            }
+
+            if (plantDTO.getTrimmingTimes() != null) {
+                existingPlant.setTrimmingTimes(plantDTO.getTrimmingTimes());
+            }
+
+            if (plantDTO.getHarvestTimes() != null) {
+                existingPlant.setHarvestTimes(plantDTO.getHarvestTimes());
+            }
+
 
             // 5. Save updated plant
             Plant updatedPlant = plantService.save(existingPlant);
