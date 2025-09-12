@@ -1,23 +1,22 @@
 package com.plants.backend.service;
 
-import java.time.LocalDate;
-import java.util.List;
-
-import com.plants.backend.data.PlantTask;
+import com.plants.backend.data.entities.PlantTask;
+import com.plants.backend.data.entities.Task;
+import com.plants.backend.repository.TaskRepository;
 import jakarta.mail.MessagingException;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.plants.backend.data.Task;
-import com.plants.backend.repository.TaskRepository;
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class TaskReminderScheduler {
-	
-	@Value("${mailadressReceiver}")
+
+    @Value("${mailadressReceiver}")
     public String mailAdressToContact;
 
     @Autowired
@@ -31,7 +30,7 @@ public class TaskReminderScheduler {
 
     @Transactional
     @Scheduled(cron = "0 10 10 * * *") // Every day at 5 AM server time
-  //  @Scheduled(cron = "0 */1 * * * *") // every 1 minute
+    //  @Scheduled(cron = "0 */1 * * * *") // every 1 minute
     public void checkAndSendReminders() throws MessagingException {
 
         LocalDate today = LocalDate.now();
@@ -66,11 +65,10 @@ public class TaskReminderScheduler {
             content.append("</body></html>");
 
 
-
             emailService.sendTaskReminder(
-            		mailAdressToContact, 
-                "🌱 Plant Task Reminder for " + today.toString(), 
-                content.toString()
+                    mailAdressToContact,
+                    "🌱 Plant Task Reminder for " + today.toString(),
+                    content.toString()
             );
         }
     }

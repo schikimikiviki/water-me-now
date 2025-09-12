@@ -1,4 +1,9 @@
-package com.plants.backend.data;
+package com.plants.backend.data.dtos;
+
+import com.plants.backend.data.entities.Common_pest;
+import com.plants.backend.data.entities.Plant;
+import com.plants.backend.data.entities.PlantTask;
+import com.plants.backend.data.entities.Task;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -70,6 +75,8 @@ public class DTOMapper {
         dto.setImageFile(task.getImageFile());
         dto.setTodo(task.getTodo());
         dto.setDate(task.getDate());
+        dto.setIsRepeated(task.getIsRepeated());
+        dto.setRepetition(task.getRepetition());
         if (task.getPlantTasks() != null) {
             dto.setPlantTasks(task.getPlantTasks().stream()
                     .map(pt -> {

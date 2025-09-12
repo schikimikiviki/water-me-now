@@ -1,4 +1,4 @@
-package com.plants.backend.data;
+package com.plants.backend.data.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;

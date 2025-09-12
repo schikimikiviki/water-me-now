@@ -1,20 +1,14 @@
-package com.plants.backend.data;
+package com.plants.backend.data.entities;
 
-import java.sql.Date;
-import java.util.Collection;
-import java.util.List;
-
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import java.sql.Date;
+import java.util.Collection;
+import java.util.List;
 
 @Table(name = "users")
 @Entity
@@ -50,6 +44,11 @@ public class User implements UserDetails {
         return password;
     }
 
+    public User setPassword(String password) {
+        this.password = password;
+        return this; // Return 'this' for method chaining
+    }
+
     @Override
     public String getUsername() {
         return email;
@@ -74,7 +73,7 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-    
+
     public User setFullName(String fullName) {
         this.fullName = fullName;
         return this; // Return 'this' for method chaining
@@ -85,15 +84,5 @@ public class User implements UserDetails {
         return this; // Return 'this' for method chaining
     }
 
-    public User setPassword(String password) {
-        this.password = password;
-        return this; // Return 'this' for method chaining
-    }
 
-	
-
-
-	
-    
-    
 }

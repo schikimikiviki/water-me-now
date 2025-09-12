@@ -1,7 +1,12 @@
 package com.plants.backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.plants.backend.data.*;
+import com.plants.backend.data.dtos.PlantDTO;
+import com.plants.backend.data.dtos.PlantTaskDTO;
+import com.plants.backend.data.entities.Common_pest;
+import com.plants.backend.data.entities.Plant;
+import com.plants.backend.data.entities.PlantTask;
+import com.plants.backend.data.entities.Task;
 import com.plants.backend.data.enums.*;
 import com.plants.backend.repository.PestRepository;
 import com.plants.backend.repository.PlantRepository;

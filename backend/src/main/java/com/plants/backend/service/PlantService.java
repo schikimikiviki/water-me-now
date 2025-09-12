@@ -1,17 +1,15 @@
 package com.plants.backend.service;
 
+import com.plants.backend.data.dtos.DTOMapper;
+import com.plants.backend.data.dtos.PlantDTO;
+import com.plants.backend.data.entities.Plant;
+import com.plants.backend.repository.PlantRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-
-import com.plants.backend.data.DTOMapper;
-import com.plants.backend.data.Plant;
-import com.plants.backend.data.PlantDTO;
-import com.plants.backend.repository.PlantRepository;
-
-import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class PlantService {
@@ -24,24 +22,24 @@ public class PlantService {
     }
 
     public List<PlantDTO> findAll() {
-		/* return plantRepository.findAll(); */
-    	return plantRepository.findAll().stream()
+        /* return plantRepository.findAll(); */
+        return plantRepository.findAll().stream()
                 .map(DTOMapper::toPlantDTO)
                 .collect(Collectors.toList());
     }
-   
-    
+
+
     public Plant save(Plant plant) {
-    	return plantRepository.save(plant);
+        return plantRepository.save(plant);
     }
-    
-    public Optional<Plant> findPlantById (Long id) {
-    	return plantRepository.findById(id);
+
+    public Optional<Plant> findPlantById(Long id) {
+        return plantRepository.findById(id);
     }
 
     public void deletePlantById(Long id) {
         Plant plant = plantRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Plant not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Plant not found"));
 
         // Remove plant from other plants' companion lists
         List<Plant> allPlants = plantRepository.findAll();
@@ -59,12 +57,8 @@ public class PlantService {
 
 
     public List<Plant> findPlantsByIds(List<Long> plantIds) {
-        return plantRepository.findAllById(plantIds); 
+        return plantRepository.findAllById(plantIds);
     }
 
-   
-    
-   
 
-	
 }

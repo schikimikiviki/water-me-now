@@ -612,6 +612,8 @@ function Admin() {
                   <option value='ORCHID_SOIL'>Orchid soil</option>
                   <option value='TOMATO_SOIL'>Tomato soil</option>
                   <option value='COMPOST'>Compost</option>
+                  <option value='SANDY_MIX'>Sandy mix</option>
+                  <option value='POTTING_MIX'>Potting mix</option>
                 </select>
                 <label htmlFor='perennial'>Choose perennial type:</label>
                 <select

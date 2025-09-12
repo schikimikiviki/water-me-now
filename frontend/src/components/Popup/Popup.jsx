@@ -429,6 +429,8 @@ const Popup = ({
                 <option value='ORCHID_SOIL'>Orchid soil</option>
                 <option value='TOMATO_SOIL'>Tomato soil</option>
                 <option value='COMPOST'>Compost</option>
+                <option value='SANDY_MIX'>Sandy mix</option>
+                <option value='POTTING_MIX'>Potting mix</option>
               </select>
               <br />
               <label htmlFor='perennial'>Choose perennial type:</label>

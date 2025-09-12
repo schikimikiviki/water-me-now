@@ -1,6 +1,8 @@
-package com.plants.backend.data;
+package com.plants.backend.data.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.plants.backend.data.entities.Common_pest;
+import com.plants.backend.data.entities.Plant;
 import com.plants.backend.data.enums.*;
 
 import java.util.ArrayList;

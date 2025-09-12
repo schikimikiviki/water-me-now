@@ -1,5 +1,18 @@
 package com.plants.backend.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.plants.backend.data.dtos.CommonPestDTO;
+import com.plants.backend.data.entities.Common_pest;
+import com.plants.backend.data.entities.Plant;
+import com.plants.backend.repository.PlantRepository;
+import com.plants.backend.service.PestService;
+import com.plants.backend.service.PlantService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -9,184 +22,162 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.plants.backend.data.CommonPestDTO;
-import com.plants.backend.data.Common_pest;
-import com.plants.backend.data.Plant;
-import com.plants.backend.repository.PlantRepository;
-import com.plants.backend.service.PestService;
-import com.plants.backend.service.PlantService;
-
 @RestController
 @RequestMapping("/pests")
 public class PestController {
 
-	private final PestService pestService;
+    private final PestService pestService;
 
-	private final PlantService plantService;
+    private final PlantService plantService;
 
-	private final PlantRepository plantRepository;
+    private final PlantRepository plantRepository;
 
-	public PestController(PestService pestService, PlantService plantService, PlantRepository plantRepository) {
-		this.pestService = pestService;
-		this.plantService = plantService;
-		this.plantRepository = plantRepository;
-	}
+    public PestController(PestService pestService, PlantService plantService, PlantRepository plantRepository) {
+        this.pestService = pestService;
+        this.plantService = plantService;
+        this.plantRepository = plantRepository;
+    }
 
-	@GetMapping("/all")
-	public List<CommonPestDTO> getAllPests() {
-		
-		return pestService.findAll();
-	}
+    @GetMapping("/all")
+    public List<CommonPestDTO> getAllPests() {
 
-	@PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<?> addPest(@RequestPart("imageFile") MultipartFile imageFile,
-			@RequestPart("pestData") CommonPestDTO pestDTO) {
+        return pestService.findAll();
+    }
 
-		System.out.println("Received pestDTO: " + pestDTO);
-		System.out.println("PlantList: " + (pestDTO.getPlantList()));
+    @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> addPest(@RequestPart("imageFile") MultipartFile imageFile,
+                                     @RequestPart("pestData") CommonPestDTO pestDTO) {
 
-		try {
-			// 1. Handle Image Upload
-			String imageName = null;
-			if (imageFile != null && !imageFile.isEmpty()) {
-				String uploadDir = "uploads/";
-				imageName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
-				Path imagePath = Paths.get(uploadDir + imageName);
-				Files.createDirectories(imagePath.getParent());
-				Files.write(imagePath, imageFile.getBytes());
-			}
+        System.out.println("Received pestDTO: " + pestDTO);
+        System.out.println("PlantList: " + (pestDTO.getPlantList()));
 
-			// 2. Convert DTO to Entity
-			List<Plant> plants = plantRepository.findAllById(pestDTO.getPlantList());
+        try {
+            // 1. Handle Image Upload
+            String imageName = null;
+            if (imageFile != null && !imageFile.isEmpty()) {
+                String uploadDir = "uploads/";
+                imageName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
+                Path imagePath = Paths.get(uploadDir + imageName);
+                Files.createDirectories(imagePath.getParent());
+                Files.write(imagePath, imageFile.getBytes());
+            }
 
-			System.out.println("Plants found: " + (plants));
+            // 2. Convert DTO to Entity
+            List<Plant> plants = plantRepository.findAllById(pestDTO.getPlantList());
 
-			Common_pest pest = new Common_pest();
-			pest.setName(pestDTO.getName());
-			pest.setTodo(pestDTO.getTodo());
-			pest.setImageFile(imageName); // Save the renamed image
-			pest.setPlantList(plants);
+            System.out.println("Plants found: " + (plants));
 
-			// 3. Save Pest
-			pestService.save(pest);
+            Common_pest pest = new Common_pest();
+            pest.setName(pestDTO.getName());
+            pest.setTodo(pestDTO.getTodo());
+            pest.setImageFile(imageName); // Save the renamed image
+            pest.setPlantList(plants);
 
-			return ResponseEntity.ok(Map.of("success", true, "pest", pest));
-		} catch (IOException e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(Map.of("success", false, "error", e.getMessage()));
-		}
-	}
+            // 3. Save Pest
+            pestService.save(pest);
 
-	@GetMapping("/id/{Id}")
-	public Optional<Common_pest> getPestById(@PathVariable Long Id) {
-		// Return details of a single user
-		return pestService.findPestById(Id);
-	}
-	
-	@PatchMapping(value = "/{pestId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<?> updatePest(
-	        @PathVariable Long pestId,
-	        @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
-	        @RequestPart("pestBody") String pestBodyJson) {
+            return ResponseEntity.ok(Map.of("success", true, "pest", pest));
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("success", false, "error", e.getMessage()));
+        }
+    }
 
-	    System.out.println("Received PATCH request for pestId: " + pestId);
-	    System.out.println("Received raw pestBody: " + pestBodyJson);
+    @GetMapping("/id/{Id}")
+    public Optional<Common_pest> getPestById(@PathVariable Long Id) {
+        // Return details of a single user
+        return pestService.findPestById(Id);
+    }
+
+    @PatchMapping(value = "/{pestId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updatePest(
+            @PathVariable Long pestId,
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
+            @RequestPart("pestBody") String pestBodyJson) {
+
+        System.out.println("Received PATCH request for pestId: " + pestId);
+        System.out.println("Received raw pestBody: " + pestBodyJson);
 
 
-	    try {
-	    	
-	    	 ObjectMapper objectMapper = new ObjectMapper();
-	         CommonPestDTO pestDTO = objectMapper.readValue(pestBodyJson, CommonPestDTO.class);
+        try {
 
-	         System.out.println("Parsed pestDTO: " + pestDTO);
-	         System.out.println("PlantList: " + pestDTO.getPlantList());
-	         
-	        // 1. Find existing pest
-	        Optional<Common_pest> existingPlantOpt = pestService.findPestById(pestId);
-	        if (!existingPlantOpt.isPresent()) {
-	            return ResponseEntity.notFound().build();
-	        }
+            ObjectMapper objectMapper = new ObjectMapper();
+            CommonPestDTO pestDTO = objectMapper.readValue(pestBodyJson, CommonPestDTO.class);
 
-	        Common_pest existingPest = existingPlantOpt.get();
+            System.out.println("Parsed pestDTO: " + pestDTO);
+            System.out.println("PlantList: " + pestDTO.getPlantList());
 
-	        // 2. Handle Image Upload (only if new image provided)
-	        if (imageFile != null && !imageFile.isEmpty()) {
-	            // Delete old image if it exists
-	            if (existingPest.getImageFile() != null) {
-	                Path oldImagePath = Paths.get("uploads/" + existingPest.getImageFile());
-	                Files.deleteIfExists(oldImagePath);
-	            }
+            // 1. Find existing pest
+            Optional<Common_pest> existingPlantOpt = pestService.findPestById(pestId);
+            if (!existingPlantOpt.isPresent()) {
+                return ResponseEntity.notFound().build();
+            }
 
-	            // Save new image
-	            String uploadDir = "uploads/";
-	            String imageName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
-	            Path imagePath = Paths.get(uploadDir + imageName);
-	            Files.createDirectories(imagePath.getParent());
-	            Files.write(imagePath, imageFile.getBytes());
-	            existingPest.setImageFile(imageName);
-	        }
+            Common_pest existingPest = existingPlantOpt.get();
 
-	        // 3. Update pest properties
-	        if (pestDTO.getName() != null) {
-	            existingPest.setName(pestDTO.getName());
-	        }
-	        if (pestDTO.getTodo() != null) {
-	            existingPest.setTodo(pestDTO.getTodo());
-	        }
+            // 2. Handle Image Upload (only if new image provided)
+            if (imageFile != null && !imageFile.isEmpty()) {
+                // Delete old image if it exists
+                if (existingPest.getImageFile() != null) {
+                    Path oldImagePath = Paths.get("uploads/" + existingPest.getImageFile());
+                    Files.deleteIfExists(oldImagePath);
+                }
 
-	        // 4. Update plant associations if provided
-	        if (pestDTO.getPlantList() != null && !pestDTO.getPlantList().isEmpty()) {
-	            List<Plant> plants = plantRepository.findAllById(pestDTO.getPlantList());
-	            existingPest.setPlantList(plants);
-	        }
+                // Save new image
+                String uploadDir = "uploads/";
+                String imageName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
+                Path imagePath = Paths.get(uploadDir + imageName);
+                Files.createDirectories(imagePath.getParent());
+                Files.write(imagePath, imageFile.getBytes());
+                existingPest.setImageFile(imageName);
+            }
 
-	        // 5. Save updated pest
-	        Common_pest updatedPest = pestService.save(existingPest);
+            // 3. Update pest properties
+            if (pestDTO.getName() != null) {
+                existingPest.setName(pestDTO.getName());
+            }
+            if (pestDTO.getTodo() != null) {
+                existingPest.setTodo(pestDTO.getTodo());
+            }
 
-	        return ResponseEntity.ok(Map.of(
-	                "success", true,
-	                "pest", updatedPest
-	        ));
-	    } catch (IOException e) {
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body(Map.of(
-	                        "success", false,
-	                        "error", "File processing error: " + e.getMessage()
-	                ));
-	    } catch (Exception e) {
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body(Map.of(
-	                        "success", false,
-	                        "error", "Server error: " + e.getMessage()
-	                ));
-	    }
-	}
+            // 4. Update plant associations if provided
+            if (pestDTO.getPlantList() != null && !pestDTO.getPlantList().isEmpty()) {
+                List<Plant> plants = plantRepository.findAllById(pestDTO.getPlantList());
+                existingPest.setPlantList(plants);
+            }
 
-	
+            // 5. Save updated pest
+            Common_pest updatedPest = pestService.save(existingPest);
 
-	@DeleteMapping("/{pestId}")
-	public ResponseEntity<?> deletePest(@PathVariable Long pestId) {
-		try {
-			pestService.deletePestById(pestId);
-			return ResponseEntity.ok(Map.of("success", true, "message", "Pest deleted successfully"));
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-					.body(Map.of("success", false, "message", "Pest not found"));
-		}
-	}
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "pest", updatedPest
+            ));
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "success", false,
+                            "error", "File processing error: " + e.getMessage()
+                    ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "success", false,
+                            "error", "Server error: " + e.getMessage()
+                    ));
+        }
+    }
+
+
+    @DeleteMapping("/{pestId}")
+    public ResponseEntity<?> deletePest(@PathVariable Long pestId) {
+        try {
+            pestService.deletePestById(pestId);
+            return ResponseEntity.ok(Map.of("success", true, "message", "Pest deleted successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("success", false, "message", "Pest not found"));
+        }
+    }
 
 }

@@ -1,11 +1,11 @@
-package com.plants.backend.data;
+package com.plants.backend.data.dtos;
 
 public class RegisterUserDto {
     private String email;
     private String password;
     private String fullName;
 
-    
+
     public RegisterUserDto() {
     }
 
@@ -15,26 +15,25 @@ public class RegisterUserDto {
         this.fullName = fullName;
     }
 
-    
+
     public String getEmail() {
         return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public String getFullName() {
-        return fullName;
-    }
-
-    
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getFullName() {
+        return fullName;
     }
 
     public void setFullName(String fullName) {
