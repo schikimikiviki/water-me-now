@@ -149,15 +149,15 @@ function PlantList() {
         <div style={{ display: 'flex', gap: '30px' }}>
           <h3 style={{ marginTop: '50px' }}>Show only alive plants?</h3>
 
-          <label class='switch'>
+          <label className='switch'>
             <input
               type='checkbox'
               value={showAliveOnly}
               onChange={handleShowAliveOnly}
             />
-            <span class='slider'>
+            <span className='slider'>
               <svg
-                class='slider-icon'
+                className='slider-icon'
                 viewBox='0 0 32 32'
                 xmlns='http://www.w3.org/2000/svg'
                 aria-hidden='true'

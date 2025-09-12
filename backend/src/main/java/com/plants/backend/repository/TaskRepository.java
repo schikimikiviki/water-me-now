@@ -12,8 +12,12 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     List<Task> findByDate(LocalDate date);
 
-    @Query("SELECT t FROM Task t WHERE EXTRACT(MONTH FROM t.date) = :month AND EXTRACT(DAY FROM t.date) = :day")
+    @Query("SELECT t FROM Task t WHERE EXTRACT(MONTH FROM t.date) = :month AND EXTRACT(DAY FROM t.date) = :day AND (t.isRepeated = false OR t.isRepeated IS NULL)")
     List<Task> findByMonthAndDay(@Param("month") int month, @Param("day") int day);
+
+
+    @Query("SELECT t FROM Task t WHERE t.isRepeated = true")
+    List<Task> findByIsRepeated();
 
 
 }

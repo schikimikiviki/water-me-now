@@ -10,9 +10,15 @@ const AddTask = () => {
   const [date, setDate] = useState('');
   const [message, setMessage] = useState('');
   const [postCompleted, setIsPostCompleted] = useState(false);
+  const [isRepeated, setIsRepeated] = useState(false);
+  const [repetition, setRepetition] = useState('WEEKLY');
 
   const handleTodoChange = (e) => {
     setTodo(e.target.value);
+  };
+
+  const handleIsRepeatedChange = (e) => {
+    setIsRepeated(e.target.value);
   };
 
   const handleNameChange = (e) => {
@@ -24,6 +30,10 @@ const AddTask = () => {
     setDate(e.target.value);
   };
 
+  const handleRepetitionChange = (e) => {
+    setRepetition(e.target.value);
+  };
+
   const handleAddTask = async (e) => {
     e.preventDefault();
 
@@ -32,6 +42,8 @@ const AddTask = () => {
     formData.append('imageFile', imageFile);
     formData.append('todo', todo);
     formData.append('date', date);
+    formData.append('isRepeated', isRepeated);
+    formData.append('repetition', repetition);
 
     console.log('Posting with this data :');
     for (var pair of formData.entries()) {
@@ -116,8 +128,33 @@ const AddTask = () => {
         <input type='date' value={date} onChange={handleDateChange} />
 
         <hr className='hr-styled' />
-        <br />
+        <label htmlFor='isRepeated'>Is this task a repeated task ?</label>
+        <select
+          value={isRepeated}
+          onChange={handleIsRepeatedChange}
+          name='isRepeated'
+          id='isRepeated'
+        >
+          <option value='true'>yes</option>
+          <option value='false'>no</option>
+        </select>
 
+        <hr className='hr-styled' />
+        <label htmlFor='repetition'>Choose repetition cycle:</label>
+        <select
+          value={repetition}
+          onChange={handleRepetitionChange}
+          name='repetition'
+          id='repetition'
+        >
+          <option value='WEEKLY'>Weekly</option>
+          <option value='DAILY'>Daily</option>
+          <option value='MONTHLY'>Monthly</option>
+          <option value='EVERY_QUARTER'>Every quarter</option>
+        </select>
+        <br />
+        <br />
+        <hr className='hr-styled' />
         <button type='submit'>Post</button>
       </form>
     </div>

@@ -13,6 +13,8 @@ const TaskPopup = ({ onClose, taskData, allPlants }) => {
   const [plantObjectWithTodo, setPlantObjectWithTodo] = useState(
     taskData.plantTasks
   );
+  const [isRepeated, setIsRepeated] = useState(taskData.isRepeated);
+  const [repetition, setRepetition] = useState(taskData.repetition);
   const [plantTodos, setPlantTodos] = useState({});
 
   // other states
@@ -55,6 +57,14 @@ const TaskPopup = ({ onClose, taskData, allPlants }) => {
     setPlantTodos(newPlantTodos);
   };
 
+  const handleIsRepeatedChange = (e) => {
+    setIsRepeated(e.target.value);
+  };
+
+  const handleRepetitionChange = (e) => {
+    setRepetition(e.target.value);
+  };
+
   const handleToDo = (e) => {
     setTodo(e.target.value);
   };
@@ -79,6 +89,8 @@ const TaskPopup = ({ onClose, taskData, allPlants }) => {
       todo: todo,
       date: date,
       plantTasks: plantObjectWithTodo,
+      isRepeated: isRepeated,
+      repetition: repetition,
     };
 
     // Verify the final payload
@@ -217,6 +229,33 @@ const TaskPopup = ({ onClose, taskData, allPlants }) => {
               <hr className='hr-styled' />
               <label>Select a Date 📅</label>
               <input type='date' value={date} onChange={handleDateChange} />
+
+              <hr className='hr-styled' />
+              <label htmlFor='isRepeated'>Is this task a repeated task ?</label>
+              <select
+                value={isRepeated}
+                onChange={handleIsRepeatedChange}
+                name='isRepeated'
+                id='isRepeated'
+              >
+                <option value='true'>yes</option>
+                <option value='false'>no</option>
+              </select>
+
+              <hr className='hr-styled' />
+              <label htmlFor='repetition'>Choose repetition cycle:</label>
+              <select
+                value={repetition}
+                onChange={handleRepetitionChange}
+                name='repetition'
+                id='repetition'
+              >
+                <option value='WEEKLY'>Weekly</option>
+                <option value='DAILY'>Daily</option>
+                <option value='MONTHLY'>Monthly</option>
+                <option value='EVERY_QUARTER'>Every quarter</option>
+              </select>
+
               <hr className='hr-styled' />
               <p htmlFor='companions'>Add plants for this task:</p>
 
