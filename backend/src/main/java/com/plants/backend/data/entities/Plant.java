@@ -80,10 +80,13 @@ public class Plant {
     @Enumerated(EnumType.STRING)
     private List<TrimmingTime> trimmingTimes;
 
+    @ElementCollection
+    private List<String> galleryImages = new ArrayList<>();
+
     public Plant() {
     }
 
-    public Plant(Long id, String name, String origin, String imageFile, Hardiness hardiness, String hardiness_info, Ideal_location ideal_location, Watering watering, Soil_type soil_type, List<Feature> featureList, Ideal_placement ideal_placement, String propagation, Fertilization_schedule fertilization_schedule, List<Plant> companionPlants, List<String> uses, List<Common_pest> commonPests, List<PlantTask> plantTasks, Boolean perennial, Boolean isAlive, String extraInfo, Boolean isVegetable, SeedTime seedTime, List<TrimmingTime> trimmingTimes, List<HarvestTime> harvestTimes) {
+    public Plant(Long id, String name, String origin, String imageFile, Hardiness hardiness, String hardiness_info, Ideal_location ideal_location, Watering watering, Soil_type soil_type, List<Feature> featureList, Ideal_placement ideal_placement, String propagation, Fertilization_schedule fertilization_schedule, List<Plant> companionPlants, List<String> uses, List<Common_pest> commonPests, List<PlantTask> plantTasks, Boolean perennial, Boolean isAlive, String extraInfo, Boolean isVegetable, SeedTime seedTime, List<TrimmingTime> trimmingTimes, List<HarvestTime> harvestTimes, List<String> galleryImages) {
         super();
         this.id = id;
         this.name = name;
@@ -109,7 +112,16 @@ public class Plant {
         this.seedTime = seedTime;
         this.harvestTimes = harvestTimes;
         this.trimmingTimes = trimmingTimes;
+        this.galleryImages = galleryImages;
 
+    }
+
+    public List<String> getGalleryImages() {
+        return galleryImages;
+    }
+
+    public void setGalleryImages(List<String> galleryImages) {
+        this.galleryImages = galleryImages;
     }
 
     public Boolean getIsVegetable() {

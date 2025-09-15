@@ -44,6 +44,7 @@ public class PlantDTO {
     private SeedTime seedTime;
     private List<HarvestTime> harvestTimes;
     private List<TrimmingTime> trimmingTimes;
+    private List<String> galleryImages = new ArrayList<>();
 
     public PlantDTO() {
     }
@@ -86,6 +87,15 @@ public class PlantDTO {
         this.seedTime = plant.getSeedTime();
         this.trimmingTimes = plant.getTrimmingTimes();
         this.harvestTimes = plant.getHarvestTimes();
+        this.galleryImages = plant.getGalleryImages();
+    }
+
+    public List<String> getGalleryImages() {
+        return galleryImages;
+    }
+
+    public void setGalleryImages(List<String> galleryImages) {
+        this.galleryImages = galleryImages;
     }
 
     public Boolean getIsVegetable() {

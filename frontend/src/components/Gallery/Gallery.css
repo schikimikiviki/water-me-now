@@ -1,0 +1,11 @@
+.box-another-img {
+  border: 1px solid black;
+  padding: 2px;
+  display: flex;
+  justify-items: center;
+  align-items: center;
+}
+
+.gallery-div {
+  display: flex;
+}

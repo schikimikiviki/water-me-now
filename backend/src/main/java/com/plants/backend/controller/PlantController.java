@@ -88,7 +88,8 @@ public class PlantController {
             @RequestParam(value = "isVegetable", required = false) Boolean isVegetable,
             @RequestParam(value = "seedTime", required = false) SeedTime seedTime,
             @RequestParam(value = "harvestTimes", required = false) List<HarvestTime> harvestTimes,
-            @RequestParam(value = "trimmingTimes", required = false) List<TrimmingTime> trimmingTimes
+            @RequestParam(value = "trimmingTimes", required = false) List<TrimmingTime> trimmingTimes,
+            @RequestParam(value = "galleryImages", required = false) List<MultipartFile> galleryImages
 
     ) {
         System.out.println("Received POST /plants/add");
@@ -147,6 +148,25 @@ public class PlantController {
             plant.setIsVegetable(isVegetable);
             plant.setSeedTime(seedTime);
 
+            // handle gallery files
+            if (galleryImages != null && !galleryImages.isEmpty()) {
+                List<String> savedGalleryFiles = new ArrayList<>();
+                String uploadDir = "uploads/";
+
+                for (MultipartFile file : galleryImages) {
+                    if (file != null && !file.isEmpty()) {
+                        String imageNameForFile = UUID.randomUUID() + "_" + file.getOriginalFilename();
+                        Path imagePath = Paths.get(uploadDir + imageNameForFile);
+                        Files.createDirectories(imagePath.getParent());
+                        Files.write(imagePath, file.getBytes());
+                        savedGalleryFiles.add(imageNameForFile);
+                    }
+                }
+
+                plant.setGalleryImages(savedGalleryFiles);
+            }
+
+
             // 4. Save Plant
             plantService.save(plant);
 
@@ -162,6 +182,7 @@ public class PlantController {
     public ResponseEntity<?> updatePlant(
             @PathVariable Long plantId,
             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
+            @RequestPart(value = "galleryImages", required = false) List<MultipartFile> galleryImages,
             @RequestPart("plantBody") String plantBodyJson) {
 
         System.out.println("Received PATCH request for pestId: " + plantId);
@@ -199,6 +220,34 @@ public class PlantController {
                 Files.write(imagePath, imageFile.getBytes());
                 existingPlant.setImageFile(imageName);
             }
+
+            // handle gallery update
+            if (galleryImages != null && !galleryImages.isEmpty()) {
+                // Delete old gallery images
+                if (existingPlant.getGalleryImages() != null) {
+                    for (String oldFileName : existingPlant.getGalleryImages()) {
+                        Path oldPath = Paths.get("uploads/" + oldFileName);
+                        Files.deleteIfExists(oldPath);
+                    }
+                }
+
+                // Save new gallery images
+                List<String> savedGalleryFiles = new ArrayList<>();
+                String uploadDir = "uploads/";
+
+                for (MultipartFile file : galleryImages) {
+                    if (file != null && !file.isEmpty()) {
+                        String newFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+                        Path newPath = Paths.get(uploadDir + newFileName);
+                        Files.createDirectories(newPath.getParent());
+                        Files.write(newPath, file.getBytes());
+                        savedGalleryFiles.add(newFileName);
+                    }
+                }
+
+                existingPlant.setGalleryImages(savedGalleryFiles);
+            }
+
 
             // 3. Update pest properties
             if (plantDTO.getName() != null) {

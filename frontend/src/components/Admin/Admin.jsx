@@ -7,6 +7,7 @@ import AddTask from '../AddTask/AddTask';
 import UploadImage from '../UploadImage/UploadImage';
 import DatabaseButton from '../DatabaseButton/DatabaseButton';
 import { useAuth } from '../../AuthContext.jsx';
+import Gallery from '../Gallery/Gallery.jsx';
 
 function Admin() {
   const [password, setPassword] = useState('');
@@ -43,6 +44,7 @@ function Admin() {
   const [selectedPests, setSelectedPests] = useState([]);
   const [extraInfo, setExtraInfo] = useState('');
   const [isAlive, setIsAlive] = useState(true);
+  const [galleryImages, setGalleryImages] = useState([]);
 
   // vegetable fields
   const [isVegetable, setIsVegetable] = useState(false);
@@ -154,7 +156,7 @@ function Admin() {
   const handleAddPlant = async (e) => {
     e.preventDefault();
 
-    // console.log(selectedPests);
+    console.log(galleryImages);
 
     const formData = new FormData();
     formData.append('name', plantName);
@@ -924,6 +926,8 @@ function Admin() {
                     </div>
                   </>
                 )}
+                <hr className='hr-styled' />
+                <Gallery />
                 <hr className='hr-styled' />
                 <label>Choose common pests:</label>
                 <div className='plant-tasks-checkboxes'>
