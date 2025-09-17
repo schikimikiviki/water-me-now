@@ -129,7 +129,7 @@ public class PlantController {
                 plant.setCommonPests(commonPests);
             }
 
-            System.out.println("Common Pests: " + plant.getCommonPests());
+            // System.out.println("Common Pests: " + plant.getCommonPests());
 
             if (companionPlantIds != null && !companionPlantIds.isEmpty()) {
                 // set compagnion Plats

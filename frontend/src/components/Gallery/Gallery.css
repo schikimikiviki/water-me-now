@@ -1,5 +1,5 @@
 .box-another-img {
-  border: 1px solid black;
+  /* border: 1px solid black; */
   padding: 2px;
   display: flex;
   justify-items: center;
@@ -8,4 +8,22 @@
 
 .gallery-div {
   display: flex;
+  overflow-wrap: break-word;
+  word-break: break-all;
+}
+
+.upload-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.gallery-item {
+  align-self: flex-start;
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.button-custom {
+  all: unset;
+  font-size: 20px;
 }

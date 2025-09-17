@@ -75,7 +75,6 @@ const UploadImage = ({ id, onUploadImage, postCompleted }) => {
         name='plantImage'
         accept='image/*'
         onChange={handleImageUpload}
-        required
         style={{ display: 'none' }}
       />
     </>

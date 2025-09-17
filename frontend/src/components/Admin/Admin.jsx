@@ -45,6 +45,7 @@ function Admin() {
   const [extraInfo, setExtraInfo] = useState('');
   const [isAlive, setIsAlive] = useState(true);
   const [galleryImages, setGalleryImages] = useState([]);
+  const [reset, setReset] = useState(false);
 
   // vegetable fields
   const [isVegetable, setIsVegetable] = useState(false);
@@ -177,6 +178,13 @@ function Admin() {
     formData.append('commonPests', selectedPests);
     formData.append('isAlive', isAlive);
     formData.append('extraInfo', extraInfo);
+    //formData.append('galleryImages', galleryImages);
+    galleryImages.forEach((file) => {
+      formData.append('galleryImages', file);
+    });
+
+    //TODO: in plant-list die images displayen
+    // TODO: patchen sollte gehen
 
     if (isVegetable) {
       formData.append('isVegetable', isVegetable);
@@ -227,8 +235,8 @@ function Admin() {
 
   const patchCompanionPlants = async (companionPlants, plantJustCreatedId) => {
     // to each plant in the companionList, we need to do a patch request
-    console.log(companionPlants);
-    console.log(plantJustCreatedId);
+    // console.log(companionPlants);
+    // console.log(plantJustCreatedId);
 
     for (let i = 0; i < companionPlants.length; i++) {
       const formData = new FormData();
@@ -327,6 +335,11 @@ function Admin() {
     setHarvestTimes([]);
     setFormKey((prev) => prev + 1); // ===> we need this to clearly reset the form fields like plantTasks
     setIsPostCompleted(true); // ===> we need this state so that the UploadImage component knwos to clear the text
+    setReset(true);
+
+    setTimeout(() => {
+      setReset(false); // set to false after a few seconds so that the "reset" action is only called once in the child
+    }, 4500);
   };
 
   const handlePlantNameChange = (e) => {
@@ -443,6 +456,7 @@ function Admin() {
   const handleUpload = (e) => {
     setImageFile(e);
     setIsPostCompleted(false);
+    setReset(false);
   };
 
   const generateCompanionList = (idList) => {
@@ -466,6 +480,11 @@ function Admin() {
     );
   };
 
+  const handleGalleryUpload = (file) => {
+    // console.log('got: ', file);
+    setGalleryImages(file);
+  };
+
   return (
     <div className='page-div'>
       {!isLoggedIn ? (
@@ -478,7 +497,7 @@ function Admin() {
             </div>
           )}
 
-          <form onSubmit={handleLogin} role='form'>
+          <form novalidate onSubmit={handleLogin} role='form'>
             <input
               type='text'
               id='username'
@@ -547,11 +566,15 @@ function Admin() {
                   onChange={handlePlantOriginChange}
                   required
                 />
+                <p>Choose a default image</p>
                 <UploadImage
                   id='upload1'
                   onUploadImage={handleUpload}
                   postCompleted={postCompleted}
                 />
+                <hr className='hr-styled' />
+                <p>Add more photos</p>
+                <Gallery reset={reset} sendToParent={handleGalleryUpload} />
                 <hr className='hr-styled' />
                 <label htmlFor='hardiness'>Choose hardiness:</label>
                 <select
@@ -926,8 +949,6 @@ function Admin() {
                     </div>
                   </>
                 )}
-                <hr className='hr-styled' />
-                <Gallery />
                 <hr className='hr-styled' />
                 <label>Choose common pests:</label>
                 <div className='plant-tasks-checkboxes'>

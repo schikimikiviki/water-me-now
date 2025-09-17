@@ -4,6 +4,7 @@ package com.plants.backend;
 import jakarta.persistence.EntityManagerFactory;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationContext;
@@ -22,12 +23,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 public class BackendApplication {
 
     public static void main(String[] args) {
-
-
-        int x;
-        x = 24;
-        byte b = x;
-        //SpringApplication.run(BackendApplication.class, args);
+        SpringApplication.run(BackendApplication.class, args);
     }
 
     @Bean
