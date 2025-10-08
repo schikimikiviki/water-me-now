@@ -184,7 +184,7 @@ function Admin() {
     });
 
     //TODO: in plant-list die images displayen
-    // TODO: patchen sollte gehen
+    // TODO: patchen testen
 
     if (isVegetable) {
       formData.append('isVegetable', isVegetable);

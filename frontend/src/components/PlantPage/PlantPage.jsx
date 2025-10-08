@@ -11,6 +11,7 @@ import NotPerennialIcon from '../../assets/images/not-perennial.svg';
 import { Link } from 'react-router-dom';
 import './PlantPage.css';
 import { pathToUploads } from '../../helpers/constants';
+import GalleryView from '../GalleryView/GalleryView';
 
 function PlantPage() {
   const { id } = useParams();
@@ -102,6 +103,7 @@ function PlantPage() {
             height={350}
             className='img-plant'
           />
+          <GalleryView images={viewedPlant?.galleryImages} />
         </div>
         <div className='plant-details'>
           <div className='plant-shortinfo'>

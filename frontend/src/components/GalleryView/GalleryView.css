@@ -1,0 +1,8 @@
+.gallery-block {
+  display: flex;
+  max-width: 300px;
+  background-color: antiquewhite;
+  gap: 10px;
+  padding: 5px;
+  flex-wrap: wrap;
+}
