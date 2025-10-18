@@ -183,7 +183,6 @@ function Admin() {
       formData.append('galleryImages', file);
     });
 
-    //TODO: in plant-list die images displayen
     // TODO: patchen testen
 
     if (isVegetable) {

@@ -1,12 +1,22 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { pathToUploads } from '../../helpers/constants';
 import './GalleryView.css';
 import PicturePopup from '../PicturePopup/PicturePopup';
 
 function GalleryView({ images }) {
-  const [viewedId, setViewedId] = useState(0);
+  const [viewedId, setViewedId] = useState('none');
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   console.log(images);
+
+  const closePopup = () => {
+    setIsPopupOpen(false);
+  };
+
+  const chooseFile = (fileName) => {
+    setViewedId(fileName);
+    setIsPopupOpen(true);
+  };
 
   return (
     <>
@@ -16,14 +26,14 @@ function GalleryView({ images }) {
             return (
               <img
                 src={pathToUploads + imageFile}
-                onClick={() => setViewedId(imageFile)}
+                onClick={() => chooseFile(imageFile)}
                 alt={`gallery-${imageFile}`}
-                width={100}
+                width={90}
               ></img>
             );
           })}
       </div>
-      <PicturePopup fileName={viewedId} />
+      {isPopupOpen && <PicturePopup fileName={viewedId} onClose={closePopup} />}
     </>
   );
 }

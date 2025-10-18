@@ -11,11 +11,11 @@
   z-index: 999;
 }
 
-.popup {
+.popup-file {
   background: var(--color-red);
   border: white 1px solid;
-  width: 70%;
-  padding: 40px;
+  /* width: 70%; */
+  /* padding: 40px; */
   position: relative;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
@@ -24,7 +24,7 @@
 }
 
 @media only screen and (max-width: 768px) {
-  .popup {
+  .popup-file {
     width: 90% !important;
     max-height: 90%;
     padding: 20px !important;
