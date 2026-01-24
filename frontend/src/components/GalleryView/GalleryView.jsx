@@ -17,10 +17,9 @@ function GalleryView({ images }) {
     setViewedId(fileName);
     setIsPopupOpen(true);
   };
-
   return (
     <>
-      <div className='gallery-block'>
+      <div className={`${images?.length > 0 ? 'gallery-block' : ''}`}>
         {images &&
           images.map((imageFile) => {
             return (

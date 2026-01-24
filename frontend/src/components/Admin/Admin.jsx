@@ -51,7 +51,7 @@ function Admin() {
   const [isVegetable, setIsVegetable] = useState(false);
   const [areVegetableFieldsOpen, setAreVegetableFieldsOpen] = useState(false);
   const [seedTime, setSeedTime] = useState(
-    'END_OF_JANUARY_BEGINNING_OF_FEBRUARY'
+    'END_OF_JANUARY_BEGINNING_OF_FEBRUARY',
   );
   const [trimmingTimes, setTrimmingTimes] = useState([]);
   const [harvestTimes, setHarvestTimes] = useState([]);
@@ -142,7 +142,7 @@ function Admin() {
             'Content-Type': 'application/json',
             Accept: 'application/json',
           },
-        }
+        },
       );
 
       console.log('Login successful:', response.data);
@@ -178,7 +178,7 @@ function Admin() {
     formData.append('commonPests', selectedPests);
     formData.append('isAlive', isAlive);
     formData.append('extraInfo', extraInfo);
-    //formData.append('galleryImages', galleryImages);
+
     galleryImages.forEach((file) => {
       formData.append('galleryImages', file);
     });
@@ -258,7 +258,7 @@ function Admin() {
         let response = await patchSomethingWithId(
           'plants',
           companionPlants[i],
-          formData
+          formData,
         );
         console.log(response);
       } catch (error) {
@@ -298,7 +298,7 @@ function Admin() {
         let response = await patchSomethingWithId(
           'plants',
           plantToPatchId,
-          formData
+          formData,
         );
         console.log(response);
       } catch (error) {
@@ -393,21 +393,21 @@ function Admin() {
   const handleCheckboxChange = (e) => {
     const { value, checked } = e.target;
     setFeatures((prev) =>
-      checked ? [...prev, value] : prev.filter((f) => f !== value)
+      checked ? [...prev, value] : prev.filter((f) => f !== value),
     );
   };
 
   const handleHarvestTimeChange = (e) => {
     const { value, checked } = e.target;
     setHarvestTimes((prev) =>
-      checked ? [...prev, value] : prev.filter((f) => f !== value)
+      checked ? [...prev, value] : prev.filter((f) => f !== value),
     );
   };
 
   const handleTrimmingTimeChange = (e) => {
     const { value, checked } = e.target;
     setTrimmingTimes((prev) =>
-      checked ? [...prev, value] : prev.filter((f) => f !== value)
+      checked ? [...prev, value] : prev.filter((f) => f !== value),
     );
   };
 
@@ -439,7 +439,7 @@ function Admin() {
       ]);
     } else {
       setSelectedPlantTasks(
-        selectedPlantTasks.filter((t) => !(t.taskId === taskId))
+        selectedPlantTasks.filter((t) => !(t.taskId === taskId)),
       );
     }
   };
@@ -573,7 +573,11 @@ function Admin() {
                 />
                 <hr className='hr-styled' />
                 <p>Add more photos</p>
-                <Gallery reset={reset} sendToParent={handleGalleryUpload} />
+                <Gallery
+                  reset={reset}
+                  sendToParent={handleGalleryUpload}
+                  existingImages='no'
+                />
                 <hr className='hr-styled' />
                 <label htmlFor='hardiness'>Choose hardiness:</label>
                 <select
@@ -778,7 +782,7 @@ function Admin() {
                           id={`task-${task.id}`}
                           value={task.id}
                           checked={selectedPlantTasks.some(
-                            (t) => t.taskId === task.id
+                            (t) => t.taskId === task.id,
                           )}
                           onChange={(e) => handleTaskChange(e, task.id)}
                         />

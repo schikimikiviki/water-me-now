@@ -1,33 +1,38 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-const UploadImage = ({ id, onUploadImage, postCompleted }) => {
+const UploadImage = ({ id, onUploadImage, existingImage, postCompleted }) => {
   const [imgText, setImgText] = useState('');
-  const [imageFile, setImageFile] = useState('');
+  const [imagePreview, setImagePreview] = useState(null);
 
   const TARGET_WIDTH = 546;
   const TARGET_HEIGHT = 672;
+
+  // Hydrate UI with existing image
+  useEffect(() => {
+    if (existingImage) {
+      setImagePreview(existingImage);
+      setImgText('Image selected');
+    }
+  }, [existingImage]);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     setImgText(file.name);
-    setImageFile(file);
 
     const reader = new FileReader();
     reader.onload = (event) => {
       const img = new Image();
       img.onload = () => {
-        // Create canvas
         const canvas = document.createElement('canvas');
         canvas.width = TARGET_WIDTH;
         canvas.height = TARGET_HEIGHT;
         const ctx = canvas.getContext('2d');
 
-        // Compute scale to fill target size (like CSS "cover")
         const scale = Math.max(
           TARGET_WIDTH / img.width,
-          TARGET_HEIGHT / img.height
+          TARGET_HEIGHT / img.height,
         );
 
         const x = TARGET_WIDTH / 2 - (img.width / 2) * scale;
@@ -35,7 +40,6 @@ const UploadImage = ({ id, onUploadImage, postCompleted }) => {
 
         ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
 
-        // Convert canvas back to a File
         canvas.toBlob(
           (blob) => {
             if (!blob) return;
@@ -45,14 +49,12 @@ const UploadImage = ({ id, onUploadImage, postCompleted }) => {
               lastModified: Date.now(),
             });
 
-            if (typeof onUploadImage === 'function') {
-              onUploadImage(croppedFile);
-            } else {
-              console.warn('onUploadImage is not a function', onUploadImage);
-            }
+            setImagePreview(URL.createObjectURL(croppedFile));
+
+            onUploadImage?.(croppedFile);
           },
           'image/jpeg',
-          0.9 // quality
+          0.9,
         );
       };
       img.src = event.target.result;
@@ -61,23 +63,19 @@ const UploadImage = ({ id, onUploadImage, postCompleted }) => {
   };
 
   return (
-    <>
+    <div className='upload-image'>
       <label htmlFor={id} className='custom-file-upload'>
-        {imgText.length > 0
-          ? postCompleted
-            ? 'Choose Image'
-            : imgText
-          : 'Choose Image'}
+        {postCompleted ? 'Choose Image' : imgText || 'Choose Image'}
       </label>
+
       <input
         type='file'
         id={id}
-        name='plantImage'
         accept='image/*'
         onChange={handleImageUpload}
         style={{ display: 'none' }}
       />
-    </>
+    </div>
   );
 };
 

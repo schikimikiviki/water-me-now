@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import './PicturePopup.css';
 import { pathToUploads } from '../../helpers/constants';
+import CloseIcon from '../../assets/images/close.png';
 
 const PicturePopup = ({ fileName, onClose }) => {
   const [width, setWidth] = useState(window.innerWidth);
@@ -25,9 +26,7 @@ const PicturePopup = ({ fileName, onClose }) => {
   return (
     <div className='popup-overlay'>
       <div className='popup-file'>
-        <button className='close-button' onClick={onClose}>
-          X
-        </button>
+        <img src={CloseIcon} className='close-btn' onClick={onClose} />
         {/* <h1>{fileName}</h1> */}
         <img src={pathToUploads + fileName} alt={fileName} />
       </div>

@@ -3,6 +3,7 @@ import api from '../../api/axiosConfig';
 import './Popup.css';
 import { patchSomethingWithId } from '../../helpers/functions';
 import UploadImage from '../UploadImage/UploadImage';
+import Gallery from '../Gallery/Gallery';
 
 const Popup = ({
   onClose,
@@ -18,7 +19,7 @@ const Popup = ({
   const [commonPests, setCommonPests] = useState(plantData.commonPests);
 
   const [companionPlants, setCompanionPlants] = useState(
-    plantData.companionPlants || []
+    plantData.companionPlants || [],
   );
   // const [compagnionPlantIds, setCompagnionPlantIds] = useState([]);
 
@@ -26,15 +27,17 @@ const Popup = ({
   const [allPlants, setAllPlants] = useState(allPlantsData);
   const [features, setFeatures] = useState(plantData.featureList);
   const [fertilization, setFertilization] = useState(
-    plantData.fertilization_schedule
+    plantData.fertilization_schedule,
   );
   const [hardiness, setHardiness] = useState(plantData.hardiness);
   const [hardinessInfo, setHardinessInfo] = useState(plantData.hardiness_info);
   const [idealLocation, setIdealLocation] = useState(plantData.ideal_location);
   const [idealPlacement, setIdealPlacement] = useState(
-    plantData.ideal_placement
+    plantData.ideal_placement,
   );
   const [imageFile, setImageFile] = useState(plantData.imageFile);
+  const [galleryImages, setGalleryImages] = useState(plantData.galleryImages);
+  const [reset, setReset] = useState(false);
   const [perennial, setPerennial] = useState(plantData.perennial);
   const [plantTasks, setPlantTasks] = useState(plantData.plantTasks);
   const [propagation, setPropagation] = useState(plantData.propagation);
@@ -43,7 +46,7 @@ const Popup = ({
   const [customUse, setCustomUse] = useState('');
   const [watering, setWatering] = useState(plantData.watering);
   const [selectedPlantTasks, setSelectedPlantTasks] = useState(
-    plantData.plantTasks
+    plantData.plantTasks,
   );
   const [selectedPests, setSelectedPests] = useState(commonPests);
 
@@ -57,7 +60,7 @@ const Popup = ({
   // vegetable fields
   const [isVegetable, setIsVegetable] = useState(plantData.isVegetable);
   const [areVegetableFieldsOpen, setAreVegetableFieldsOpen] = useState(
-    plantData.isVegetable
+    plantData.isVegetable,
   );
   const [seedTime, setSeedTime] = useState(plantData.seedTime);
   const [trimmingTimes, setTrimmingTimes] = useState(plantData.trimmingTimes);
@@ -67,6 +70,11 @@ const Popup = ({
     // console.log(selectedPlantTasks);
     console.log(allTasksData);
   }, []);
+
+  const handleGalleryUpload = (file) => {
+    // console.log('got: ', file);
+    setGalleryImages(file);
+  };
 
   function handleWindowSizeChange() {
     setWidth(window.innerWidth);
@@ -118,7 +126,7 @@ const Popup = ({
   const handleCheckboxChange = (e) => {
     const { value, checked } = e.target;
     setFeatures((prev) =>
-      checked ? [...prev, value] : prev.filter((f) => f !== value)
+      checked ? [...prev, value] : prev.filter((f) => f !== value),
     );
   };
 
@@ -155,8 +163,8 @@ const Popup = ({
     } else {
       setSelectedPlantTasks(
         selectedPlantTasks.filter(
-          (t) => !(t.taskId === taskId && t.plantId === plantData.id)
-        )
+          (t) => !(t.taskId === taskId && t.plantId === plantData.id),
+        ),
       );
     }
   };
@@ -220,7 +228,7 @@ const Popup = ({
       let response = await patchSomethingWithId(
         'plants',
         plantData.id,
-        formData
+        formData,
       );
       console.log(response);
       onClose();
@@ -232,14 +240,14 @@ const Popup = ({
   const handleHarvestTimeChange = (e) => {
     const { value, checked } = e.target;
     setHarvestTimes((prev) =>
-      checked ? [...prev, value] : prev.filter((f) => f !== value)
+      checked ? [...prev, value] : prev.filter((f) => f !== value),
     );
   };
 
   const handleTrimmingTimeChange = (e) => {
     const { value, checked } = e.target;
     setTrimmingTimes((prev) =>
-      checked ? [...prev, value] : prev.filter((f) => f !== value)
+      checked ? [...prev, value] : prev.filter((f) => f !== value),
     );
   };
 
@@ -285,7 +293,7 @@ const Popup = ({
 
   const generateCompanionList = (idList) => {
     const companions = allPlantsData.filter((plant) =>
-      idList.includes(plant.id)
+      idList.includes(plant.id),
     );
 
     return (
@@ -310,6 +318,11 @@ const Popup = ({
     console.log('removing plant with id: ', idToRemove);
     setCompanionPlants(companionPlants.filter((id) => id !== idToRemove));
   };
+
+  // TODO: here in the popup we are rendering UploadImages
+  // twice - once normally and once in the Gallery component
+  // -> enhance this
+  // also, add the names of the files
 
   return (
     <div className='popup-overlay'>
@@ -367,6 +380,11 @@ const Popup = ({
                   }
                 </p>
               </div>
+              <Gallery
+                reset={reset}
+                existingImages={!galleryImages.length ? 'no' : galleryImages}
+                sendToParent={handleGalleryUpload}
+              />
               <hr className='hr-styled' />
               <label htmlFor='hardiness'>Choose hardiness:</label>
               <select
@@ -600,7 +618,7 @@ const Popup = ({
                         id={`task-${task.id}`}
                         value={task.id}
                         checked={selectedPlantTasks.some(
-                          (t) => t.taskId === task.id
+                          (t) => t.taskId === task.id,
                         )}
                         onChange={(e) => handleTaskChange(e, task.id)}
                       />
@@ -613,7 +631,8 @@ const Popup = ({
                         value={
                           selectedPlantTasks.find(
                             (t) =>
-                              t.taskId === task.id && t.plantId === plantData.id
+                              t.taskId === task.id &&
+                              t.plantId === plantData.id,
                           )?.todo || ''
                         }
                         onChange={(e) => {

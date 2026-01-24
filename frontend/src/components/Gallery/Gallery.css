@@ -20,6 +20,7 @@
 .gallery-item {
   align-self: flex-start;
   display: flex;
+  margin: 10px;
   flex-direction: row-reverse;
 }
 
