@@ -183,8 +183,6 @@ function Admin() {
       formData.append('galleryImages', file);
     });
 
-    // TODO: patchen testen
-
     if (isVegetable) {
       formData.append('isVegetable', isVegetable);
       formData.append('seedTime', seedTime);

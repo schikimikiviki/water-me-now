@@ -39,7 +39,7 @@ function Gallery({ sendToParent, reset, existingImages }) {
 
   useEffect(() => {
     if (!items.length) return;
-    sendToParent(items.filter((i) => i.file).map((i) => i.file));
+    sendToParent(items);
   }, [items]);
 
   const handleUpload = (file, id) => {

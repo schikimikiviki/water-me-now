@@ -78,7 +78,7 @@ const Popup = ({
   }, [plantData]);
 
   const handleGalleryUpload = (file) => {
-    // console.log('got: ', file);
+    console.log('got: ', file);
     setGalleryImages(file);
   };
 
@@ -217,18 +217,37 @@ const Popup = ({
       plantBody.trimmingTimes = trimmingTimes;
     }
 
-    // Verify the final payload
-    console.log('Final payload:', JSON.stringify(plantBody, null, 2));
-
     if (imageFile) {
+      console.log('changed main img!');
       formData.append('imageFile', imageFile);
     }
+
+    if (galleryImages && galleryImages.length > 0) {
+      for (let i = 0; i < galleryImages.length; i++) {
+        const file = galleryImages[i].file;
+        if (file) {
+          // only append real files
+          formData.append('galleryImages', file);
+        }
+      }
+
+      const existingNames = galleryImages
+        .filter((img) => !img.file) // old images
+        .map((img) => img.name);
+
+      formData.append('existingGalleryImages', JSON.stringify(existingNames));
+    }
+
+    // Verify the final payload
+    console.log('Final payload:', JSON.stringify(plantBody, null, 2));
 
     // Create the Blob with proper type
     const jsonBlob = new Blob([JSON.stringify(plantBody)], {
       type: 'application/json',
     });
     formData.append('plantBody', jsonBlob);
+
+    console.log(formData);
 
     try {
       let response = await patchSomethingWithId(
@@ -325,11 +344,6 @@ const Popup = ({
     setCompanionPlants(companionPlants.filter((id) => id !== idToRemove));
   };
 
-  // TODO: here in the popup we are rendering UploadImages
-  // twice - once normally and once in the Gallery component
-  // -> enhance this
-  // also, add the names of the files
-
   return (
     <div className='popup-overlay'>
       <div className='popup'>
@@ -376,7 +390,18 @@ const Popup = ({
               />
               <br />
               <br />
-              <div style={{ display: 'flex' }}></div>
+              <h2>Main image</h2>
+              <div style={{ display: 'flex' }}>
+                <UploadImage id='upload4' onUploadImage={handleUpload} />
+                <p>
+                  {
+                    typeof imageFile === 'string'
+                      ? imageFile // existing filename
+                      : imageFile?.name || '' // new File object
+                  }
+                </p>
+              </div>
+              <h2>Gallery Images</h2>
               <Gallery
                 reset={reset}
                 existingImages={galleryImages}

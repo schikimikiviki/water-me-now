@@ -65,31 +65,7 @@ public class PlantController {
 
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public ResponseEntity<?> addPlant(
-            @RequestParam("name") String name,
-            @RequestParam("origin") String origin,
-            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
-            @RequestParam("hardiness") Hardiness hardiness,
-            @RequestParam(value = "hardiness_info", required = false) String hardinessInfo,
-            @RequestParam("ideal_location") Ideal_location idealLocation,
-            @RequestParam("watering") Watering watering,
-            @RequestParam("soil_type") Soil_type soilType,
-            @RequestParam("perennial") Boolean perennial,
-            @RequestParam(value = "featureList", required = false) List<Feature> featureList,
-            @RequestParam("ideal_placement") Ideal_placement idealPlacement,
-            @RequestParam(value = "propagation", required = false) String propagation,
-            @RequestParam("fertilization_schedule") Fertilization_schedule fertilizationSchedule,
-            @RequestParam(value = "uses", required = false) List<String> uses,
-            @RequestParam(value = "commonPests", required = false) List<Long> commonPestIds,
-            @RequestParam(value = "companionPlants", required = false) List<Long> companionPlantIds,
-            @RequestPart(value = "plantTasks", required = false) List<PlantTaskDTO> plantTasks,
-            @RequestParam(value = "isAlive", required = false) Boolean isAlive,
-            @RequestParam(value = "extraInfo", required = false) String extraInfo,
-            @RequestParam(value = "isVegetable", required = false) Boolean isVegetable,
-            @RequestParam(value = "seedTime", required = false) SeedTime seedTime,
-            @RequestParam(value = "harvestTimes", required = false) List<HarvestTime> harvestTimes,
-            @RequestParam(value = "trimmingTimes", required = false) List<TrimmingTime> trimmingTimes,
-            @RequestParam(value = "galleryImages", required = false) List<MultipartFile> galleryImages
+    public ResponseEntity<?> addPlant(@RequestParam("name") String name, @RequestParam("origin") String origin, @RequestParam(value = "imageFile", required = false) MultipartFile imageFile, @RequestParam("hardiness") Hardiness hardiness, @RequestParam(value = "hardiness_info", required = false) String hardinessInfo, @RequestParam("ideal_location") Ideal_location idealLocation, @RequestParam("watering") Watering watering, @RequestParam("soil_type") Soil_type soilType, @RequestParam("perennial") Boolean perennial, @RequestParam(value = "featureList", required = false) List<Feature> featureList, @RequestParam("ideal_placement") Ideal_placement idealPlacement, @RequestParam(value = "propagation", required = false) String propagation, @RequestParam("fertilization_schedule") Fertilization_schedule fertilizationSchedule, @RequestParam(value = "uses", required = false) List<String> uses, @RequestParam(value = "commonPests", required = false) List<Long> commonPestIds, @RequestParam(value = "companionPlants", required = false) List<Long> companionPlantIds, @RequestPart(value = "plantTasks", required = false) List<PlantTaskDTO> plantTasks, @RequestParam(value = "isAlive", required = false) Boolean isAlive, @RequestParam(value = "extraInfo", required = false) String extraInfo, @RequestParam(value = "isVegetable", required = false) Boolean isVegetable, @RequestParam(value = "seedTime", required = false) SeedTime seedTime, @RequestParam(value = "harvestTimes", required = false) List<HarvestTime> harvestTimes, @RequestParam(value = "trimmingTimes", required = false) List<TrimmingTime> trimmingTimes, @RequestParam(value = "galleryImages", required = false) List<MultipartFile> galleryImages
 
     ) {
         System.out.println("Received POST /plants/add");
@@ -122,10 +98,7 @@ public class PlantController {
             plant.setUses(uses != null ? uses : new ArrayList<>());
             // 3. Fetch Common Pests by IDs
             if (commonPestIds != null && !commonPestIds.isEmpty()) {
-                List<Common_pest> commonPests = commonPestIds.stream()
-                        .map(id -> pestRepository.findById(id).orElse(null))
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
+                List<Common_pest> commonPests = commonPestIds.stream().map(id -> pestRepository.findById(id).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList());
                 plant.setCommonPests(commonPests);
             }
 
@@ -173,17 +146,12 @@ public class PlantController {
 
             return ResponseEntity.ok(Map.of("success", true, "plant", plant));
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("success", false, "error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("success", false, "error", e.getMessage()));
         }
     }
 
     @PatchMapping(value = "/{plantId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> updatePlant(
-            @PathVariable Long plantId,
-            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
-            @RequestPart(value = "galleryImages", required = false) List<MultipartFile> galleryImages,
-            @RequestPart("plantBody") String plantBodyJson) {
+    public ResponseEntity<?> updatePlant(@PathVariable Long plantId, @RequestPart(value = "imageFile", required = false) MultipartFile imageFile, @RequestPart(value = "galleryImages", required = false) List<MultipartFile> galleryImages, @RequestParam(value = "existingGalleryImages", required = false) String existingGalleryImagesJson, @RequestPart("plantBody") String plantBodyJson) {
 
         System.out.println("Received PATCH request for pestId: " + plantId);
         System.out.println("Received raw plantBody: " + plantBodyJson);
@@ -222,30 +190,47 @@ public class PlantController {
             }
 
             // handle gallery update
+
+
             if (galleryImages != null && !galleryImages.isEmpty()) {
-                // Delete old gallery images
+
+                // Parse existing image names from the frontend (old images the user wants to keep)
+                List<String> existingImages = existingGalleryImagesJson != null ? new ObjectMapper().readValue(existingGalleryImagesJson, List.class) : new ArrayList<>();
+
+                // Prepare a list for new uploads
+                List<String> savedGalleryFiles = new ArrayList<>();
+
+                String uploadDir = "uploads/";
+                if (galleryImages != null && !galleryImages.isEmpty()) {
+                    for (MultipartFile file : galleryImages) {
+                        if (file != null && !file.isEmpty()) {
+                            String newFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+                            Path newPath = Paths.get(uploadDir + newFileName);
+                            Files.createDirectories(newPath.getParent());
+                            Files.write(newPath, file.getBytes());
+                            savedGalleryFiles.add(newFileName);
+                        }
+                    }
+                }
+
+                // Merge existing + new uploads
+                List<String> finalGallery = new ArrayList<>();
+                if (existingImages != null) finalGallery.addAll(existingImages); // old images
+                finalGallery.addAll(savedGalleryFiles); // new images
+
+                // Optionally, delete old files that are no longer kept
                 if (existingPlant.getGalleryImages() != null) {
                     for (String oldFileName : existingPlant.getGalleryImages()) {
-                        Path oldPath = Paths.get("uploads/" + oldFileName);
-                        Files.deleteIfExists(oldPath);
+                        if (!finalGallery.contains(oldFileName)) {
+                            Path oldPath = Paths.get("uploads/" + oldFileName);
+                            Files.deleteIfExists(oldPath);
+                        }
                     }
                 }
 
-                // Save new gallery images
-                List<String> savedGalleryFiles = new ArrayList<>();
-                String uploadDir = "uploads/";
+// 5️⃣ Save the merged gallery back to the plant
+                existingPlant.setGalleryImages(finalGallery);
 
-                for (MultipartFile file : galleryImages) {
-                    if (file != null && !file.isEmpty()) {
-                        String newFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-                        Path newPath = Paths.get(uploadDir + newFileName);
-                        Files.createDirectories(newPath.getParent());
-                        Files.write(newPath, file.getBytes());
-                        savedGalleryFiles.add(newFileName);
-                    }
-                }
-
-                existingPlant.setGalleryImages(savedGalleryFiles);
             }
 
 
@@ -304,11 +289,9 @@ public class PlantController {
                 existingPlant.setFeatureList(plantDTO.getFeatureList());
             }
 
-            if (plantDTO.getCompanionPlants() != null &&
-                    !plantDTO.getCompanionPlants().isEmpty()) {
+            if (plantDTO.getCompanionPlants() != null && !plantDTO.getCompanionPlants().isEmpty()) {
                 System.out.println("Compagnion List updated");
-                List<Plant> plants =
-                        plantRepository.findAllById(plantDTO.getCompanionPlants());
+                List<Plant> plants = plantRepository.findAllById(plantDTO.getCompanionPlants());
 
                 System.out.println("plants" + plants);
                 existingPlant.setCompanionPlants(plants);
@@ -335,9 +318,7 @@ public class PlantController {
                 }
 
                 // Remove pests not in new list
-                currentPests.removeIf(currentPest ->
-                        newPests.stream().noneMatch(p -> p.getId().equals(currentPest.getId()))
-                );
+                currentPests.removeIf(currentPest -> newPests.stream().noneMatch(p -> p.getId().equals(currentPest.getId())));
 
                 // Add new pests (check by ID)
                 for (Common_pest newPest : newPests) {
@@ -365,8 +346,7 @@ public class PlantController {
                         throw new IllegalArgumentException("Task ID cannot be null");
                     }
 
-                    Task task = taskService.findTaskById(plantTaskDTO.getTaskId())
-                            .orElseThrow(() -> new IllegalArgumentException("Task not found for ID: " + plantTaskDTO.getTaskId()));
+                    Task task = taskService.findTaskById(plantTaskDTO.getTaskId()).orElseThrow(() -> new IllegalArgumentException("Task not found for ID: " + plantTaskDTO.getTaskId()));
 
                     PlantTask plantTask = new PlantTask();
                     plantTask.setPlant(existingPlant);
@@ -409,22 +389,11 @@ public class PlantController {
             // 5. Save updated plant
             Plant updatedPlant = plantService.save(existingPlant);
 
-            return ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "plant", updatedPlant
-            ));
+            return ResponseEntity.ok(Map.of("success", true, "plant", updatedPlant));
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of(
-                            "success", false,
-                            "error", "File processing error: " + e.getMessage()
-                    ));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("success", false, "error", "File processing error: " + e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of(
-                            "success", false,
-                            "error", "Server error: " + e.getMessage()
-                    ));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("success", false, "error", "Server error: " + e.getMessage()));
         }
     }
 
@@ -435,8 +404,7 @@ public class PlantController {
             plantService.deletePlantById(plantId);
             return ResponseEntity.ok(Map.of("success", true, "message", "Plant deleted successfully"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("success", false, "message", "Plant not found"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("success", false, "message", "Plant not found"));
         }
     }
 
