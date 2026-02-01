@@ -6,7 +6,6 @@ import { useRef } from 'react';
 
 function Gallery({ sendToParent, reset, existingImages }) {
   const [items, setItems] = useState([]);
-  const [isFirst, setIsFirst] = useState(true);
 
   const initializedRef = useRef(false);
 
@@ -67,18 +66,13 @@ function Gallery({ sendToParent, reset, existingImages }) {
         file: null,
       },
     ]);
-
-    setIsFirst(false);
   };
 
   const deleteImage = (idToDelete) => {
     // console.log('isfirst', isFirst);
-    // only delete it if there was something added already
 
-    if (!isFirst) {
-      // find that id and delete it from the arr
-      setItems((prev) => prev.filter((item) => item.id !== idToDelete));
-    }
+    // find that id and delete it from the arr
+    setItems((prev) => prev.filter((item) => item.id !== idToDelete));
   };
 
   return (
