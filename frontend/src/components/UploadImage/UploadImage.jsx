@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import './UploadImage.css';
 
 const UploadImage = ({ id, onUploadImage, existingImage, postCompleted }) => {
   const [imgText, setImgText] = useState('');

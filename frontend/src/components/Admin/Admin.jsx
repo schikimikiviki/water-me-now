@@ -576,7 +576,7 @@ function Admin() {
                 <Gallery
                   reset={reset}
                   sendToParent={handleGalleryUpload}
-                  existingImages='no'
+                  existingImages={0}
                 />
                 <hr className='hr-styled' />
                 <label htmlFor='hardiness'>Choose hardiness:</label>

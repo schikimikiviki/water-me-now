@@ -36,7 +36,7 @@ const Popup = ({
     plantData.ideal_placement,
   );
   const [imageFile, setImageFile] = useState(plantData.imageFile);
-  const [galleryImages, setGalleryImages] = useState(plantData.galleryImages);
+  const [galleryImages, setGalleryImages] = useState([]);
   const [reset, setReset] = useState(false);
   const [perennial, setPerennial] = useState(plantData.perennial);
   const [plantTasks, setPlantTasks] = useState(plantData.plantTasks);
@@ -70,6 +70,12 @@ const Popup = ({
     // console.log(selectedPlantTasks);
     console.log(allTasksData);
   }, []);
+
+  useEffect(() => {
+    if (plantData?.galleryImages) {
+      setGalleryImages(plantData.galleryImages);
+    }
+  }, [plantData]);
 
   const handleGalleryUpload = (file) => {
     // console.log('got: ', file);
@@ -370,19 +376,10 @@ const Popup = ({
               />
               <br />
               <br />
-              <div style={{ display: 'flex' }}>
-                <UploadImage id='upload4' onUploadImage={handleUpload} />
-                <p>
-                  {
-                    typeof imageFile === 'string'
-                      ? imageFile // existing filename
-                      : imageFile?.name || '' // new File object
-                  }
-                </p>
-              </div>
+              <div style={{ display: 'flex' }}></div>
               <Gallery
                 reset={reset}
-                existingImages={!galleryImages.length ? 'no' : galleryImages}
+                existingImages={galleryImages}
                 sendToParent={handleGalleryUpload}
               />
               <hr className='hr-styled' />

@@ -1,7 +1,6 @@
 .upload-image {
-  min-width: 150px;
-
-  img {
-    margin-left: 20px;
-  }
+  min-width: 200px;
+  text-align: right;
+  align-items: end;
+  display: flex;
 }
