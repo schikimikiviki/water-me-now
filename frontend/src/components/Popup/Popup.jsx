@@ -149,7 +149,8 @@ const Popup = ({
   };
 
   const handleIsAliveChange = (e) => {
-    setIsAlive(e.target.value);
+    const value = e.target.value === 'true'; // converts string to boolean
+    setIsAlive(value);
   };
 
   const removeUse = (index) => {
