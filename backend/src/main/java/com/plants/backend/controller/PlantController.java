@@ -228,7 +228,7 @@ public class PlantController {
                     }
                 }
 
-// 5️⃣ Save the merged gallery back to the plant
+// Save the merged gallery back to the plant
                 existingPlant.setGalleryImages(finalGallery);
 
             }

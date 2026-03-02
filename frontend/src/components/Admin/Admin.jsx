@@ -179,9 +179,15 @@ function Admin() {
     formData.append('isAlive', isAlive);
     formData.append('extraInfo', extraInfo);
 
-    galleryImages.forEach((file) => {
-      formData.append('galleryImages', file);
-    });
+    if (galleryImages && galleryImages.length > 0) {
+      for (let i = 0; i < galleryImages.length; i++) {
+        const file = galleryImages[i].file;
+        if (file) {
+          // only append real files
+          formData.append('galleryImages', file);
+        }
+      }
+    }
 
     if (isVegetable) {
       formData.append('isVegetable', isVegetable);
@@ -333,6 +339,7 @@ function Admin() {
     setFormKey((prev) => prev + 1); // ===> we need this to clearly reset the form fields like plantTasks
     setIsPostCompleted(true); // ===> we need this state so that the UploadImage component knwos to clear the text
     setReset(true);
+    setExtraInfo('');
 
     setTimeout(() => {
       setReset(false); // set to false after a few seconds so that the "reset" action is only called once in the child

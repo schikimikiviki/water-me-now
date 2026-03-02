@@ -16,7 +16,7 @@ function Header() {
       }}
     >
       <h2 style={{ textAlign: 'right', fontSize: '16px', marginTop: '-15px' }}>
-        Version 1.0
+        Version 1.2
       </h2>
       <h1>🪴 water me now 🪴</h1>
       <hr style={{ width: '500px', marginLeft: '0' }}></hr>
