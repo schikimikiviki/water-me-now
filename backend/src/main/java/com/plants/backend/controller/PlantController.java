@@ -389,7 +389,9 @@ public class PlantController {
             // 5. Save updated plant
             Plant updatedPlant = plantService.save(existingPlant);
 
-            return ResponseEntity.ok(Map.of("success", true, "plant", updatedPlant));
+            PlantDTO responseDTO = new PlantDTO(updatedPlant);
+            return ResponseEntity.ok(Map.of("success", true, "plant", responseDTO));
+
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("success", false, "error", "File processing error: " + e.getMessage()));
         } catch (Exception e) {

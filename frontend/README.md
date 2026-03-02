@@ -3,7 +3,7 @@
 ## How to deploy
 
 1. Backend: mvn clean package locally, then copy jar file to the server
-2. Frontend: First, edit constants.js to have the correct PATHS! Then, copy the whole folder and run npm build on the server.
+2. Frontend: First, edit constants.js to have the correct PATHS! Then, run: run npm build and copy the folder to the server.
 
 Deploy a new version:
 
