@@ -2,8 +2,18 @@
 
 ## How to deploy
 
-1. Backend: mvn clean package locally, then copy to the server
-2. Frontend: When doing changes, copy the whole folder and run npm run build on the server.
+1. Backend: mvn clean package locally, then copy jar file to the server
+2. Frontend: First, edit constants.js to have the correct PATHS! Then, copy the whole folder and run npm build on the server.
+
+Deploy a new version:
+
+- make a db dump of the running versison !!
+- backend: after copying the jar file, just restart the service
+- frontend: after creating the folder, just copy it to the correct location, thats it - no need to start it
+
+## Development
+
+You can connect Intellij to the remote version to view your data. Simply start in debug mode and view the domain.
 
 ## Used technologies:
 
