@@ -278,10 +278,12 @@ const Popup = ({
   };
 
   const handleIsVegetableChange = (e) => {
-    if (e.target.value == 'true') {
-      setAreVegetableFieldsOpen(true);
+    const value = e.target.value === 'true'; // converts string to boolean
+
+    if (value == 'true') {
+      setAreVegetableFieldsOpen(value);
     } else {
-      setAreVegetableFieldsOpen(false);
+      setAreVegetableFieldsOpen(value);
     }
     setIsVegetable(e.target.value);
   };
@@ -529,12 +531,9 @@ const Popup = ({
               </div>
               <div>
                 <label htmlFor='isAlive'>Alive status:</label>
-                <select
-                  value={isAlive}
-                  onChange={handleIsAliveChange}
-                  name='isAlive'
-                  id='isAlive'
-                >
+
+                <select value={isAlive ?? ''} onChange={handleIsAliveChange}>
+                  <option value=''>-- select --</option>
                   <option value='true'>yes</option>
                   <option value='false'>no</option>
                 </select>
@@ -699,12 +698,14 @@ const Popup = ({
               </div>
               <div>
                 <label htmlFor='isVegetable'>Is this plant a vegetable?:</label>
+
                 <select
-                  value={isVegetable}
+                  value={isVegetable ?? ''}
                   onChange={handleIsVegetableChange}
                   name='isVegetable'
                   id='isVegetable'
                 >
+                  <option value=''>-- select --</option>
                   <option value='true'>yes</option>
                   <option value='false'>no</option>
                 </select>

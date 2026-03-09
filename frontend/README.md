@@ -15,6 +15,24 @@ Deploy a new version:
 
 You can connect Intellij to the remote version to view your data. Simply start in debug mode and view the domain.
 
+## Add constraints to db
+
+Show the constraint with:
+
+```
+SELECT conname, pg_get_constraintdef(c.oid)
+FROM pg_constraint c
+JOIN pg_class t ON c.conrelid = t.oid
+WHERE t.relname = 'plants'
+AND conname = 'plants_soil_type_check';
+```
+
+When adding a new Enum to the list:
+
+```
+ALTER TYPE soil_type ADD VALUE 'NEW_SOIL_TYPE';
+```
+
 ## Used technologies:
 
 - React and Vite for the frontend
